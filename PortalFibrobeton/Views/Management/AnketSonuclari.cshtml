@@ -1,0 +1,194 @@
+﻿@model PortalFibrobeton.Models.Entity.AnketSonucModel
+
+@{
+    ViewBag.Title = "AnketSonuclari";
+    Layout = "~/Views/Shared/_PeraLayout.cshtml";
+
+}
+
+<head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+</head>
+
+
+
+
+<div class="container-fluid flex-grow-1 container-p-y">
+
+    <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">PeraFIBRO /</span> Anket Sonuçları </h4>
+
+    @using (Html.BeginForm("AnketSonuclari", "Management"))
+    {
+        <div class="row mt-4">
+            <div class="col-xxl-5">
+                <div class="card mt-3">
+                    <div class="card-header d-flex align-items-center justify-content-between">
+                        <h5 class="mb-0">Anketi Seç</h5>
+                        <small class="text-muted float-end"></small>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mt-3">
+                            <label class="col-sm-2 col-form-label" for="anketSec">Anketler</label>
+                            <div class="col-sm-8">
+                                <select class="form-select" name="anketid">
+                                    <option selected>Anket Seçin</option>
+                                    @if (Model != null && Model.AnketList != null)
+                                    {
+                                        foreach (var i in Model.AnketList)
+                                        {
+                                            <option value="@i.AnketID">@i.AnketAdi</option>
+                                        }
+                                    }
+
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row mt-3">
+                            <label class="col-sm-2 col-form-label" for="projeid">Projeler</label>
+                            <div class="col-sm-8">
+                                <select class="form-select" id="projeid" name="projeID" onchange="setSelectedProjectID()">
+                                    <option selected>Proje Seçin</option>
+                                </select>
+                                <br />
+                                <input type="hidden" id="selectedProjectID" name="selectedProjectID" value="" />
+                            </div>
+                        </div>
+
+                        <div class="row mt-3">
+                            <div class="col-sm-10 text-center">
+                                <button type="submit" class="btn btn-primary mx-auto btn-block" style="width:120px">Seç</button>
+                            </div>
+                        </div>
+                        <div>
+                            @if (TempData["errorCozenKisiSayi"] != null)
+                            {
+                                <p class="mt-3" style="color:red">@TempData["errorCozenKisiSayi"].ToString()</p>
+                            }
+                            @if (TempData["errorParametre"] != null)
+                            {
+                                <p class="mt-3" style="color:red">@TempData["errorParametre"].ToString()</p>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="col-lg-3 col-md-12 col-6 mt-3">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="card-title d-flex align-items-start justify-content-between">
+                            <img src="~/Content/icons/clipboard64px.png" />
+                        </div>
+                        <span class="fw-semibold d-block mb-2">Ortalama Ağırlık Eşdeğer Katsayı</span>
+                        @if (Model != null && Model.AnketList != null && Model.AnketSonuclari != null)
+                        {
+
+                            var sumGenel = ViewBag.toplamSonuc;
+                            string sumGenelFormatted = string.Format("{0:0.00}", sumGenel);
+                            <h3 class="card-title mb-2" style="margin-top:12px">@sumGenelFormatted</h3>
+                            if (ViewBag.cozenKisiSayi >= 3)
+                            {
+                                <small class="text-success fw-semibold">Anketi @ViewBag.cozenKisiSayi kişi çözdü</small>
+                            }
+                            else if (ViewBag.cozenKisiSayi == 1 || ViewBag.cozenKisiSayi == 2)
+                            {
+                                <small class="text-danger fw-semibold">Anketi @ViewBag.cozenKisiSayi kişi çözdü</small>
+                            }
+
+                        }
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+
+    @if (Model != null && Model.AnketSonuclari != null && Model.AnketSonuclari.Any() && Model.AnketList != null)
+    {
+        <div class="row mt-5">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title mt-2">Anket Sonuçları</h5>
+                    <div class="table-responsive text-nowrap mt-4">
+                        <table class="table table-striped">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th style="color:#fff">Anketi Çözdüğü Tarih</th>
+                                    <th style="color:#fff">Anketi Çözen</th>
+                                    <th style="color:#fff">Anket Adı</th>
+                                    <th style="color:#fff">Proje</th>
+                                    <th style="color:#fff">Sonuç</th>
+                                </tr>
+                            </thead>
+                            @foreach (var sonucGruplu in Model.AnketSonuclari)
+                            {
+                                <tbody>
+                                    <tr>
+                                        <td>@sonucGruplu.Select(a => a.CozumTarihi).LastOrDefault()</td>
+                                        <td>@sonucGruplu.Key</td>
+                                        <td>@sonucGruplu.Select(a => a.Anketler.AnketAdi).LastOrDefault()</td>
+                                        <td>@sonucGruplu.Select(a => a.AnketProjeler.ProjeAdi).LastOrDefault()</td>
+                                        @{
+                                            double sum = (double)sonucGruplu.Select(a => a.Sonuc).Sum();
+                                            string formattedSum = string.Format("{0:0.000}", sum);
+                                        }
+                                        <td>@formattedSum</td>
+                                    </tr>
+                                </tbody>
+                            }
+
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    }
+
+
+</div>
+
+<script>
+    $(document).ready(function () {
+        // Proje select elementi disabled olarak ayarlanır
+        $("#projeid").prop("disabled", true);
+
+        // Anket seçildiğinde çalışacak fonksiyon
+        $("select[name='anketid']").change(function () {
+            var anketid = $(this).val(); // Seçilen anketin ID'si
+            if (anketid != "") {
+                // AJAX isteği ile seçilen anketin projeleri yüklenir
+                $.getJSON("/Management/ProjeListeleCozum/" + anketid, function (data) {
+                    // Proje select elementi temizlenir
+                    $("#projeid").empty();
+                    // Seçenekler eklenir
+                    $("#projeid").append($('<option>').text("Proje Seçin"));
+                    $.each(data, function (i, projeler) {
+                        $("#projeid").append($('<option>').text(projeler.ProjeAdi).attr('value', projeler.ID));
+                    });
+                    // Proje select elementi enabled olarak ayarlanır
+                    $("#projeid").prop("disabled", false);
+                });
+            } else {
+                // Seçili anket yoksa, proje select elementi disabled olarak ayarlanır
+                $("#projeid").empty();
+                $("#projeid").append($('<option>').text("Proje Seçin"));
+                $("#projeid").prop("disabled", true);
+            }
+        });
+
+        // Sayfa yüklendiğinde Anket seçim kutusunun başlangıç durumunu kontrol edin
+        if ($("select[name='anketid']").val() == "") {
+            $("#projeid").prop("disabled", true);
+        }
+    });
+</script>
+
+
+
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+<script type="text/javascript" src="http://ajax.cdnjs.com/ajax/libs/json2/20110223/json2.js"></script>
+<script src="~/quixlab-master/quixlab-master/plugins/common/common.min.js"></script>
+<script src="~/quixlab-master/quixlab-master/js/custom.min.js"></script>

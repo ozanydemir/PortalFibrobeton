@@ -1,0 +1,198 @@
+﻿@model  PortalFibrobeton.Models.Entity.Tbl_Taramalar
+
+@{
+    ViewBag.Title = "ScanInfo";
+    Layout = "~/Views/Shared/ScanLayout.cshtml";
+}
+
+<head>
+
+    <link href="~/quixlab-master/quixlab-master/plugins/bootstrap-material-datetimepicker/css/bootstrap-material-datetimepicker.css" rel="stylesheet">
+    <link href="~/quixlab-master/quixlab-master/plugins/clockpicker/dist/jquery-clockpicker.min.css" rel="stylesheet">
+    <link href="~/quixlab-master/quixlab-master/plugins/jquery-asColorPicker-master/css/asColorPicker.css" rel="stylesheet">
+    <link href="~/quixlab-master/quixlab-master/plugins/bootstrap-datepicker/bootstrap-datepicker.min.css" rel="stylesheet">
+    <link href="~/quixlab-master/quixlab-master/plugins/timepicker/bootstrap-timepicker.min.css" rel="stylesheet">
+    <link href="~/quixlab-master/quixlab-master/plugins/bootstrap-daterangepicker/daterangepicker.css" rel="stylesheet">
+
+    <link href="~/quixlab-master/quixlab-master/css/style.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-material-datetimepicker/2.7.1/css/bootstrap-material-datetimepicker.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.20.1/moment.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-material-datetimepicker/2.7.1/js/bootstrap-material-datetimepicker.min.js"></script>
+    <script src="https://cdnjs.com/libraries/moment.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.20.1/locale/ja.js"></script>
+
+    <style>
+        label {
+            font-weight: bold;
+            font-size: 17px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container-fluid">
+        @using (Html.BeginForm("Update", "UpdateScan", FormMethod.Post))
+        {
+            <div class="row justify-content-center">
+                <div class="col-lg-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <h1 class="card-title" style="font-size:35px; text-align:center; padding-bottom:7px; padding-top:7px;">Tarama Kayıt Bilgileri</h1>
+                            <br />
+                            <div class="basic-form">
+                                <form method="post">
+                                    @*@foreach (var item in Model)
+                                        {*@
+                                    <div class="form-row">
+                                        <div class="form-group col-md-12">
+                                            <label>ID</label>
+                                            <input type="text" class="form-control" value="@Model.IDT" name="IDT" readonly="readonly" />
+                                        </div>
+                                    </div>
+                                    <div class="form-row">
+                                        <div class="form-group col-md-4">
+                                            <label>Barkod</label>
+                                            <input type="text" class="form-control" value="@Model.BarkodT" name="BarkodT" />
+                                        </div>
+                                        <div class="form-group col-md-4">
+                                            <label>Poz No</label>
+                                            <input type="text" class="form-control" value="@Model.PozT" name="PozT">
+                                        </div>
+                                        <div class="form-group col-md-4">
+                                            <label>Poz Barkod</label>
+                                            <input type="text" class="form-control" value="@Model.PozBarkodT" name="PozBarkodT" />
+                                        </div>
+                                    </div>
+                                    <div class="form-row">
+                                        <div class="form-group col-md-6">
+                                            <label>Malzeme</label>
+                                            <input type="text" class="form-control" value="@Model.MalzemeT" name="MalzemeT">
+                                        </div>
+                                        <div class="form-group col-md-6">
+                                            <label>Proje</label>
+                                            <input type="text" class="form-control" value="@Model.ProjeT" name="ProjeT" />
+                                        </div>
+                                    </div>
+                                    <div class="form-row">
+                                        <div class="form-group col-md-3">
+                                            <label>Alan m²</label>
+                                            <input type="text" class="form-control" value="@Model.AlanT" name="AlanT" />
+                                        </div>
+                                        <div class="form-group col-md-3">
+                                            <label>Tarama Süresi</label>
+                                            <input type="number" class="form-control" name="SureT" value="@Model.SureT" />
+                                        </div>
+                                        <div class="form-group col-md-3">
+                                            <label>Rapor Süresi</label>
+                                            <input type="number" class="form-control" name="SureR" value="@Model.SureR" />
+                                        </div>
+                                        <div class="form-group col-md-3">
+                                            <label class="m-t-20">Tarih</label>
+                                            <input type="text" class="form-control" id="dateUpdate" name="TarihT" value="@Model.TarihT" />
+                                        </div>
+                                    </div>
+                                    <div class="form-row">
+                                        <div class="form-group col-md-3">
+                                            <label>Tarama Sayısı</label>
+                                            <input type="number" class="form-control" name="SayıT" value="@Model.SayıT" />
+                                        </div>
+                                        <div class="form-group col-md-3">
+                                            <label>Döküm</label>
+                                            <select id="dokum" class="form-control" name="DökümT">
+                                                <option value="@Model.DökümT">@Model.DökümT</option>
+                                                <option>UHPC</option>
+                                                <option>GRC</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group col-md-3">
+                                            <label>Yüzey</label>
+                                            <select id="yuzey" class="form-control" name="YüzeyT">
+                                                <option value="@Model.YüzeyT">@Model.YüzeyT</option>
+                                                <option>U-L-Z</option>
+                                                <option>AMORF</option>
+                                                <option>DÜZ</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group col-md-3">
+                                            <label>Cihaz</label>
+                                            <select id="cihaz" class="form-control" name="CihazT">
+                                                <option value="@Model.CihazT">@Model.CihazT</option>
+                                                <option>AICON</option>
+                                                <option>METRASCAN</option>
+                                                <option>BLACK ELİTE</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group col-md-4">
+                                            <label>Tarama Talebi</label>
+                                            <select class="form-control" name="KonuT">
+                                                <option value="@Model.KonuT">@Model.KonuT</option>
+                                                <option>DÖKÜM ÖNCESİ</option>
+                                                <option>KALIP TOPLAMA</option>
+                                                <option>DENEME</option>
+                                                <option>CNC İŞLEME</option>
+                                                <option>DÖKÜM SONRASI</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group col-md-4">
+                                            <label>Teslim</label>
+                                            <select class="form-control" name="TeslimT">
+                                                <option value="@Model.TeslimT">@Model.TeslimT</option>
+                                                <option>HOL-9</option>
+                                                <option>HOL-6</option>
+                                                <option>TAŞERON</option>
+                                                <option>CNC</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group col-md-4">
+                                            <label>Durum</label>
+                                            <select class="form-control" name="DurumT">
+                                                <option value="@Model.DurumT">@Model.DurumT</option>
+                                                <option>OK</option>
+                                                <option>RED</option>
+                                                <option></option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <button type="submit" class="btn btn-info" onclick="location.href='@Url.Action("Update","UpdateScan")'" style="margin-left:15px">Güncelle</button>
+                                    </div>
+
+                                    @*}*@
+
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    <script>
+        $(function () {
+            $('#dateUpdate').bootstrapMaterialDatePicker({
+                format: 'DD/MM/YYYY',
+                clearButton: false,
+                okText: "Tamam",
+                cancelText: "İptal",
+                monthNames: ['Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs', 'Haziran', 'Temmuz', 'Ağustos', 'Eylül', 'Ekim', 'Kasım', 'Aralık'],
+                time: false
+            });
+        });
+    </script>
+
+    <script src="~/quixlab-master/quixlab-master/plugins/moment/moment.js"></script>
+    <script src="~/quixlab-master/quixlab-master/plugins/bootstrap-material-datetimepicker/js/bootstrap-material-datetimepicker.js"></script>
+    <script src="~/quixlab-master/quixlab-master/plugins/clockpicker/dist/jquery-clockpicker.min.js"></script>
+    <script src="~/quixlab-master/quixlab-master/plugins/jquery-asColorPicker-master/libs/jquery-asColor.js"></script>
+    <script src="~/quixlab-master/quixlab-master/plugins/jquery-asColorPicker-master/libs/jquery-asGradient.js"></script>
+    <script src="~/quixlab-master/quixlab-master/plugins/jquery-asColorPicker-master/dist/jquery-asColorPicker.min.js"></script>
+    <script src="~/quixlab-master/quixlab-master/plugins/bootstrap-datepicker/bootstrap-datepicker.min.js"></script>
+    <script src="~/quixlab-master/quixlab-master/plugins/timepicker/bootstrap-timepicker.min.js"></script>
+    <script src="~/quixlab-master/quixlab-master/plugins/bootstrap-daterangepicker/daterangepicker.js"></script>
+    <script src="~/quixlab-master/quixlab-master/js/plugins-init/form-pickers-init.js"></script>
+
+</body>

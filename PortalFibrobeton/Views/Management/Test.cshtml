@@ -1,0 +1,698 @@
+﻿@model IEnumerable<PortalFibrobeton.Models.Entity.AnketSorular>
+
+@{
+    ViewBag.Title = "Test";
+    Layout = "~/Views/Shared/_PeraLayout.cshtml";
+}
+
+
+<head>
+    <meta charset="UTF-8">
+
+    <link href="~/quixlab-master/quixlab-master/plugins/jquery-steps/css/jquery.steps.css" rel="stylesheet">
+    <link href="~/Content/CssFile/CssStepForm.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+</head>
+
+
+<style>
+    html, body {
+        min-height: 100%;
+    }
+
+    body {
+        font-family: sans-serif;
+        background: #f3f3f3;
+        color: rgba(255,255,255,.5);
+    }
+
+    .container {
+        width: 80%;
+        max-width: 680px;
+        margin: 50px auto;
+        padding: 1.3em;
+        background: #585dd8;
+        border-radius: .75em;
+    }
+
+    h4 {
+        color: #fff
+    }
+
+    pYF {
+        font-size: .9em;
+        color: #FFFFFF;
+    }
+
+    .rb {
+        height: 50px;
+        line-height: 38px;
+        text-align: center;
+        background: #7571F9;
+        border-radius: .3em;
+    }
+
+    .tabY {
+        display: inline-block;
+        position: relative;
+        width: 20%;
+        font-size: 40px;
+    }
+
+    .txt {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: .5em;
+        color: #FFFFFF;
+    }
+
+    .spot {
+        position: absolute;
+        width: 35px;
+        height: 35px;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: transparent;
+        border: 2px solid rgba(255,255,255,.3);
+        border-radius: 100%;
+        cursor: pointer;
+        transition: ease .5s;
+    }
+
+    .activeTab .spot {
+        background: rgba(0,0,0,.35);
+        border: 2px solid rgb(240,255,66);
+    }
+
+    .button-box {
+        padding: 10px 0;
+        text-align: center;
+    }
+
+    .nav-pills .nav-link.active, .nav-pills .nav-link.active:hover, .nav-pills .nav-link.active:focus {
+        background-color: #fff;
+        color: #696cff;
+        box-shadow: 0 2px 4px 0 rgba(105, 108, 255, 0.4);
+    }
+
+    .nav-pills .nav-link:not(.active, .disabled) {
+        color: #fff;
+    }
+    
+
+        .wizard .content > .body {
+            background-color: transparent;
+            width: 100%;
+            height: 100%;
+            padding: 2rem;
+        }
+
+
+    button {
+        display: inline-block;
+        width: 80%;
+        margin-top: 1.2em;
+        padding: 1em;
+        max-width: 220px;
+        font-size: .9em;
+        background-color: #FFEA11; 
+        color: #FAC213;
+        text-transform: uppercase;
+        text-decoration: none;
+        letter-spacing: .15em;
+        background: white;
+        border: none;
+        outline: none;
+        border-radius: 5em;
+        box-shadow: 0 15px 20px -10px rgba(0, 0, 0, 0.3);
+        transition: color 0.6s, box-shadow 0.3s, transform 0.3s;
+        cursor: pointer;
+    }
+
+        button:hover {
+            box-shadow: 0 3px 5px -5px rgba(0, 0, 0, 0.3);
+            color: #fff;
+            background-color: #FFEA11;
+        }
+</style>
+
+<body>
+
+    <div class="container">
+
+        <div class="row">
+            <div class="col-md-12">
+
+                <div class="card-body">
+                    <h4 class="card-title mb-4">@ViewBag.anketAdi</h4>
+                    <div class="row align-items-center">
+                        <div class="col-md-4 col-lg-3">
+                            <div class="nav flex-column nav-pills" style="color:#fff">
+                                @if (Model.Count(a => a.AsamaAdi == "Proje Aşaması") >= 1)
+                                {
+                                    <a onclick="return false" style="pointer-events:none" data-toggle="pill" class="nav-link">Proje Aşaması</a>
+                                }
+                                @if (Model.Count(a => a.AsamaAdi == "Kalıp Aşaması") >= 1)
+                                {
+                                    <a onclick="return false" style="pointer-events:none" data-toggle="pill" class="nav-link">Kalıp Aşaması</a>
+                                }
+                                @if (Model.Count(a => a.AsamaAdi == "Karkas") >= 1)
+                                {
+                                    <a onclick="return false" style="pointer-events:none" data-toggle="pill" class="nav-link">Karkas</a>
+                                }
+                                @if (Model.Count(a => a.AsamaAdi == "Malzeme") >= 1)
+                                {
+                                    <a onclick="return false" style="pointer-events:none" data-toggle="pill" class="nav-link">Malzeme</a>
+                                }
+                                @if (Model.Count(a => a.AsamaAdi == "Döküm") >= 1)
+                                {
+                                    <a onclick="return false" style="pointer-events:none" data-toggle="pill" class="nav-link">Döküm</a>
+                                }
+                                @if (Model.Count(a => a.AsamaAdi == "Söküm") >= 1)
+                                {
+                                    <a onclick="return false" style="pointer-events:none" data-toggle="pill" class="nav-link">Söküm</a>
+                                }
+                                @if (Model.Count(a => a.AsamaAdi == "Yüzey") >= 1)
+                                {
+                                    <a onclick="return false" style="pointer-events:none" data-toggle="pill" class="nav-link">Yüzey İşlemleri</a>
+                                }
+                                @if (Model.Count(a => a.AsamaAdi == "Kalite") >= 1)
+                                {
+                                    <a onclick="return false" style="pointer-events:none" data-toggle="pill" class="nav-link">Kalite</a>
+                                }
+                                @if (Model.Count(a => a.AsamaAdi == "Sevkiyat") >= 1)
+                                {
+                                    <a onclick="return false" style="pointer-events:none" data-toggle="pill" class="nav-link">Sevkiyat</a>
+                                }
+                                @if (Model.Count(a => a.AsamaAdi == "Maddi Faktör") >= 1)
+                                {
+                                    <a onclick="return false" style="pointer-events:none" data-toggle="pill" class="nav-link">Maddi Faktör</a>
+                                }
+                                @if (Model.Count(a => a.AsamaAdi == "Montaj") >= 1)
+                                {
+                                    <a onclick="return false" style="pointer-events:none" data-toggle="pill" class="nav-link">Montaj</a>
+                                }
+                            </div>
+                        </div>
+
+                        <div class="col-md-8 col-lg-9">
+                            <div class="tab-content">
+                                @if (Model.Count(a => a.AsamaAdi == "Proje Aşaması") >= 1)
+                                {
+                                    <div id="v-pills-1" class="tab-pane fade active show">
+                                        <h4 id="asama" style="color:#fff">Proje Aşaması</h4>
+                                        <section class="step-section">
+                                            @foreach (var i in Model.Where(a => a.AsamaAdi == "Proje Aşaması"))
+                                            {
+                                                <p class="mt-4" style="color:#fff;font-size:17px">@i.Soru</p>
+                                                <div id="@i.SoruNo-@i.AsamaAdi" class="rb">
+                                                    <div class="tabY" data-value="@i.K1">
+                                                        <div class="spot">
+                                                            <span class="txt">1</span>
+                                                        </div>
+                                                    </div><div class="tabY" data-value="@i.K2">
+                                                        <div class="spot">
+                                                            <span class="txt">2</span>
+                                                        </div>
+                                                    </div><div class="tabY" data-value="@i.K3">
+                                                        <div class="spot">
+                                                            <span class="txt">3</span>
+                                                        </div>
+                                                    </div><div class="tabY" data-value="@i.K4">
+                                                        <div class="spot">
+                                                            <span class="txt">4</span>
+                                                        </div>
+                                                    </div><div class="tabY" data-value="@i.K5">
+                                                        <div class="spot">
+                                                            <span class="txt">5</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                            }
+
+                                        </section>
+                                    </div>
+                                }
+
+                                @if (Model.Count(a => a.AsamaAdi == "Kalıp Aşaması") >= 1)
+                                {
+                                    <div id="v-pills-1" class="tab-pane fade">
+                                        <h4 id="asama">Kalıp Aşaması</h4>
+                                        <section class="step-section">
+                                            @foreach (var i in Model.Where(a => a.AsamaAdi == "Kalıp Aşaması"))
+                                            {
+                                                <p class="mt-4" style="color:#fff;font-size:17px">@i.Soru</p>
+                                                <div id="@i.SoruNo-@i.AsamaAdi" class="rb">
+                                                    <div class="tabY" data-value="@i.K1">
+                                                        <div class="spot">
+                                                            <span class="txt">1</span>
+                                                        </div>
+                                                    </div><div class="tabY" data-value="@i.K2">
+                                                        <div class="spot">
+                                                            <span class="txt">2</span>
+                                                        </div>
+                                                    </div><div class="tabY" data-value="@i.K3">
+                                                        <div class="spot">
+                                                            <span class="txt">3</span>
+                                                        </div>
+                                                    </div><div class="tabY" data-value="@i.K4">
+                                                        <div class="spot">
+                                                            <span class="txt">4</span>
+                                                        </div>
+                                                    </div><div class="tabY" data-value="@i.K5">
+                                                        <div class="spot">
+                                                            <span class="txt">5</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            }
+                                        </section>
+                                    </div>
+                                }
+
+                                @if (Model.Count(a => a.AsamaAdi == "Karkas") >= 1)
+                                {
+                                    <div id="v-pills-1" class="tab-pane fade">
+                                        <h4 id="asama">Karkas/Gömülüler</h4>
+                                        <section class="step-section">
+                                            @foreach (var i in Model.Where(a => a.AsamaAdi == "Karkas"))
+                                            {
+                                                <p class="mt-4" style="color:#fff;font-size:17px">@i.Soru</p>
+                                                <div id="@i.SoruNo-@i.AsamaAdi" class="rb">
+                                                    <div class="tabY" data-value="@i.K1">
+                                                        <div class="spot">
+                                                            <span class="txt">1</span>
+                                                        </div>
+                                                    </div><div class="tabY" data-value="@i.K2">
+                                                        <div class="spot">
+                                                            <span class="txt">2</span>
+                                                        </div>
+                                                    </div><div class="tabY" data-value="@i.K3">
+                                                        <div class="spot">
+                                                            <span class="txt">3</span>
+                                                        </div>
+                                                    </div><div class="tabY" data-value="@i.K4">
+                                                        <div class="spot">
+                                                            <span class="txt">4</span>
+                                                        </div>
+                                                    </div><div class="tabY" data-value="@i.K5">
+                                                        <div class="spot">
+                                                            <span class="txt">5</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            }
+                                        </section>
+                                    </div>
+                                }
+
+
+                                @if (Model.Count(a => a.AsamaAdi == "Malzeme") >= 1)
+                                {
+                                    <div id="v-pills-1" class="tab-pane fade">
+                                        <h4>Malzeme</h4>
+                                        <section>
+                                            @foreach (var i in Model.Where(a => a.AsamaAdi == "Malzeme"))
+                                            {
+                                                <p class="mt-4" style="color:#fff;font-size:17px">@i.Soru</p>
+                                                <div id="@i.SoruNo-@i.AsamaAdi" class="rb">
+                                                    <div class="tabY" data-value="@i.K1">
+                                                        <div class="spot">
+                                                            <span class="txt">1</span>
+                                                        </div>
+                                                    </div><div class="tabY" data-value="@i.K2">
+                                                        <div class="spot">
+                                                            <span class="txt">2</span>
+                                                        </div>
+                                                    </div><div class="tabY" data-value="@i.K3">
+                                                        <div class="spot">
+                                                            <span class="txt">3</span>
+                                                        </div>
+                                                    </div><div class="tabY" data-value="@i.K4">
+                                                        <div class="spot">
+                                                            <span class="txt">4</span>
+                                                        </div>
+                                                    </div><div class="tabY" data-value="@i.K5">
+                                                        <div class="spot">
+                                                            <span class="txt">5</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                            }
+
+                                        </section>
+                                    </div>
+                                }
+
+
+                                @if (Model.Count(a => a.AsamaAdi == "Döküm") >= 1)
+                                {
+                                    <div id="v-pills-1" class="tab-pane fade">
+                                        <h4>Döküm</h4>
+                                        <section>
+                                            @foreach (var i in Model.Where(a => a.AsamaAdi == "Döküm"))
+                                            {
+                                                <p class="mt-4" style="color:#fff;font-size:17px">@i.Soru</p>
+                                                <div id="@i.SoruNo-@i.AsamaAdi" class="rb">
+                                                    <div class="tabY" data-value="@i.K1">
+                                                        <div class="spot">
+                                                            <span class="txt">1</span>
+                                                        </div>
+                                                    </div><div class="tabY" data-value="@i.K2">
+                                                        <div class="spot">
+                                                            <span class="txt">2</span>
+                                                        </div>
+                                                    </div><div class="tabY" data-value="@i.K3">
+                                                        <div class="spot">
+                                                            <span class="txt">3</span>
+                                                        </div>
+                                                    </div><div class="tabY" data-value="@i.K4">
+                                                        <div class="spot">
+                                                            <span class="txt">4</span>
+                                                        </div>
+                                                    </div><div class="tabY" data-value="@i.K5">
+                                                        <div class="spot">
+                                                            <span class="txt">5</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                            }
+
+                                        </section>
+                                    </div>
+                                }
+
+                                @if (Model.Count(a => a.AsamaAdi == "Söküm") >= 1)
+                                {
+                                    <div id="v-pills-1" class="tab-pane fade">
+                                        <h4>Söküm</h4>
+                                        <section>
+                                            @foreach (var i in Model.Where(a => a.AsamaAdi == "Söküm"))
+                                            {
+                                                <p class="mt-4" style="color:#fff;font-size:17px">@i.Soru</p>
+                                                <div id="@i.SoruNo-@i.AsamaAdi" class="rb">
+                                                    <div class="tabY" data-value="@i.K1">
+                                                        <div class="spot">
+                                                            <span class="txt">1</span>
+                                                        </div>
+                                                    </div><div class="tabY" data-value="@i.K2">
+                                                        <div class="spot">
+                                                            <span class="txt">2</span>
+                                                        </div>
+                                                    </div><div class="tabY" data-value="@i.K3">
+                                                        <div class="spot">
+                                                            <span class="txt">3</span>
+                                                        </div>
+                                                    </div><div class="tabY" data-value="@i.K4">
+                                                        <div class="spot">
+                                                            <span class="txt">4</span>
+                                                        </div>
+                                                    </div><div class="tabY" data-value="@i.K5">
+                                                        <div class="spot">
+                                                            <span class="txt">5</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                            }
+                                        </section>
+                                    </div>
+                                }
+
+                                @if (Model.Count(a => a.AsamaAdi == "Yüzey") >= 1)
+                                {
+                                    <div id="v-pills-1" class="tab-pane fade">
+                                        <h4>Yüzey İşlemleri</h4>
+                                        <section>
+                                            @foreach (var i in Model.Where(a => a.AsamaAdi == "Yüzey"))
+                                            {
+                                                <p class="mt-4" style="color:#fff;font-size:17px">@i.Soru</p>
+                                                <div id="@i.SoruNo-@i.AsamaAdi" class="rb">
+                                                    <div class="tabY" data-value="@i.K1">
+                                                        <div class="spot">
+                                                            <span class="txt">1</span>
+                                                        </div>
+                                                    </div><div class="tabY" data-value="@i.K2">
+                                                        <div class="spot">
+                                                            <span class="txt">2</span>
+                                                        </div>
+                                                    </div><div class="tabY" data-value="@i.K3">
+                                                        <div class="spot">
+                                                            <span class="txt">3</span>
+                                                        </div>
+                                                    </div><div class="tabY" data-value="@i.K4">
+                                                        <div class="spot">
+                                                            <span class="txt">4</span>
+                                                        </div>
+                                                    </div><div class="tabY" data-value="@i.K5">
+                                                        <div class="spot">
+                                                            <span class="txt">5</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                            }
+                                        </section>
+                                    </div>
+                                }
+
+                                @if (Model.Count(a => a.AsamaAdi == "Kalite") >= 1)
+                                {
+                                    <div id="v-pills-1" class="tab-pane fade">
+                                        <h4>Kalite</h4>
+                                        <section>
+                                            @foreach (var i in Model.Where(a => a.AsamaAdi == "Kalite"))
+                                            {
+                                                <p class="mt-4" style="color:#fff;font-size:17px">@i.Soru</p>
+                                                <div id="@i.SoruNo-@i.AsamaAdi" class="rb">
+                                                    <div class="tabY" data-value="@i.K1">
+                                                        <div class="spot">
+                                                            <span class="txt">1</span>
+                                                        </div>
+                                                    </div><div class="tabY" data-value="@i.K2">
+                                                        <div class="spot">
+                                                            <span class="txt">2</span>
+                                                        </div>
+                                                    </div><div class="tabY" data-value="@i.K3">
+                                                        <div class="spot">
+                                                            <span class="txt">3</span>
+                                                        </div>
+                                                    </div><div class="tabY" data-value="@i.K4">
+                                                        <div class="spot">
+                                                            <span class="txt">4</span>
+                                                        </div>
+                                                    </div><div class="tabY" data-value="@i.K5">
+                                                        <div class="spot">
+                                                            <span class="txt">5</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                            }
+                                        </section>
+                                    </div>
+                                }
+
+                                @if (Model.Count(a => a.AsamaAdi == "Sevkiyat") >= 1)
+                                {
+                                    <div id="v-pills-1" class="tab-pane fade">
+                                        <h4>Sevkiyat</h4>
+                                        <section>
+                                            @foreach (var i in Model.Where(a => a.AsamaAdi == "Sevkiyat"))
+                                            {
+                                                <p class="mt-4" style="color:#fff;font-size:17px">@i.Soru</p>
+                                                <div id="@i.SoruNo-@i.AsamaAdi" class="rb">
+                                                    <div class="tabY" data-value="@i.K1">
+                                                        <div class="spot">
+                                                            <span class="txt">1</span>
+                                                        </div>
+                                                    </div><div class="tabY" data-value="@i.K2">
+                                                        <div class="spot">
+                                                            <span class="txt">2</span>
+                                                        </div>
+                                                    </div><div class="tabY" data-value="@i.K3">
+                                                        <div class="spot">
+                                                            <span class="txt">3</span>
+                                                        </div>
+                                                    </div><div class="tabY" data-value="@i.K4">
+                                                        <div class="spot">
+                                                            <span class="txt">4</span>
+                                                        </div>
+                                                    </div><div class="tabY" data-value="@i.K5">
+                                                        <div class="spot">
+                                                            <span class="txt">5</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                            }
+                                        </section>
+                                    </div>
+                                }
+
+                                @if (Model.Count(a => a.AsamaAdi == "Maddi Faktör") >= 1)
+                                {
+                                    <div id="v-pills-1" class="tab-pane fade">
+                                        <h4>Maddi Faktör</h4>
+                                        <section>
+                                            @foreach (var i in Model.Where(a => a.AsamaAdi == "Maddi Faktör"))
+                                            {
+                                                <p class="mt-4" style="color:#fff;font-size:17px">@i.Soru</p>
+                                                <div id="@i.SoruNo-@i.AsamaAdi" class="rb">
+                                                    <div class="tabY" data-value="@i.K1">
+                                                        <div class="spot">
+                                                            <span class="txt">1</span>
+                                                        </div>
+                                                    </div><div class="tabY" data-value="@i.K2">
+                                                        <div class="spot">
+                                                            <span class="txt">2</span>
+                                                        </div>
+                                                    </div><div class="tabY" data-value="@i.K3">
+                                                        <div class="spot">
+                                                            <span class="txt">3</span>
+                                                        </div>
+                                                    </div><div class="tabY" data-value="@i.K4">
+                                                        <div class="spot">
+                                                            <span class="txt">4</span>
+                                                        </div>
+                                                    </div><div class="tabY" data-value="@i.K5">
+                                                        <div class="spot">
+                                                            <span class="txt">5</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                            }
+                                        </section>
+                                    </div>
+                                }
+
+                                @if (Model.Count(a => a.AsamaAdi == "Montaj") >= 1)
+                                {
+                                    <div id="v-pills-1" class="tab-pane fade">
+                                        <h4>Montaj</h4>
+                                        <section>
+                                            @foreach (var i in Model.Where(a => a.AsamaAdi == "Montaj"))
+                                            {
+                                                <p class="mt-4" style="color:#fff;font-size:17px">@i.Soru</p>
+                                                <div id="@i.SoruNo-@i.AsamaAdi" class="rb">
+                                                    <div class="tabY" data-value="@i.K1">
+                                                        <div class="spot">
+                                                            <span id="data1" class="txt">1</span>
+                                                        </div>
+                                                    </div><div class="tabY" data-value="@i.K2">
+                                                        <div class="spot">
+                                                            <span class="txt">2</span>
+                                                        </div>
+                                                    </div><div class="tabY" data-value="@i.K3">
+                                                        <div class="spot">
+                                                            <span class="txt">3</span>
+                                                        </div>
+                                                    </div><div class="tabY" data-value="@i.K4">
+                                                        <div class="spot">
+                                                            <span class="txt">4</span>
+                                                        </div>
+                                                    </div><div class="tabY" data-value="@i.K5">
+                                                        <div class="spot">
+                                                            <span class="txt">5</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            }
+                                        </section>
+                                    </div>
+                                }
+
+
+                            </div>
+                            <div class="btn-group" style="margin-left:100px">
+                                <button type="button" style="background-color:#7571F9;color:#fff" class="btn btn-prev">Geri</button>
+                                <button type="button" style="background-color:#7571F9;color:#fff" class="btn btn-next">İleri</button>
+                            </div>
+                            <div style="margin-left:70px;">
+                                <button type="button" class="button mt-5" id="btnSave">Anketi Kaydet</button>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <script>
+        $(document).ready(function () {
+            
+
+            // ilk sıradaki sayfayı seç
+            $('.tab-pane').removeClass('active show');
+            $('#v-pills-1').addClass('active show');
+
+            // tıklanan tabları kontrol et
+            $('.nav-link').on('click', function () {
+                $('.nav-link').removeClass('active show');
+                $(this).addClass('active show');
+            });
+
+            // açık olan sayfaya göre nav-link'e active show ekle
+            $('.nav-link').eq($('.tab-pane.active.show').index()).addClass('active show');
+        });
+    </script>
+
+
+
+    @*Tablo Gizli*@
+    <div class="table-responsive text-nowrap d-none">
+        <table class="table table-striped w-auto" id="tblKalip">
+            <thead class="table-dark">
+                <tr>
+                    <th>No</th>
+                    <th>Aşama Adı</th>
+                    <th>AnketID</th>
+                    <th>Soru</th>
+                    <td>Cevap</td>
+                    <th>Anketi Çözen</th>
+                    <th>Çözüm Tarihi</th>
+                    <th>Proje ID</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@item.SoruNo</td>
+                        <td>@item.AsamaAdi</td>
+                        <td>@item.AnketID</td>
+                        <td>@item.Soru</td>
+                        <td id="cevap-@item.SoruNo-@item.AsamaAdi.Replace(" ", "-")"></td>
+                        <td>@ViewBag.cozen</td>
+                        <td>@ViewBag.tarih</td>
+                        <td>@ViewBag.projeID</td>
+                    </tr>
+                }
+            </tbody>
+
+        </table>
+    </div>
+
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js'></script>
+    <script src="~/quixlab-master/quixlab-master/plugins/jquery-steps/build/jquery.steps.min.js"></script>
+    <script src="~/quixlab-master/quixlab-master/plugins/jquery-validation/jquery.validate.min.js"></script>
+    <script src="~/quixlab-master/quixlab-master/js/plugins-init/jquery-steps-init.js"></script>
+    <script src="~/quixlab-master/quixlab-master/plugins/common/common.min.js"></script>
+    <script src="~/quixlab-master/quixlab-master/js/custom.min.js"></script>
+    <script src="~/Content/jsFile/AnketCoz.js"></script>
+
+</body>
+
+
+
+

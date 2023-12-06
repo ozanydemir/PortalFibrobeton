@@ -1,0 +1,410 @@
+﻿@*@model IEnumerable<PortalFibrobeton.Models.Class.ARGE.OlgunlukViewModels.OlgunlukViewModelDashboard>*@
+@model PortalFibrobeton.Models.Class.ARGE.OlgunlukViewModels.OlgunlukViewModelDashboard
+
+@{
+    ViewBag.Title = "OlgunlukRaporlari";
+    Layout = "~/Views/Shared/_ARGELayout.cshtml";
+}
+
+<head>
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <script src="path/to/showGraph.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.3/css/jquery.dataTables.min.css">
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.13.3/js/jquery.dataTables.min.js"></script>
+
+    <style>
+        .id-column{
+            display:none;
+        }
+    </style>
+</head>
+
+<div class="container-fluid flex-grow-1 container-p-y">
+    <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">AR-GE / </span>Olgunluk Raporları</h4>
+
+    @using (Html.BeginForm("OlgunlukRaporlari", "Olgunluk", FormMethod.Post))
+    {
+        <div class="row mt-3">
+            <div class="col-xxl-5">
+                <div class="card mt-2">
+                    <div class="card-header d-flex align-items-center justify-content-between">
+                        <h5 class="mb-0">Tarih Seç</h5>
+                        <small class="text-muted float-end"></small>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mt-3 input-group">
+                            <label class="col-sm-2 col-form-label">Başlangıç</label>
+                            <input type="date" class="form-control" name="bas" style="cursor:pointer" />
+                        </div>
+                        <div class="row mt-3 input-group">
+                            <label class="col-sm-2 col-form-label">Bitiş</label>
+                            <input type="date" class="form-control" name="bit" style="cursor:pointer" />
+                        </div>
+                        <div class="mt-3 text-center">
+                            <button type="submit" class="btn btn-primary">Ara</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-12 mt-5">
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title">Olgunluk Raporları</h4>
+                        <div class="table-responsive text-nowrap">
+                            <table class="table table-hover" style="cursor:pointer" id="olgunluk">
+                                <thead class="table-dark">
+                                    <tr style="color:white">
+                                        <th style="color:#fff" class="id-column">ID</th>
+                                        <th style="color:#fff">Test Tarihi</th>
+                                        <th style="color:#fff">Proje Adı</th>
+                                        <th style="color:#fff">Poz</th>
+                                        <th style="color:#fff">Cihaz No</th>
+                                        <th style="color:#fff">Kalıp Türü</th>
+                                        <th style="color:#fff">Kalıp Tipi</th>
+                                        <th style="color:#fff">Extra Süre</th>
+                                        <th style="color:#fff">Başlangıç Sıcaklık</th>
+                                        <th style="color:#fff">Hammadde Tipi</th>
+                                        <th style="color:#fff">Olgunluk Başlangıç - Bitiş</th>
+                                        <th style="color:#fff">Testi Başlatan</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="text-center">
+                                    @foreach (var item in Model.OlgunlukCihazList)
+                                    {
+                                        <tr>
+                                            <td class="id-column">@item.ID</td>
+                                            <td>@item.test_tarihi</td>
+                                            <td>@item.projeAdi</td>
+                                            <td>@item.poz</td>
+                                            <td>@item.cihaz_no</td>
+                                            <td>@item.kalip_Turu</td>
+                                            <td>@item.kalip_Tipi</td>
+                                            <td>@item.extra_Sure</td>
+                                            <td>@item.baslangic_Sicaklik</td>
+                                            <td>@item.hammadde_Tipi</td>
+                                            <td>@item.olgunluk_Baslangic - @item.olgunluk_Bitis</td>
+                                            <td>@item.testi_baslatan</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row mt-5">
+            <div class="col-lg-6">
+                <div class="card">
+                    <h4 class="card-title mt-3" style="margin-left:15px">Sıcaklık Grafiği</h4>
+                    <div class="card-body">
+                        <div id="sicaklikChart"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="card">
+                    <h4 class="card-title mt-3" style="margin-left:15px">Olgunluk Grafiği</h4>
+                    <div class="card-body">
+                        <div id="olgunlukChart"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row mt-3">
+            <div class="col-lg-6">
+                <div class="card">
+                    <h4 class="card-title mt-3" style="margin-left:15px">Eğilme Dayanımı</h4>
+                    <div class="card-body">
+                        <div id="egilmeChart"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="card">
+                    <h4 class="card-title mt-3" style="margin-left:15px">Basınç Dayanımı</h4>
+                    <div class="card-body">
+                        <div id="basincChart"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+
+<script>
+    function showGraph(id) {
+        $.ajax({
+            url: '/Olgunluk/GetSensorData',
+            type: 'GET',
+            data: { id: id },
+            success: function (response) {
+                //var chartData = JSON.parse(response);
+                var sicaklikChart = response.map(function (item) {
+                    console.log(item.Sicaklik);
+                    return item.Sicaklik;
+                });
+
+                var olgunlukChart = response.map(function (item) {
+                    //return Math.round(item.Olgunluk,2);
+                    return item.Olgunluk;
+                });
+
+                var basincChart = response.map(function (item) {
+                    //return Math.round(item.BasincDayanim,2)
+                    return item.BasincDayanim;
+                });
+
+                var egilmeChart = response.map(function (item) {
+                    //return Math.round(item.EgilmeDayanim,2);
+                    return item.EgilmeDayanim;
+                });
+
+                var tarih = response.map(function (item) {
+                    var dateString = item.SensorTarih;
+                    // Get the integer value inside the brackets
+                    var timeStamp = parseInt(dateString.match(/\d+/)[0]);
+                    var date = new Date(timeStamp);
+                    return date.getTime();
+                });
+
+
+                //Sıcaklık Chart
+                var optionsSicaklik = {
+                    series: [{
+                        name: 'Sensor Sıcaklık',
+                        data: sicaklikChart
+                    }],
+                    chart: {
+                        type: 'area',
+                        stacked: false,
+                        height: 350,
+                        toolbar: {
+                            autoSelected: 'zoom'
+                        }
+                    },
+                    colors: ['#FF0000'],
+                    dataLabels: {
+                        enabled: false
+                    },
+                    markers: {
+                        size: 0,
+                    },
+                    fill: {
+                        type: 'gradient',
+                        gradient: {
+                            shadeIntensity: 1,
+                            inverseColors: false,
+                            opacityFrom: 0.5,
+                            opacityTo: 0,
+                            stops: [0, 90, 100]
+                        },
+                    },
+                    xaxis: {
+                        categories: tarih,
+                        type: 'datetime',
+                        labels: {
+                            formatter: function (value, timestamp, index) {
+                                var date = new Date(timestamp);
+                                return date.toLocaleDateString() + ' ' + date.toLocaleTimeString()
+                            }
+                        }
+                    },
+                    tooltip: {
+                        x: {
+                            format: 'dd/MM/yyyy HH:mm'
+                        }
+                    }
+                };
+
+                var chartSicaklik = new ApexCharts(document.querySelector("#sicaklikChart"), optionsSicaklik);
+                chartSicaklik.render();
+
+
+                //Olgunluk Chart
+                var optionsOlgunluk = {
+                    series: [{
+                        name: 'Olgunluk',
+                        data: olgunlukChart
+                    }],
+                    chart: {
+                        type: 'area',
+                        stacked: false,
+                        height: 350,
+                        toolbar: {
+                            autoSelected: 'zoom'
+                        }
+                    },
+                    dataLabels: {
+                        enabled: false
+                    },
+                    markers: {
+                        size: 0,
+                    },
+                    fill: {
+                        type: 'gradient',
+                        gradient: {
+                            shadeIntensity: 1,
+                            inverseColors: false,
+                            opacityFrom: 0.5,
+                            opacityTo: 0,
+                            stops: [0, 90, 100]
+                        },
+                    },
+                    xaxis: {
+                        categories: tarih,
+                        type: 'datetime',
+                        labels: {
+                            formatter: function (value, timestamp, index) {
+                                var date = new Date(timestamp);
+                                return date.toLocaleDateString() + ' ' + date.toLocaleTimeString()
+                            }
+                        }
+                    },
+                    tooltip: {
+                        x: {
+                            format: 'dd/MM/yyyy HH:mm'
+                        }
+                    }
+                };
+
+                var chartOlgunluk = new ApexCharts(document.querySelector("#olgunlukChart"), optionsOlgunluk);
+                chartOlgunluk.render();
+
+
+                //Basınç Dayanım
+                var optionsBasinc = {
+                    series: [{
+                        name: 'Basınç Dayanımı',
+                        data: basincChart.map(Math.abs)
+                    }],
+                    chart: {
+                        type: 'area',
+                        stacked: false,
+                        height: 350,
+                        toolbar: {
+                            autoSelected: 'zoom'
+                        }
+                    },
+                    colors: ['#008000'],
+                    dataLabels: {
+                        enabled: false
+                    },
+                    markers: {
+                        size: 0,
+                    },
+                    fill: {
+                        type: 'gradient',
+                        gradient: {
+                            shadeIntensity: 1,
+                            inverseColors: false,
+                            opacityFrom: 0.5,
+                            opacityTo: 0,
+                            stops: [0, 90, 100]
+                        },
+                    },
+                    xaxis: {
+                        categories: tarih,
+                        type: 'datetime',
+                        labels: {
+                            formatter: function (value, timestamp, index) {
+                                var date = new Date(timestamp);
+                                return date.toLocaleDateString() + ' ' + date.toLocaleTimeString()
+                            }
+                        }
+                    },
+                    tooltip: {
+                        x: {
+                            format: 'dd/MM/yyyy HH:mm'
+                        }
+                    }
+                };
+
+                var chartBasinc = new ApexCharts(document.querySelector("#basincChart"), optionsBasinc);
+                chartBasinc.render();
+
+
+                //Eğilme Dayanım
+                var optionsEgilme = {
+                    series: [{
+                        name: 'Eğilme Dayanımı',
+                        data: egilmeChart.map(Math.abs)
+                    }],
+                    chart: {
+                        type: 'area',
+                        stacked: false,
+                        height: 350,
+                        toolbar: {
+                            autoSelected: 'zoom'
+                        }
+                    },
+                    colors: ['#800080'],
+                    dataLabels: {
+                        enabled: false
+                    },
+                    markers: {
+                        size: 0,
+                    },
+                    fill: {
+                        type: 'gradient',
+                        gradient: {
+                            shadeIntensity: 1,
+                            inverseColors: false,
+                            opacityFrom: 0.5,
+                            opacityTo: 0,
+                            stops: [0, 90, 100]
+                        },
+                    },
+                    xaxis: {
+                        categories: tarih,
+                        type: 'datetime',
+                        labels: {
+                            formatter: function (value, timestamp, index) {
+                                var date = new Date(timestamp);
+                                return date.toLocaleDateString() + ' ' + date.toLocaleTimeString()
+                            }
+                        }
+                    },
+                    tooltip: {
+                        x: {
+                            format: 'dd/MM/yyyy HH:mm'
+                        }
+                    }
+                };
+
+                var chartEgilme = new ApexCharts(document.querySelector("#egilmeChart"), optionsEgilme);
+                chartEgilme.render();
+
+            },
+            error: function (xhr, status, error) {
+                console.log(xhr.responseText); // Hata durumunda hatayı konsola yazdır
+            }
+        });
+    }
+
+    $(document).ready(function () {
+        $('#olgunluk tbody').on('click', 'tr', function () {
+            var testId = $(this).find('td:first').text();
+            showGraph(testId);
+        });
+    });
+</script>
+
+<script>
+    // Simple Initialisation
+    $('#olgunluk').DataTable({
+        autoFill: true,
+        "language": {
+            "url": "https://cdn.datatables.net/plug-ins/1.10.20/i18n/Turkish.json"
+        },
+        dom: 'Qfrtip'
+    });
+</script>
+
+

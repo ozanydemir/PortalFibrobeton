@@ -1,0 +1,292 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html lang="en"
+      class="light-style layout-menu-fixed"
+      dir="ltr"
+      data-theme="theme-default"
+      data-assets-path="~/sneat-1.0.0/assets/"
+      data-template="vertical-menu-template-free">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
+
+    <title>PeraFIBRO | Fibrobeton</title>
+
+    <meta name="description" content="" />
+
+    <link rel="icon" type="image/x-icon" href="~/Gp/Gp/pics/fibroFavicon.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap"
+          rel="stylesheet" />
+
+    <link rel="stylesheet" href="~/sneat-1.0.0/assets/vendor/fonts/boxicons.css" />
+
+    <link href="~/sneat-1.0.0/assets/vendor/css/peraLayout.css" rel="stylesheet" class="template-customizer-core-css" />
+    
+    <link rel="stylesheet" href="~/sneat-1.0.0/assets/vendor/css/theme-default.css" class="template-customizer-theme-css" />
+    <link rel="stylesheet" href="~/sneat-1.0.0/assets/css/demo.css" />
+
+    <link rel="stylesheet" href="~/sneat-1.0.0/assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.css" />
+
+    <link rel="stylesheet" href="~/sneat-1.0.0/assets/vendor/libs/apex-charts/apex-charts.css" />
+
+    <script src="~/sneat-1.0.0/assets/vendor/js/helpers.js"></script>
+
+    <script src="~/sneat-1.0.0/assets/js/config.js"></script>
+</head>
+
+<body>
+
+    <div class="layout-wrapper layout-content-navbar">
+        <div class="layout-container">
+
+
+            <aside id="layout-menu" class="layout-menu menu-vertical menu bg-menu-theme">
+                <div class="app-brand demo">
+                    <a href="/Login/Departmanlar" class="app-brand-link">
+                        <img src="~/Gp/Gp/pics/fibroFavicon.png" style="margin-left:-20px;max-width:24px" />
+                        <span class="d-none d-lg-block" style="color: #012970;font-size:25px;font-family:sans-serif;font-weight:bold;padding-left:5px">PortalFibrobeton</span>
+
+                    </a>
+
+                    <a href="javascript:void(0);" class="layout-menu-toggle menu-link text-large ms-auto d-block d-xl-none">
+                        <i class="bx bx-chevron-left bx-sm align-middle"></i>
+                    </a>
+                </div>
+
+                <div class="menu-inner-shadow"></div>
+
+                <ul class="menu-inner py-1">
+                    <!-- Dashboard -->
+                    <li class="menu-item">
+                        <a href="javascript:void(0)" class="menu-link menu-toggle">
+                            <i class="menu-icon tf-icons bx bxs-file-pdf"></i>
+                            <div data-i18n="TeknikResimler">Teknik Resimler</div>
+                        </a>
+                        <ul class="menu-sub">
+                            <li class="menu-item">
+                                <a href="/ArsivDokuman/Cizimler" class="menu-link">
+                                    <div data-i18n="ArsivNP">Yeni Pera Arşivleri</div>
+                                </a>
+                            </li>
+                            <li class="menu-item">
+                                <a href="/Frame/FrameCizim" class="menu-link">
+                                    <div data-i18n="ArsivPera">Eski Pera Arşivleri</div>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="menu-item">
+                        <a href="javascript:void(0)" class="menu-link menu-toggle">
+                            <i class="menu-icon tf-icons bx bxs-report"></i>
+                            <div data-i18n="PeraRaporlar">PeraV4 Raporlar</div>
+                        </a>
+                        <ul class="menu-sub">
+                            <li class="menu-item">
+                                <a href="/PeraV4Raporlar/UrunIzlemeRaporu" class="menu-link">
+                                    <div data-i18n="UrunIzleme">Ürün İzleme Raporu</div>
+                                </a>
+                            </li>
+                            <li class="menu-item">
+                                <a href="/PeraV4Raporlar/SiparisIzleme" class="menu-link">
+                                    <div data-i18n="SiparisIzleme">Sipariş İzleme Raporu</div>
+                                </a>
+                            </li>
+                            <li class="menu-item">
+                                <a href="/PeraV4Raporlar/UretimRaporu" class="menu-link">
+                                    <div data-i18n="UretimRaporu">Üretim Raporu</div>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    @*<li class="menu-item">
+                    <a href="/Hammadde/HammaddeTakip" class="menu-link">
+                        <i class="menu-icon tf-icon bx bxs-report"></i>
+                        <div data-i18n="Hammadde">Hammadde ve Harç Takip</div>
+                    </a>
+                </li>*@
+                    @*<li class="menu-item">
+                    <a href="/PeraV4Raporlar/UrunIzlemeRaporu" class="menu-link">
+                        <i class="menu-icon tf-icon bx bxs-report"></i>
+                        <div data-i18n="UrunIzleme">Ürün İzleme Raporu</div>
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="/PeraV4Raporlar/SiparisIzleme" class="menu-link">
+                        <i class="menu-icon tf-icon bx bxs-report"></i>
+                        <div data-i18n="SiparisIzleme">Sipariş İzleme Raporu</div>
+                    </a>
+                </li>*@
+                    @*<li class="menu-item">
+                    <a href="javascript:void(0)" class="menu-link menu-toggle">
+                        <i class="menu-icon tf-icons bx bxs-data"></i>
+                        <div data-i18n="UretimSevkiyat">Üretim ve Sevkiyat Raporu</div>
+                    </a>
+                    <ul class="menu-sub">
+                        <li class="menu-item">
+                            <a href="/UretimSevkiyatRapor/HedefEkle" class="menu-link">
+                                <div data-i18n="UretimSevkiyat">Haftalık Hedef Belirle</div>
+                            </a>
+                        </li>
+                        <li class="menu-item">
+                            <a href="/UretimSevkiyatRapor/HaftalikUretimSevkiyatRaporu" class="menu-link">
+                                <div data-i18n="UretimSevkiyat">Raporu Görüntüle</div>
+                            </a>
+                        </li>
+                    </ul>
+                </li>*@
+                    @*<li class="menu-item ">
+                    <a href="javascript:void(0)" class="menu-link menu-toggle">
+                        <i class="menu-icon tf-icons bx bx-copy"></i>
+                        <div data-i18n="Anket">Ağırlık Eşdeğer Katsayı H.</div>
+                    </a>
+                    <ul class="menu-sub">
+                        <li class="menu-item">
+                            <a href="/Management/AnketOlustur" class="menu-link">
+                                <div data-i18n="AnketOlustur">Anket Oluştur</div>
+                            </a>
+                        </li>
+                        <li class="menu-item">
+                            <a href="/Management/AnketSec" class="menu-link">
+                                <div data-i18n="AnketCoz">Anket Çöz</div>
+                            </a>
+                        </li>
+                        <li class="menu-item">
+                            <a href="/Management/AnketSonuclari" class="menu-link">
+                                <div data-i18n="AnketSonuc">Anket Sonuçları</div>
+                            </a>
+                        </li>
+                        <li class="menu-item">
+                            <a href="javascript:void(0)" class="menu-link menu-toggle">
+                                <div data-i18n="AnketDuzenle">Anket Düzenle</div>
+                            </a>
+                            <ul class="menu-sub">
+                                <li class="menu-item">
+                                    <a href="/Management/YeniProjeEkle" class="menu-link">
+                                        <div style="font-size:14px;margin-left:7px" data-i18n="YeniProje">Yeni Proje Ekle</div>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>*@
+                </ul>
+            </aside>
+
+            <div class="layout-page">
+                @RenderBody()
+
+                @*<button class="btn btn-info menuToggle" id="menuToggle">Buton</button>*@
+            </div>
+
+            <div id="overlay" style="display: none; position: fixed; top: 0; left: 0; height: 100%; width: 100%; z-index: 9999; background-color: rgba(255,255,255,0.9);">
+                <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
+                    <!-- Spinner -->
+                    <div class="spinner-border spinner-border-lg text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Overlay -->
+        <div class="layout-overlay layout-menu-toggle"></div>
+    </div>
+
+    <script>
+        // Düğmeyi seçin
+        const menuToggle = document.getElementById('menuToggle');
+
+        // Yan menünün açık/kapalı durumunu takip eden bir değişken tanımlayın
+        let isMenuOpen = false;
+
+        // Düğmeye tıklama olayını dinleyin
+        menuToggle.addEventListener('click', () => {
+            // Yan menünün açık mı kapalı mı olduğunu kontrol edin
+            if (isMenuOpen) {
+                // Yan menü kapalıysa, açın
+                openMenu();
+            } else {
+                // Yan menü açıksa, kapatın
+                closeMenu();
+            }
+        });
+
+        // Yan menüyü açan fonksiyon
+        function openMenu() {
+            // Yan menüyü görünür hale getirin (CSS veya animasyon kullanarak)
+            // Örnek olarak:
+            // Yan menünün elementini seçin ve görünür yapın
+            const menu = document.querySelector('.layout-menu');
+            menu.style.transform = 'translate3d(0, 0, 0)';
+
+            // Yan menü açık durumunu güncelleyin
+            isMenuOpen = true;
+        }
+
+        // Yan menüyü kapatan fonksiyon
+        function closeMenu() {
+            // Yan menüyü gizleyin (CSS veya animasyon kullanarak)
+            // Örnek olarak:
+            // Yan menünün elementini seçin ve gizleyin
+            const menu = document.querySelector('.layout-menu');
+            menu.style.transform = 'translate3d(-100%, 0, 0)';
+
+            // Yan menü kapalı durumunu güncelleyin
+            isMenuOpen = false;
+        }
+
+    </script>
+
+    
+    <script>
+
+        //Menu Aktif Rengi
+        document.addEventListener("DOMContentLoaded", function () {
+            const menuItems = document.querySelectorAll(".menu-item");
+
+            menuItems.forEach(item => {
+                const link = item.querySelector('a.menu-link');
+                const submenuLinks = item.querySelectorAll('.menu-sub .menu-item a.menu-link');
+
+                if (link.getAttribute('href') === window.location.pathname) {
+                    item.classList.add('active');
+                } else if (submenuLinks.length) {
+                    submenuLinks.forEach(subLink => {
+                        if (subLink.getAttribute('href') === window.location.pathname) {
+                            item.classList.add('active');
+                        }
+                    });
+                } else {
+                    item.classList.remove('active');
+                }
+            });
+        });
+    </script>
+
+
+
+    <script src="~/sneat-1.0.0/assets/vendor/libs/jquery/jquery.js"></script>
+    <script src="~/sneat-1.0.0/assets/vendor/libs/popper/popper.js"></script>
+    <script src="~/sneat-1.0.0/assets/vendor/js/bootstrap.js"></script>
+    <script src="~/sneat-1.0.0/assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.js"></script>
+
+    <script src="~/sneat-1.0.0/assets/vendor/js/menu.js"></script>
+
+    <script src="~/sneat-1.0.0/assets/vendor/libs/apex-charts/apexcharts.js"></script>
+
+    <script src="~/sneat-1.0.0/assets/js/main.js"></script>
+
+    <script src="~/sneat-1.0.0/assets/js/dashboards-analytics.js"></script>
+
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
+</body>
+</html>
+

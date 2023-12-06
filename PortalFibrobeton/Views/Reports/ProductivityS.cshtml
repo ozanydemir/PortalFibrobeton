@@ -1,0 +1,1180 @@
+﻿@model IEnumerable<PortalFibrobeton.Models.Entity.Tbl_Taramalar>
+
+@{
+    ViewBag.Title = "Productivity";
+    Layout = "~/Views/Shared/ScanLayout.cshtml";
+}
+
+<head>
+    <title>FibroSCAN - Verimlilik Raporlar</title>
+    <link rel="icon" type="image/png" sizes="19x19" href="~/quixlab-master/quixlab-master/images/favicon.png">
+    <link rel="stylesheet" href="~/quixlab-master/quixlab-master/plugins/chartist/css/chartist.min.css">
+    <link rel="stylesheet" href="~/quixlab-master/quixlab-master/plugins/chartist-plugin-tooltips/css/chartist-plugin-tooltip.css">
+    <link href="~/quixlab-master/quixlab-master/css/style.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/chartist.js/latest/chartist.min.css">
+    <script src="https://cdn.jsdelivr.net/chartist.js/latest/chartist.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/morris.js/0.5.1/morris.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700">
+    <link href="~/quixlab-master/quixlab-master/plugins/pg-calendar/css/pignose.calendar.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="~/quixlab-master/quixlab-master/plugins/chartist/css/chartist.min.css">
+    <link rel="stylesheet" href="~/quixlab-master/quixlab-master/plugins/chartist-plugin-tooltips/css/chartist-plugin-tooltip.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/chartist.js/latest/chartist.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <link href="~/Content/EasyPie.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-circle-progress/1.2.2/circle-progress.min.js"></script>
+    <link href="~/quixlab-master/quixlab-master/plugins/bootstrap-material-datetimepicker/css/bootstrap-material-datetimepicker.css" rel="stylesheet">
+    <link href="~/quixlab-master/quixlab-master/plugins/clockpicker/dist/jquery-clockpicker.min.css" rel="stylesheet">
+    <link href="~/quixlab-master/quixlab-master/plugins/jquery-asColorPicker-master/css/asColorPicker.css" rel="stylesheet">
+    <link href="~/quixlab-master/quixlab-master/plugins/bootstrap-datepicker/bootstrap-datepicker.min.css" rel="stylesheet">
+    <link href="~/quixlab-master/quixlab-master/plugins/timepicker/bootstrap-timepicker.min.css" rel="stylesheet">
+    <link href="~/quixlab-master/quixlab-master/plugins/bootstrap-daterangepicker/daterangepicker.css" rel="stylesheet">
+
+    <link href="https://cdn.jsdelivr.net/bootstrap.datepicker-fork/1.3.0/css/datepicker3.css" rel="stylesheet" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.0/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/bootstrap.datepicker-fork/1.3.0/js/bootstrap-datepicker.js"></script>
+    <script src="https://cdn.jsdelivr.net/bootstrap.datepicker-fork/1.3.0/js/locales/bootstrap-datepicker.tr.js"></script>
+
+    <style>
+        .dProgress {
+            width: 150px;
+            height: 150px;
+            background: none;
+            position: relative;
+        }
+
+            .dProgress::after {
+                content: "";
+                width: 100%;
+                height: 100%;
+                border-radius: 50%;
+                border: 6px solid #eee;
+                position: absolute;
+                top: 0;
+                left: 0;
+            }
+
+            .dProgress > span {
+                width: 50%;
+                height: 100%;
+                overflow: hidden;
+                position: absolute;
+                top: 0;
+                z-index: 1;
+            }
+
+            .dProgress .dProgress-leftH {
+                left: 0;
+            }
+
+            .dProgress .dProgress-bar {
+                width: 100%;
+                height: 100%;
+                background: none;
+                border-width: 6px;
+                border-style: solid;
+                position: absolute;
+                top: 0;
+            }
+
+            .dProgress .dProgress-left .dProgress-bar {
+                left: 100%;
+                border-top-right-radius: 80px;
+                border-bottom-right-radius: 80px;
+                border-left: 0;
+                -webkit-transform-origin: center left;
+                transform-origin: center left;
+            }
+
+            .dProgress .dProgress-right {
+                right: 0;
+            }
+
+                .dProgress .dProgress-right .dProgress-bar {
+                    left: -100%;
+                    border-top-left-radius: 80px;
+                    border-bottom-left-radius: 80px;
+                    border-right: 0;
+                    -webkit-transform-origin: center right;
+                    transform-origin: center right;
+                }
+
+            .dProgress .dProgress-value {
+                position: absolute;
+                top: 0;
+                left: 0;
+            }
+
+
+
+
+        .rounded-lg {
+            border-radius: 1rem;
+        }
+
+        .text-gray {
+            color: #aaa;
+        }
+
+        div.h4 {
+            line-height: 1rem;
+        }
+    </style>
+</head>
+
+<body>
+    @using (Html.BeginForm("ProductivityS", "Reports", FormMethod.Post))
+    {
+        <div class="container-fluid">
+            <ul class="nav nav-pills mb-3 justify-content-end">
+                <li class="nav-item">
+                    <a href="#" class="nav-link active" data-toggle="tab" aria-expanded="false">Seçilen Tarihlere Göre</a>
+                </li>
+            </ul>
+            <div class="row">
+                <div class="col-lg-6 col-sm-9 justify-content-end">
+                    <div class="example justify-content-end">
+                        <h4 class="box-title m-t-30">Tarih Aralığı</h4>
+                        <p class="text-muted m-b-20">Lütfen tarih aralığı seçin</p>
+                        <div class="input-daterange input-group" id="date-range">
+                            <input type="text" autocomplete="off" class="form-control" id="datepicker1" name="start" /><span class="input-group-append"><span class="input-group-text"><i class="mdi mdi-calendar-check"></i></span></span> <span class="input-group-addon bg-info b-0 text-white">ve</span>
+                            <input type="text" autocomplete="off" class="form-control" id="datepicker2" name="end" /><span class="input-group-append"><span class="input-group-text"><i class="mdi mdi-calendar-check"></i></span></span>
+                            <button type="submit" value="date" name="action" class="btn btn-primary" onclick="location.href='@Url.Action("ProductivityS", "Reports")'" style="margin-left:20px;">Ara</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <script>
+                $(function ($) {
+                    $.fn.datepicker.dates['tr'] =
+                    {
+                        days: ["Pazar", "Pazartesi", "Salı", "Çarşamba", "Perşembe", "Cuma", "Cumartesi", "Pazar"],
+                        daysShort: ["Pz", "Pzt", "Sal", "Çrş", "Prş", "Cu", "Cts", "Pz"],
+                        daysMin: ["Pz", "Pzt", "Sa", "Çr", "Pr", "Cu", "Ct", "Pz"],
+                        months: ["Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran", "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"],
+                        monthsShort: ["Oca", "Şub", "Mar", "Nis", "May", "Haz", "Tem", "Ağu", "Eyl", "Eki", "Kas", "Ara"],
+                        today: "Bugün",
+                    };
+                });
+
+                $(function ($) {
+                    $("#datepicker1").datepicker(
+                        {
+                            language: "tr",
+                            format: "dd/mm/yyyy",
+                            autoclose: true
+                        });
+                });
+            </script>
+
+            <script>
+                $(function ($) {
+                    $.fn.datepicker.dates['tr'] =
+                    {
+                        days: ["Pazar", "Pazartesi", "Salı", "Çarşamba", "Perşembe", "Cuma", "Cumartesi", "Pazar"],
+                        daysShort: ["Pz", "Pzt", "Sal", "Çrş", "Prş", "Cu", "Cts", "Pz"],
+                        daysMin: ["Pz", "Pzt", "Sa", "Çr", "Pr", "Cu", "Ct", "Pz"],
+                        months: ["Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran", "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"],
+                        monthsShort: ["Oca", "Şub", "Mar", "Nis", "May", "Haz", "Tem", "Ağu", "Eyl", "Eki", "Kas", "Ara"],
+                        today: "Bugün",
+                    };
+                });
+
+                $(function ($) {
+                    $("#datepicker2").datepicker(
+                        {
+                            language: "tr",
+                            format: "dd/mm/yyyy",
+                            autoclose: true
+                        });
+                });
+            </script>
+
+
+
+            <br />
+            <br />
+
+            <div class="row">
+                <div class="col-lg-3 col-sm-6">
+                    <div class="card gradient-1">
+                        <div class="card-body">
+                            <h3 class="card-title text-white">Toplam Tarama</h3>
+                            <div class="d-inline-block">
+                                <h2 class="text-white">@Model.Select(a => a.IDT).Count() / @Model.Select(a => a.AlanT).Sum()</h2>
+                                <p class="text-white mb-0">Adet / m²</p>
+                            </div>
+                            <span class="float-right display-5 opacity-5"><i class="fa fa-cube"></i></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-sm-6">
+                    <div class="card gradient-2">
+                        <div class="card-body">
+                            <h3 class="card-title text-white">Süreler</h3>
+                            <div class="d-inline-block">
+                                <h2 class="text-white"> @Model.Select(a => a.SureT).Sum() / @Model.Select(a => a.SureR).Sum() </h2>
+                                <p class="text-white mb-0">Tarama (dak) / Rapor (dak)</p>
+                            </div>
+                            <span class="float-right display-5 opacity-5"><i class="fa fa-clock-o"></i></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-sm-9">
+                    <div class="card gradient-3">
+                        <div class="card-body">
+                            <h3 class="card-title text-white">Panel Tarama</h3>
+                            <div class="d-inline-block">
+                                <h2 class="text-white">@Model.Where(a => a.MalzemeT == "BETON").Select(a => a.IDT).Count() / @Model.Where(a => a.MalzemeT == "BETON").Select(a => a.AlanT).Sum() </h2>
+                                <p class="text-white mb-0">Adet / m²</p>
+                            </div>
+                            <span class="float-right display-5 opacity-5">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" class="bi bi-bricks" viewBox="0 0 16 16">
+                                    <path d="M0 .5A.5.5 0 0 1 .5 0h15a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-.5.5H14v2h1.5a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-.5.5H14v2h1.5a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-.5.5H.5a.5.5 0 0 1-.5-.5v-3a.5.5 0 0 1 .5-.5H2v-2H.5a.5.5 0 0 1-.5-.5v-3A.5.5 0 0 1 .5 6H2V4H.5a.5.5 0 0 1-.5-.5v-3zM3 4v2h4.5V4H3zm5.5 0v2H13V4H8.5zM3 10v2h4.5v-2H3zm5.5 0v2H13v-2H8.5zM1 1v2h3.5V1H1zm4.5 0v2h5V1h-5zm6 0v2H15V1h-3.5zM1 7v2h3.5V7H1zm4.5 0v2h5V7h-5zm6 0v2H15V7h-3.5zM1 13v2h3.5v-2H1zm4.5 0v2h5v-2h-5zm6 0v2H15v-2h-3.5z" />
+                                </svg>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+            <div class="row">
+                @{
+                    double ulzSayı = Model.Where(a => a.YüzeyT == "U-L-Z" && a.MalzemeT != "BETON").Count();
+                    double ulzHata = Model.Where(a => a.YüzeyT == "U-L-Z" && a.DurumT == "RED" && a.MalzemeT != "BETON").Count();
+                    double ulzSonuc;
+                    if (ulzHata != 0)
+                    {
+                        ulzSonuc = (ulzHata / ulzSayı) * 100;
+                        ulzSonuc = Math.Round(ulzSonuc, 0);
+                    }
+                    else
+                    {
+                        ulzSonuc = 0;
+                    }
+
+                    double amorfSayı = Model.Where(a => a.YüzeyT == "AMORF" && a.MalzemeT != "BETON").Count();
+                    double amorfHata = Model.Where(a => a.YüzeyT == "AMORF" && a.DurumT == "RED" && a.MalzemeT != "BETON").Count();
+                    double amorfSonuc;
+
+                    if (amorfHata != 0)
+                    {
+                        amorfSonuc = (amorfHata / amorfSayı) * 100;
+                        amorfSonuc = Math.Round(amorfSonuc, 0);
+                    }
+                    else
+                    {
+                        amorfSonuc = 0;
+                    }
+
+                    double duzSayı = Model.Where(a => a.YüzeyT == "DÜZ" && a.MalzemeT != "BETON").Count();
+                    double duzHata = Model.Where(a => a.YüzeyT == "DÜZ" && a.DurumT == "RED" && a.MalzemeT != "BETON").Count();
+                    double duzSonuc;
+
+                    if (duzHata != 0)
+                    {
+                        duzSonuc = (duzHata / duzSayı) * 100;
+                        duzSonuc = Math.Round(duzSonuc, 0);
+                    }
+                    else
+                    {
+                        duzSonuc = 0;
+                    }
+
+                    double totaltip = Model.Where(a => a.MalzemeT != "BETON").Select(a => a.IDT).Count();
+                    double ulzOran;
+                    if (ulzSayı != 0)
+                    {
+                        ulzOran = (ulzSayı / totaltip) * 100;
+                        ulzOran = Math.Round(ulzOran, 0);
+                    }
+                    else
+                    {
+                        ulzOran = 0;
+                    }
+
+                    double amorfOran;
+                    if (amorfSayı != 0)
+                    {
+                        amorfOran = (amorfSayı / totaltip) * 100;
+                        amorfOran = Math.Round(amorfOran, 0);
+                    }
+                    else
+                    {
+                        amorfOran = 0;
+                    }
+
+                    double duzOran;
+                    if (duzSayı != 0)
+                    {
+                        duzOran = (duzSayı / totaltip) * 100;
+                        duzOran = Math.Round(duzOran, 0);
+                    }
+                    else
+                    {
+                        duzOran = 0;
+                    }
+
+
+                    double metraSayı = Model.Where(a => a.CihazT == "METRASCAN").Select(a => a.IDT).Count();
+                    double metraSure = Model.Where(a => a.CihazT == "METRASCAN").Select(a => a.SureT).Sum();
+                    double blackSayı = Model.Where(a => a.CihazT == "BLACK ELİTE").Select(a => a.IDT).Count();
+                    double blackSure = Model.Where(a => a.CihazT == "BLACK ELİTE").Select(a => a.SureT).Sum();
+                    double aiconSayı = Model.Where(a => a.CihazT == "AICON").Select(a => a.IDT).Count();
+                    double aiconSure = Model.Where(a => a.CihazT == "AICON").Select(a => a.SureT).Sum();
+                    double cihazToplamSure = Model.Select(a => a.SureT).Sum();
+                    double sayıToplam = Model.Select(a => a.IDT).Count();
+
+                    double metraSonuc;
+                    if (metraSure != 0)
+                    {
+                        metraSonuc = (metraSure / cihazToplamSure) * 100;
+                        metraSonuc = Math.Round(metraSonuc);
+                    }
+                    else
+                    {
+                        metraSonuc = 0;
+                    }
+
+                    double blackSonuc;
+                    if (blackSure != 0)
+                    {
+                        blackSonuc = (blackSure / cihazToplamSure) * 100;
+                        blackSonuc = Math.Round(blackSonuc);
+                    }
+                    else
+                    {
+                        blackSonuc = 0;
+                    }
+
+                    double aiconSonuc;
+                    if (aiconSure != 0)
+                    {
+                        aiconSonuc = (aiconSure / cihazToplamSure) * 100;
+                        aiconSonuc = Math.Round(aiconSonuc);
+                    }
+                    else
+                    {
+                        aiconSonuc = 0;
+                    }
+
+
+
+                    //GRC - UHPC DÖKÜM
+
+                    double totalSayıDokum = Model.Select(a => a.IDT).Count();
+                    double totalSayıGrc = Model.Where(a => a.DökümT == "GRC").Select(a => a.IDT).Count();
+                    double totalSayıUhpc = Model.Where(a => a.DökümT == "UHPC").Select(a => a.IDT).Count();
+                    double totalHataGrc = Model.Where(a => a.DökümT == "GRC" && a.DurumT == "RED").Select(a => a.IDT).Count();
+                    double totalHataUhpc = Model.Where(a => a.DökümT == "UHPC" && a.DurumT == "RED").Select(a => a.IDT).Count();
+
+
+                    double sonucHataGrc;
+
+                    if (totalHataGrc != 0)
+                    {
+                        sonucHataGrc = (totalHataGrc / totalSayıGrc) * 100;
+                        sonucHataGrc = Math.Round(sonucHataGrc, 0);
+                    }
+                    else
+                    {
+                        sonucHataGrc = 0;
+                    }
+
+                    double sonucHataUhpc;
+
+                    if (totalHataUhpc != 0)
+                    {
+                        sonucHataUhpc = (totalHataUhpc / totalSayıUhpc) * 100;
+                        sonucHataUhpc = Math.Round(sonucHataUhpc, 0);
+                    }
+                    else
+                    {
+                        sonucHataUhpc = 0;
+                    }
+
+
+                    double sonucUhpc;
+                    if (totalSayıUhpc != 0)
+                    {
+                        sonucUhpc = (totalSayıUhpc / totalSayıDokum) * 100;
+                        sonucUhpc = Math.Round(sonucUhpc, 0);
+                    }
+                    else
+                    {
+                        sonucUhpc = 0;
+                    }
+
+                    double sonucGrc;
+                    if (totalSayıGrc != 0)
+                    {
+                        sonucGrc = (totalSayıGrc / totalSayıDokum) * 100;
+                        sonucGrc = Math.Round(sonucGrc, 0);
+                    }
+                    else
+                    {
+                        sonucGrc = 0;
+                    }
+
+                }
+            </div>
+
+
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-5">
+                                    <h4 class="card-title" style="font-size:22px;">Kalıp Tiplerine Göre İnceleme</h4>
+                                    <canvas id="kalıpTipSec" style="margin-top:20px;height:500px;width:500px;"></canvas>
+                                </div>
+
+                                <div class="col-lg-7">
+                                    <div class="card-cap-transparent" style="margin-right:150px;margin-top:100px">
+                                        <h4 class="card-title" style="font-size:22px">Tarama Adet - Hata Oranları</h4>
+                                        <div class="card-body">
+                                            <div class="active-member">
+                                                <div class="table-responsive">
+                                                    <table class="table table-xs mb-0">
+                                                        <thead>
+                                                            <tr style="text-align:center;font-size:21px">
+                                                                <th>Kalıp Tipleri</th>
+                                                                <th>Adet / Hata</th>
+                                                                <th>Hata Oranı</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody style="font-size:19px;">
+                                                            <tr style="text-align:center">
+                                                                <td style="color:rgba(117, 113, 249, 0.9)"><i class="fa fa-square" style="color:rgba(117, 113, 249, 0.9);"></i>   U-L-Z Tip</td>
+                                                                <td style="color:rgba(117, 113, 249, 0.9)">@ulzSayı / @ulzHata</td>
+                                                                @if (ulzSonuc < 50)
+                                                                {
+                                                                    <td style="color:forestgreen">%@ulzSonuc</td>
+                                                                }
+                                                                @if (ulzSonuc >= 50)
+                                                                {
+                                                                    <td style="color:red">%@ulzSonuc</td>
+                                                                }
+                                                            </tr>
+                                                            <tr style="text-align:center">
+                                                                <td style="color:rgba(144, 104, 190, 0.9)"><i class="fa fa-square" style="color:rgba(144, 104, 190, 0.9)"></i>    Amorf Tip</td>
+                                                                <td style="color: rgba(144, 104, 190, 0.9)">@amorfSayı / @amorfHata</td>
+                                                                @if (amorfSonuc < 50)
+                                                                {
+                                                                    <td style="color:forestgreen">%@amorfSonuc</td>
+
+                                                                }
+                                                                @if (amorfSonuc >= 50)
+                                                                {
+                                                                    <td style="color:red">%@amorfSonuc</td>
+                                                                }
+                                                            </tr>
+                                                            <tr style="text-align:center">
+                                                                <td style="color:#b860f7"><i class="fa fa-square" style="color:#b860f7"></i> Düz Tip</td>
+                                                                <td style="color:#b860f7">@duzSayı / @duzHata</td>
+                                                                @if (duzSonuc < 50)
+                                                                {
+                                                                    <td style="color:forestgreen">%@duzSonuc</td>
+                                                                }
+                                                                @if (duzSonuc >= 50)
+                                                                {
+                                                                    <td style="color:red">%@duzSonuc</td>
+                                                                }
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+
+
+            <script>
+                var ulzSonucAy = @ulzOran;
+                var amorfSonucAy = @amorfOran;
+                var duzSonucAy = @duzOran;
+
+                var ctx = document.getElementById("kalıpTipSec");
+                //ctx.height = 150;
+                var myChart = new Chart(ctx, {
+                    type: 'polarArea',
+                    data: {
+                    datasets: [{
+                    data: [ulzSonucAy, amorfSonucAy, duzSonucAy],
+                    backgroundColor: [
+                        "rgba(117, 113, 249,0.9)",
+                        "rgba(144,	104,	190,.9)",
+                        "#b860f7"
+                    ]
+
+                    }],
+                    labels: [
+                        "U-L-Z Tip",
+                        "Amorf",
+                        "Düz",
+                    ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: true
+                    }
+                 });
+            </script>
+
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="card">
+                        <div class="row">
+                            <div class="card-body">
+                                <h3 class="card-title" style="font-size:22px;">Döküm Türüne Göre İnceleme</h3>
+                                <canvas id="dokumChart" width="460" height="250"></canvas>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-6 col-sm-6">
+                                <div class="card">
+                                    <div class="stat-widget-one">
+                                        <div class="stat-content">
+                                            <div class="stat-text">UHPC Hata Oranı</div>
+                                            <div class="stat-digit gradient-4-text" style="color: #5780FE;font-size:32px;"><i class="fa fa-percent" style="color: #5780FE;font-size:21px"></i>@sonucHataUhpc</div>
+                                        </div>
+                                        <div class="progress mb-3">
+                                            <div class="progress-bar gradient-4" style="width: @sonucHataUhpc%;" role="progressbar">
+                                                <span class="sr-only">@sonucHataUhpc% Complete</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-6 border-right">
+                                            <div class="pt-3 pb-3 pl-0 pr-0 text-center">
+                                                <h4 class="m-1" style="color: #114EFD">@totalSayıUhpc</h4>
+                                                <p class="m-0">Tarama</p>
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="pt-3 pb-3 pl-0 pr-0 text-center">
+                                                <h4 class="m-1" style="color: #114EFD">@totalHataUhpc</h4>
+                                                <p class="m-0">Hata</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-6 col-sm-6">
+                                <div class="card">
+                                    <div class="stat-widget-one">
+                                        <div class="stat-content">
+                                            <div class="stat-text">GRC Hata Oranı</div>
+                                            <div class="stat-digit gradient-1-text" style="color: #7E5DF9;font-size:32px"><i class="fa fa-percent" style="color: #7E5DF9;font-size:21px"></i>@sonucHataGrc</div>
+                                        </div>
+                                        <div class="progress mb-3">
+                                            <div class="progress-bar gradient-1" style="width: @sonucHataGrc%;" role="progressbar">
+                                                <span class="sr-only">@sonucHataGrc% Complete</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-6 border-right">
+                                            <div class="pt-3 pb-3 pl-0 pr-0 text-center">
+                                                <h4 class="m-1" style="color: #8341F6">@totalSayıGrc</h4>
+                                                <p class="m-0">Tarama</p>
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="pt-3 pb-3 pl-0 pr-0 text-center">
+                                                <h4 class="m-1" style="color: #8341F6">@totalHataGrc</h4>
+                                                <p class="m-0">Hata</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-9">
+                                    <h3 class="card-title" style="font-size:22px;">Cihazlara Göre İnceleme</h3>
+                                    <span style="font-size:15px;">Tarama Adedi / Tarama Süresi</span>
+                                    <canvas id="cihazAySec" style="float:left; padding:15px 10px 10px 0;margin-left:150px;height:400px;width:400px;"></canvas>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-4 col-sm-4">
+                                    <div class="card-cap-transparent">
+                                        <div class="mt-5 justify-content-center">
+                                            <h4 class="text-muted text-center" style="font-size:21px;"> <i class="fa fa-circle-o" style="color:#1192e8;padding-right:10px;font-size:21px;" aria-hidden="true"></i>MetraSCAN</h4>
+                                            <h5 class="text-center" style="color:#1192e8;padding-left:35px;font-size:18px;">@metraSayı / @metraSure (dak)</h5>
+                                        </div>
+
+                                    </div>
+                                </div>
+                                <div class="col-lg-4 col-sm-4">
+                                    <div class="card-cap-transparent">
+                                        <div class="mt-5 justify-content-center">
+                                            <h4 class="text-muted text-center" style="font-size:21px;"> <i class="fa fa-circle-o" style="color:#08bdba; padding-right:10px;font-size:21px;" aria-hidden="true"></i>Black Elite</h4>
+                                            <h5 class="text-center" style="color:#08bdba;padding-left:35px;font-size:18px;">@blackSayı / @blackSure (dak)</h5>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4 col-sm-4">
+                                    <div class="card-cap-transparent">
+                                        <div class="mt-5 justify-content-center">
+                                            <h4 class="text-muted text-center" style="font-size:21px;"> <i class="fa fa-circle-o" style="color:#6929c4; padding-right:10px;font-size:21px;" aria-hidden="true"></i>AICON</h4>
+                                            <h5 class="text-center" style="color:#6929c4;padding-left:35px;font-size:18px;">@aiconSayı / @aiconSure (dak)</h5>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <script>
+                var ctx = document.getElementById("cihazAySec");
+                var myChart = new Chart(ctx, {
+                    type: 'pie',
+                    data: {
+                    datasets: [{
+                    data: [@metraSonuc,@blackSonuc,@aiconSonuc],
+                    backgroundColor: [
+                        "#1192e8",
+                        "#08bdba",
+                        "#6929c4"
+                    ],
+                    hoverBackgroundColor: [
+                        "#0072c3",
+                        "#007d79",
+                        "#6929c4"
+                    ]
+
+                    }],
+                    labels: [
+                        "MetraSCAN",
+                        "Black Elite",
+                        "AICON"
+                    ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: true
+
+                    }
+                });
+            </script>
+
+            <script>
+
+                var uhpc = @sonucUhpc;
+                var grc = @sonucGrc;
+
+                var ctx = document.getElementById("dokumChart");
+                ctx.height = 150;
+                var myChart = new Chart(ctx, {
+                    type: 'bar',
+                    legend: false,
+                    data: {
+                        labels: ["UHPC", "GRC"],
+                        datasets: [
+                            {
+                                label: 'Tarama Adet Yüzdeliği',
+                                data: [uhpc, grc],
+                                borderWidth: "0",
+                                backgroundColor: [
+                                    'rgba(87, 128, 254, 1)',
+                                    '#8341F6'
+                            ]}
+                        ]
+                    },
+                    options: {
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
+                        },
+                        indexAxis: 'y',
+                        elements: {
+                            bar: {
+                                borderWidth: 1,
+                            }
+                        },
+                        scales: {
+                            yAxes: [{
+                                ticks: {
+                                    beginAtZero: true
+                                }
+                            }],
+                            xAxes: [{
+                                // Change here
+                                barPercentage: 0.2
+                            }]
+                        }
+                    }
+                });
+            </script>
+
+            <div>
+                @{
+
+                    double dokumSayı = Model.Where(a => a.KonuT == "DÖKÜM ÖNCESİ").Count();
+                    double dokumHata = Model.Where(a => a.KonuT == "DÖKÜM ÖNCESİ" && a.DurumT == "RED").Count();
+                    double dokumSonuc;
+                    if (dokumSayı != 0)
+                    {
+                        dokumSonuc = (dokumSayı / sayıToplam) * 100;
+                        dokumSonuc = Math.Round(dokumSonuc, 0);
+                    }
+                    else
+                    {
+                        dokumSonuc = 0;
+                    }
+
+                    double toplamaSayı = Model.Where(a => a.KonuT == "KALIP TOPLAMA").Count();
+                    double toplamaHata = Model.Where(a => a.KonuT == "KALIP TOPLAMA" && a.DurumT == "RED").Count();
+                    double toplamaSonuc;
+                    if (toplamaSayı != 0)
+                    {
+                        toplamaSonuc = (toplamaSayı / sayıToplam) * 100;
+                        toplamaSonuc = Math.Round(toplamaSonuc, 0);
+                    }
+                    else
+                    {
+                        toplamaSonuc = 0;
+                    }
+
+                    double denemeSayı = Model.Where(a => a.KonuT == "DENEME").Count();
+                    double denemeHata = Model.Where(a => a.KonuT == "DENEME" && a.DurumT == "RED").Count();
+                    double denemeSonuc;
+                    if (denemeSayı != 0)
+                    {
+                        denemeSonuc = (denemeSayı / sayıToplam) * 100;
+                        denemeSonuc = Math.Round(denemeSonuc, 0);
+                    }
+                    else
+                    {
+                        denemeSonuc = 0;
+                    }
+
+                    double cncSayı = Model.Where(a => a.KonuT == "CNC İŞLEME").Count();
+                    double cncHata = Model.Where(a => a.KonuT == "CNC İŞLEME" && a.DurumT == "RED").Count();
+                    double cncSonuc;
+                    if (cncSayı != 0)
+                    {
+                        cncSonuc = (cncSayı / sayıToplam) * 100;
+                        cncSonuc = Math.Round(cncSonuc, 0);
+                    }
+                    else
+                    {
+                        cncSonuc = 0;
+                    }
+
+                    double sonraSayı = Model.Where(a => a.KonuT == "DÖKÜM SONRASI").Count();
+                    double sonraHata = Model.Where(a => a.KonuT == "DÖKÜM SONRASI" && a.DurumT == "RED").Count();
+                    double sonraSonuc;
+                    if (sonraSayı != 0)
+                    {
+                        sonraSonuc = (sonraSayı / sayıToplam) * 100;
+                        sonraSonuc = Math.Round(sonraSonuc, 0);
+                    }
+                    else
+                    {
+                        sonraSonuc = 0;
+                    }
+                }
+
+            </div>
+
+            <div class="row d-flex justify-content-center">
+                <div class="col-lg-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-5">
+                                    <h3 class="card-title" style="font-size:20px;">Tarama Konusuna Göre İnceleme Grafik</h3>
+                                    <canvas id="konuChartSec" style="float:left; padding:10px 10px 10px 0;"></canvas>
+                                </div>
+                                <div class="col-5" style="margin-left:100px">
+                                    <h4 class="mt-4">Tarama Konusuna Göre Yüzdelik Dağılım</h4>
+                                    <span style="font-size:15px;">Tarama Adedi</span>
+                                    <div class="mt-4">
+                                        <h3>@dokumSayı</h3>
+                                        <h5>Döküm Öncesi <span class="pull-right">%@dokumSonuc</span></h5>
+                                        <div class="progress mb-3" style="height:9px;">
+                                            <div class="progress-bar gradient-4" style="width: @dokumSonuc%" role="progressbar"><span class="sr-only">%@dokumSonuc</span></div>
+                                        </div>
+                                    </div>
+                                    <hr />
+                                    <div class="mt-4">
+                                        <h3>@toplamaSayı</h3>
+                                        <h5>Kalıp Toplama <span class="pull-right">%@toplamaSonuc</span></h5>
+                                        <div class="progress mb-3" style="height:9px;">
+                                            <div class="progress-bar gradient-1" style="width: @toplamaSonuc%" role="progressbar"><span class="sr-only">%@toplamaSonuc</span></div>
+                                        </div>
+                                    </div>
+                                    <hr />
+                                    <div class="mt-4">
+                                        <h3>@sonraSayı</h3>
+                                        <h5>Döküm Sonrası <span class="pull-right">%@sonraSonuc</span></h5>
+                                        <div class="progress mb-3" style="height:9px;">
+                                            <div class="progress-bar bg-success" style="width: @sonraSonuc%" role="progressbar"><span class="sr-only">%@sonraSonuc</span></div>
+                                        </div>
+                                    </div>
+                                    <hr />
+                                    <div class="mt-4">
+                                        <h3>@cncSayı</h3>
+                                        <h5>Cnc İşleme <span class="pull-right">%@cncSonuc</span></h5>
+                                        <div class="progress mb-3" style="height:9px;">
+                                            <div class="progress-bar gradient-2" style="width: @cncSonuc%" role="progressbar"><span class="sr-only">%@cncSonuc</span></div>
+                                        </div>
+                                    </div>
+                                    <hr />
+                                    <div class="mt-4">
+                                        <h3>@denemeSayı</h3>
+                                        <h5>Deneme <span class="pull-right">%@denemeSonuc</span></h5>
+                                        <div class="progress mb-3" style="height:9px;">
+                                            <div class="progress-bar gradient-5" style="width: @denemeSonuc%" role="progressbar"><span class="sr-only">%@denemeSonuc</span></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <script>
+            var dokumSayıAy = @dokumSonuc;
+            var toplamaSayıAy = @toplamaSonuc;
+            var denemeSayıAy = @denemeSonuc;
+            var cncSayıAy = @cncSonuc;
+            var sonraSayıAy = @sonraSonuc;
+
+            var ctx = document.getElementById("konuChartSec");
+            var myChart = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    datasets: [{
+                    data: [dokumSayıAy,toplamaSayıAy,sonraSayıAy,denemeSayıAy,cncSayıAy],
+                    backgroundColor: [
+                        "#2B61FE",
+                        "#833EF6",
+                        "#6FD96F",
+                        "#FB5B88",
+                        "#F94D05"
+                    ],
+                    hoverBackgroundColor: [
+                        "#7B76FB",
+                        "#7D6DFB",
+                        "#bed8be",
+                        "#FBA19F",
+                        "#F9CD22"
+                    ]
+
+                }],
+                labels: [
+                    "Döküm Öncesi",
+                    "Kalıp Toplama",
+                    "Döküm Sonrası",
+                    "Deneme",
+                    "CNC İşleme"
+                ]
+                },
+                options: {
+                legend: {
+                    position: 'top'
+                },
+                scale: {
+                    ticks: {
+                        beginAtZero: true
+                    },
+                responsive: false
+                    }
+                }
+            });
+            </script>
+
+            <div>
+                @{
+                    double straforSayı = Model.Where(a => a.MalzemeT == "STRAFOR KALIP").Count();
+                    double straforHata = Model.Where(a => a.MalzemeT == "STRAFOR KALIP" && a.DurumT == "RED").Count();
+                    double straforSonuc;
+
+                    if (straforHata != 0)
+                    {
+                        straforSonuc = (straforHata / straforSayı) * 100;
+                        straforSonuc = Math.Round(straforSonuc, 0);
+                    }
+                    else
+                    {
+                        straforSonuc = 0;
+                    }
+
+                    double ahsapSayı = Model.Where(a => a.MalzemeT == "AHŞAP KALIP").Count();
+                    double ahsapHata = Model.Where(a => a.MalzemeT == "AHŞAP KALIP" && a.DurumT == "RED").Count();
+                    double ahsapSonuc;
+
+                    if (ahsapHata != 0)
+                    {
+                        ahsapSonuc = (ahsapHata / ahsapSayı) * 100;
+                        ahsapSonuc = Math.Round(ahsapSonuc, 0);
+                    }
+                    else
+                    {
+                        ahsapSonuc = 0;
+                    }
+
+                    double alciSayı = Model.Where(a => a.MalzemeT == "ALÇI KALIP").Count();
+                    double alciHata = Model.Where(a => a.MalzemeT == "ALÇI KALIP" && a.DurumT == "RED").Count();
+                    double alciSonuc;
+
+                    if (alciHata != 0)
+                    {
+                        alciSonuc = (alciHata / alciSayı) * 100;
+                        alciSonuc = Math.Round(alciSonuc, 0);
+                    }
+                    else
+                    {
+                        alciSonuc = 0;
+                    }
+
+                    double polyesterSayı = Model.Where(a => a.MalzemeT == "POLYESTER KALIP").Count();
+                    double polyesterHata = Model.Where(a => a.MalzemeT == "POLYESTER KALIP" && a.DurumT == "RED").Count();
+                    double polyesterSonuc;
+
+                    if (polyesterHata != 0)
+                    {
+                        polyesterSonuc = (polyesterHata / polyesterSayı) * 100;
+                        polyesterSonuc = Math.Round(polyesterSonuc, 0);
+                    }
+                    else
+                    {
+                        polyesterSonuc = 0;
+                    }
+                }
+            </div>
+
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <h4 class="card-title" style="font-size:21px;">Malzeme Türüne Göre İnceleme</h4>
+                            <div class="row">
+                                <div class="col-xl-3 col-lg-6 mb-4">
+                                    <div class="bg-white rounded-lg p-5 shadow">
+                                        <h2 class="h4 font-weight-bold text-center mb-4">Strafor</h2>
+
+                                        <div class="dProgress mx-auto" data-value='@straforSonuc'>
+                                            <span class="dProgress-left">
+                                                <span class="dProgress-bar border-primary"></span>
+                                            </span>
+                                            <span class="dProgress-right">
+                                                <span class="dProgress-bar border-primary"></span>
+                                            </span>
+                                            <div class="dProgress-value w-100 h-100 rounded-circle d-flex align-items-center justify-content-center">
+                                                <div class="h2 font-weight-bold">@straforSonuc<sup class="small">%</sup></div>
+                                            </div>
+                                        </div>
+                                        <div class="row text-center mt-4">
+                                            <div class="col-6 border-right">
+                                                <div class="h3 font-weight-bold mb-0">@straforSayı</div><i class="fa fa-circle" style="color:#7571F9;margin-right:5px;"></i><span class="text-gray">Tarama</span>
+                                            </div>
+                                            <div class="col-6">
+                                                <div class="h3 font-weight-bold mb-0">@straforHata</div><i class="fa fa-circle" style="color:#7571F9;margin-right:5px"></i><span class="text-gray">Hata</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-xl-3 col-lg-6 mb-4">
+                                    <div class="bg-white rounded-lg p-5 shadow">
+                                        <h2 class="h4 font-weight-bold text-center mb-4">Ahşap</h2>
+
+
+                                        <div class="dProgress mx-auto" data-value='@ahsapSonuc'>
+                                            <span class="dProgress-left">
+                                                <span class="dProgress-bar border-danger"></span>
+                                            </span>
+                                            <span class="dProgress-right">
+                                                <span class="dProgress-bar border-danger"></span>
+                                            </span>
+                                            <div class="dProgress-value w-100 h-100 rounded-circle d-flex align-items-center justify-content-center">
+                                                <div class="h2 font-weight-bold">@ahsapSonuc<sup class="small">%</sup></div>
+                                            </div>
+                                        </div>
+                                        <div class="row text-center mt-4">
+                                            <div class="col-6 border-right">
+                                                <div class="h3 font-weight-bold mb-0">@ahsapSayı</div><i class="fa fa-circle" style="color:#FF5E5E;margin-right:5px"></i><span class="text-gray">Tarama</span>
+                                            </div>
+                                            <div class="col-6">
+                                                <div class="h3 font-weight-bold mb-0">@ahsapHata</div><i class="fa fa-circle" style="color:#FF5E5E;margin-right:5px"></i><span class="text-gray">Hata</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-xl-3 col-lg-6 mb-4">
+                                    <div class="bg-white rounded-lg p-5 shadow">
+                                        <h2 class="h4 font-weight-bold text-center mb-4">Polyester</h2>
+
+                                        <div class="dProgress mx-auto" data-value='@polyesterSonuc'>
+                                            <span class="dProgress-left">
+                                                <span class="dProgress-bar border-success"></span>
+                                            </span>
+                                            <span class="dProgress-right">
+                                                <span class="dProgress-bar border-success"></span>
+                                            </span>
+                                            <div class="dProgress-value w-100 h-100 rounded-circle d-flex align-items-center justify-content-center">
+                                                <div class="h2 font-weight-bold">@polyesterSonuc<sup class="small">%</sup></div>
+                                            </div>
+                                        </div>
+                                        <div class="row text-center mt-4">
+                                            <div class="col-6 border-right">
+                                                <div class="h3 font-weight-bold mb-0">@polyesterSayı</div><i class="fa fa-circle" style="color:#6FD96F;margin-right:5px"></i><span class="text-gray">Tarama</span>
+                                            </div>
+                                            <div class="col-6">
+                                                <div class="h3 font-weight-bold mb-0">@polyesterHata</div><i class="fa fa-circle" style="color:#6FD96F;margin-right:5px"></i><span class="text-gray">Hata</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-xl-3 col-lg-6 mb-4">
+                                    <div class="bg-white rounded-lg p-5 shadow">
+                                        <h2 class="h4 font-weight-bold text-center mb-4">Alçı</h2>
+
+                                        <div class="dProgress mx-auto" data-value='@alciSonuc'>
+                                            <span class="dProgress-left">
+                                                <span class="dProgress-bar border-warning"></span>
+                                            </span>
+                                            <span class="dProgress-right">
+                                                <span class="dProgress-bar border-warning"></span>
+                                            </span>
+                                            <div class="dProgress-value w-100 h-100 rounded-circle d-flex align-items-center justify-content-center">
+                                                <div class="h2 font-weight-bold">@alciSonuc<sup class="small">%</sup></div>
+                                            </div>
+                                        </div>
+                                        <div class="row text-center mt-4">
+                                            <div class="col-6 border-right">
+                                                <div class="h3 font-weight-bold mb-0">@alciSayı</div><i class="fa fa-circle" style="color:#F29D56;margin-right:5px"></i><span class="text-gray">Tarama</span>
+                                            </div>
+                                            <div class="col-6">
+                                                <div class="h3 font-weight-bold mb-0">@alciHata</div><i class="fa fa-circle" style="color:#F29D56;margin-right:5px"></i><span class="text-gray">Hata</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+            <script>
+                $(function () {
+
+                    $(".dProgress").each(function () {
+
+                        var value = $(this).attr('data-value');
+                        var left = $(this).find('.dProgress-left .dProgress-bar');
+                        var right = $(this).find('.dProgress-right .dProgress-bar');
+
+                        if (value > 0) {
+                            if (value <= 50) {
+                                right.css('transform', 'rotate(' + percentageToDegrees(value) + 'deg)')
+                            } else {
+                                right.css('transform', 'rotate(180deg)')
+                                left.css('transform', 'rotate(' + percentageToDegrees(value - 50) + 'deg)')
+                            }
+                        }
+
+                    })
+
+                    function percentageToDegrees(percentage) {
+
+                        return percentage / 100 * 360
+
+                    }
+
+                });
+            </script>
+
+            <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/raphael/2.1.0/raphael-min.js"></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/morris.js/0.5.1/morris.min.js"></script>
+            <script src="https://cdn.jsdelivr.net/chartist.js/latest/chartist.min.js"></script>
+        </div>
+    }
+</body>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.bundle.min.js"></script>
+
+<script src="~/quixlab-master/quixlab-master/plugins/common/common.min.js"></script>
+<script src="~/quixlab-master/quixlab-master/js/custom.min.js"></script>
+<script src="~/quixlab-master/quixlab-master/js/settings.js"></script>
+<script src="~/quixlab-master/quixlab-master/js/gleek.js"></script>
+<script src="~/quixlab-master/quixlab-master/js/styleSwitcher.js"></script>
+<script src="//cdn.jsdelivr.net/chartist.js/latest/chartist.min.js"></script>
+
+<script src="~/quixlab-master/quixlab-master/js/dashboard/dashboard-2.js"></script>
+
+<script src="~/quixlab-master/quixlab-master/plugins/chartist/js/chartist.min.js"></script>
+<script src="~/quixlab-master/quixlab-master/plugins/chartist-plugin-tooltips/js/chartist-plugin-tooltip.min.js"></script>
+<script src="~/quixlab-master/quixlab-master/js/plugins-init/chartist.init.js"></script>
+
+<script src="~/quixlab-master/quixlab-master/plugins/raphael/raphael.min.js"></script>
+<script src="~/quixlab-master/quixlab-master/plugins/morris/morris.min.js"></script>
+<script src="~/quixlab-master/quixlab-master/js/plugins-init/morris-init.js"></script>
+
+<!-- Chartjs -->
+<script src="~/quixlab-master/quixlab-master/plugins/chart.js/Chart.bundle.min.js"></script>
+<!-- Circle progress -->
+<script src="~/quixlab-master/quixlab-master/plugins/circle-progress/circle-progress.min.js"></script>
+<!-- Datamap -->
+<script src="~/quixlab-master/quixlab-master/plugins/d3v3/index.js"></script>
+<script src="~/quixlab-master/quixlab-master/plugins/topojson/topojson.min.js"></script>
+<script src="~/quixlab-master/quixlab-master/plugins/datamaps/datamaps.world.min.js"></script>
+<!-- Morrisjs -->
+<script src="~/quixlab-master/quixlab-master/plugins/raphael/raphael.min.js"></script>
+<script src="~/quixlab-master/quixlab-master/plugins/morris/morris.min.js"></script>
+<!-- Pignose Calender -->
+<script src="~/quixlab-master/quixlab-master/plugins/moment/moment.min.js"></script>
+<script src="~/quixlab-master/quixlab-master/plugins/pg-calendar/js/pignose.calendar.min.js"></script>
+<!-- ChartistJS -->
+<script src="~/quixlab-master/quixlab-master/plugins/chartist/js/chartist.min.js"></script>
+<script src="~/quixlab-master/quixlab-master/plugins/chartist-plugin-tooltips/js/chartist-plugin-tooltip.min.js"></script>
+
+<script src="~/quixlab-master/quixlab-master/js/dashboard/dashboard-1.js"></script>
+<!-- Clock Plugin JavaScript -->
+<script src="~/quixlab-master/quixlab-master/plugins/clockpicker/dist/jquery-clockpicker.min.js"></script>
+<!-- Color Picker Plugin JavaScript -->
+<script src="~/quixlab-master/quixlab-master/plugins/jquery-asColorPicker-master/libs/jquery-asColor.js"></script>
+<script src="~/quixlab-master/quixlab-master/plugins/jquery-asColorPicker-master/libs/jquery-asGradient.js"></script>
+<script src="~/quixlab-master/quixlab-master/plugins/jquery-asColorPicker-master/dist/jquery-asColorPicker.min.js"></script>
+<!-- Date Picker Plugin JavaScript -->
+<script src="~/quixlab-master/quixlab-master/plugins/bootstrap-datepicker/bootstrap-datepicker.min.js"></script>
+<!-- Date range Plugin JavaScript -->
+<script src="~/quixlab-master/quixlab-master/plugins/timepicker/bootstrap-timepicker.min.js"></script>
+<script src="~/quixlab-master/quixlab-master/plugins/bootstrap-daterangepicker/daterangepicker.js"></script>
+
+<script src="~/quixlab-master/quixlab-master/js/plugins-init/form-pickers-init.js"></script>

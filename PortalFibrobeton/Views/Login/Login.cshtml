@@ -1,0 +1,85 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html class="h-100" lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>PortalFibrobeton - Login</title>
+    <link href="~/quixlab-master/quixlab-master/css/style.css" rel="stylesheet">
+
+    <link href="~/Gp/Gp/pics/fibroFavicon.png" rel="icon">
+
+    <style>
+        .gradient-custom {
+            background: #082abf;
+            background: -webkit-linear-gradient(to right, rgba(8, 42, 191, 0.5), rgba(118, 75, 162, 0.5));
+            background: linear-gradient(to right, rgba(8, 42, 191, 0.5), rgba(118, 75, 162, 0.5))
+        }
+    </style>
+
+</head>
+
+
+<body class="h-100">
+
+    <div id="preloader">
+        <div class="loader">
+            <svg class="circular" viewBox="25 25 50 50">
+                <circle class="path" cx="50" cy="50" r="20" fill="none" stroke-width="3" stroke-miterlimit="10" />
+            </svg>
+        </div>
+    </div>
+
+
+
+    <div class="login-form-bg h-100" style="background: #1b3d79;
+                                            background: -webkit-repeating-linear-gradient(to right, rgba(22,60,126,0.45),rgba(50,109,210,0.45))">
+        <div class="container h-100">
+            <div class="row justify-content-center h-75">
+                <div class="col-xl-5">
+
+                    <div class="form-input-content">
+                        <img src="~/Content/Logo/LOGO 2020 SLOGANSIZ.png" class="img-fluid" />
+                        <div class="card login-form mb-0" style="margin-top:60px;">
+                            <div class="card-body pt-5" style="background: #1b3d79;">
+                                @using (Html.BeginForm("Login", "Login", FormMethod.Post))
+                                {
+                                    <form class="mt-5 mb-5 login-input" style="color:white">
+                                        <div class="form-group" style="color:white">
+                                            <input type="text" class="form-control" name="KULLANICI_ADI" placeholder="Kullanıcı adı" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <input type="password" class="form-control" name="SIFRE" placeholder="Şifre" required>
+                                        </div>
+                                        <div>
+                                            @if (TempData["errorLogin"] != null)
+                                            {
+                                                <p class="mt-4" style="color:red">@TempData["errorLogin"].ToString()</p>
+                                            }
+                                        </div>
+                                        <button class="btn login-form__btn submit w-100" style="background-color:#39B3E6">Giriş Yap</button>
+                                    </form>
+                                }
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script src="~/quixlab-master/quixlab-master/plugins/common/common.min.js"></script>
+    <script src="~/quixlab-master/quixlab-master/js/custom.min.js"></script>
+    <script src="~/quixlab-master/quixlab-master/js/settings.js"></script>
+    <script src="~/quixlab-master/quixlab-master/js/gleek.js"></script>
+    <script src="~/quixlab-master/quixlab-master/js/styleSwitcher.js"></script>
+</body>
+</html>

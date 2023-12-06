@@ -1,0 +1,1262 @@
+﻿@model IEnumerable<PortalFibrobeton.Models.Entity.Tbl_Taramalar>
+
+@{
+    ViewBag.Title = "Kalıphaneler";
+    Layout = "~/Views/Shared/ScanLayout.cshtml";
+}
+
+<head>
+    <title>FibroSCAN - Kalıphane Raporlar</title>
+    <link rel="icon" type="image/png" sizes="19x19" href="~/quixlab-master/quixlab-master/images/favicon.png">
+    <link rel="stylesheet" href="~/quixlab-master/quixlab-master/plugins/chartist/css/chartist.min.css">
+    <link rel="stylesheet" href="~/quixlab-master/quixlab-master/plugins/chartist-plugin-tooltips/css/chartist-plugin-tooltip.css">
+    <link href="~/quixlab-master/quixlab-master/css/style.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/chartist.js/latest/chartist.min.css">
+    <script src="https://cdn.jsdelivr.net/chartist.js/latest/chartist.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/morris.js/0.5.1/morris.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700">
+    <link href="~/quixlab-master/quixlab-master/plugins/pg-calendar/css/pignose.calendar.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="~/quixlab-master/quixlab-master/plugins/chartist/css/chartist.min.css">
+    <link rel="stylesheet" href="~/quixlab-master/quixlab-master/plugins/chartist-plugin-tooltips/css/chartist-plugin-tooltip.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/chartist.js/latest/chartist.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-material-datetimepicker/2.7.1/css/bootstrap-material-datetimepicker.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.20.1/moment.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-material-datetimepicker/2.7.1/js/bootstrap-material-datetimepicker.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.20.1/locale/ja.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/locale/tr.min.js"></script>
+    <link href="~/Content/EasyPie.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-circle-progress/1.2.2/circle-progress.min.js"></script>
+    <link href="~/quixlab-master/quixlab-master/plugins/clockpicker/dist/jquery-clockpicker.min.css" rel="stylesheet">
+    <link href="~/quixlab-master/quixlab-master/plugins/jquery-asColorPicker-master/css/asColorPicker.css" rel="stylesheet">
+
+    <link href="https://cdn.jsdelivr.net/bootstrap.datepicker-fork/1.3.0/css/datepicker3.css" rel="stylesheet" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.0/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/bootstrap.datepicker-fork/1.3.0/js/bootstrap-datepicker.js"></script>
+    <script src="https://cdn.jsdelivr.net/bootstrap.datepicker-fork/1.3.0/js/locales/bootstrap-datepicker.tr.js"></script>
+
+
+
+
+    <style>
+        .dProgress {
+            width: 150px;
+            height: 150px;
+            background: none;
+            position: relative;
+        }
+
+            .dProgress::after {
+                content: "";
+                width: 100%;
+                height: 100%;
+                border-radius: 50%;
+                border: 6px solid #eee;
+                position: absolute;
+                top: 0;
+                left: 0;
+            }
+
+            .dProgress > span {
+                width: 50%;
+                height: 100%;
+                overflow: hidden;
+                position: absolute;
+                top: 0;
+                z-index: 1;
+            }
+
+            .dProgress .dProgress-leftH {
+                left: 0;
+            }
+
+            .dProgress .dProgress-bar {
+                width: 100%;
+                height: 100%;
+                background: none;
+                border-width: 6px;
+                border-style: solid;
+                position: absolute;
+                top: 0;
+            }
+
+            .dProgress .dProgress-left .dProgress-bar {
+                left: 100%;
+                border-top-right-radius: 80px;
+                border-bottom-right-radius: 80px;
+                border-left: 0;
+                -webkit-transform-origin: center left;
+                transform-origin: center left;
+            }
+
+            .dProgress .dProgress-right {
+                right: 0;
+            }
+
+                .dProgress .dProgress-right .dProgress-bar {
+                    left: -100%;
+                    border-top-left-radius: 80px;
+                    border-bottom-left-radius: 80px;
+                    border-right: 0;
+                    -webkit-transform-origin: center right;
+                    transform-origin: center right;
+                }
+
+            .dProgress .dProgress-value {
+                position: absolute;
+                top: 0;
+                left: 0;
+            }
+
+
+
+
+        .rounded-lg {
+            border-radius: 1rem;
+        }
+
+        .text-gray {
+            color: #aaa;
+        }
+
+        div.h4 {
+            line-height: 1rem;
+        }
+    </style>
+</head>
+
+<body>
+
+    @using (Html.BeginForm("KalıphanelerS", "Reports", FormMethod.Post))
+    {
+        <div class="container-fluid">
+            <ul class="nav nav-pills mb-3 justify-content-end">
+                <li class="nav-item">
+                    <a href="#" class="nav-link active" data-toggle="tab" aria-expanded="false">Seçilen Tarihlere Göre</a>
+                </li>
+            </ul>
+            <div class="row">
+                <div class="col-lg-6 col-sm-9 justify-content-end">
+                    <div class="example justify-content-end">
+                        <h4 class="box-title m-t-30">Tarih Aralığı</h4>
+                        <p class="text-muted m-b-20">Lütfen tarih aralığı seçin</p>
+                        <div class="input-daterange input-group">
+                            <input type="text" autocomplete="off" class="form-control" id="datepicker1" name="bas" /><span class="input-group-append"><span class="input-group-text"><i class="mdi mdi-calendar-check"></i></span></span> <span class="input-group-addon bg-info b-0 text-white">ve</span>
+                            <input type="text" autocomplete="off" class="form-control" id="datepicker2" name="bit" /><span class="input-group-append"><span class="input-group-text"><i class="mdi mdi-calendar-check"></i></span></span>
+                            <button type="submit" value="date" name="action" class="btn btn-primary" onclick="location.href='@Url.Action("KalıphanelerS", "Reports")'" style="margin-left:20px;">Ara</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <br />
+            <br />
+            <div class="row">
+                <div class="col-lg-3 col-sm-6">
+                    <div class="card gradient-1">
+                        <div class="card-body">
+                            <h3 class="card-title text-white">Toplam Tarama</h3>
+                            <div class="d-inline-block">
+                                <h2 class="text-white">@Model.Select(a => a.IDT).Count() / @Model.Select(a => a.AlanT).Sum()</h2>
+                                <p class="text-white mb-0">Adet / m²</p>
+                            </div>
+                            <span class="float-right display-5 opacity-5"><i class="fa fa-cube"></i></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-sm-6">
+                    <div class="card gradient-2">
+                        <div class="card-body">
+                            <h3 class="card-title text-white">Süreler</h3>
+                            <div class="d-inline-block">
+                                <h2 class="text-white"> @Model.Select(a => a.SureT).Sum() / @Model.Select(a => a.SureR).Sum() </h2>
+                                <p class="text-white mb-0">Tarama (dak) / Rapor (dak)</p>
+                            </div>
+                            <span class="float-right display-5 opacity-5"><i class="fa fa-clock-o"></i></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-sm-9">
+                    <div class="card gradient-3">
+                        <div class="card-body">
+                            <h3 class="card-title text-white">Panel Tarama</h3>
+                            <div class="d-inline-block">
+                                <h2 class="text-white">@Model.Where(a => a.MalzemeT == "BETON").Select(a => a.IDT).Count() / @Model.Where(a => a.MalzemeT == "BETON").Select(a => a.AlanT).Sum() </h2>
+                                <p class="text-white mb-0">Adet / m²</p>
+                            </div>
+                            <span class="float-right display-5 opacity-5">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" class="bi bi-bricks" viewBox="0 0 16 16">
+                                    <path d="M0 .5A.5.5 0 0 1 .5 0h15a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-.5.5H14v2h1.5a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-.5.5H14v2h1.5a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-.5.5H.5a.5.5 0 0 1-.5-.5v-3a.5.5 0 0 1 .5-.5H2v-2H.5a.5.5 0 0 1-.5-.5v-3A.5.5 0 0 1 .5 6H2V4H.5a.5.5 0 0 1-.5-.5v-3zM3 4v2h4.5V4H3zm5.5 0v2H13V4H8.5zM3 10v2h4.5v-2H3zm5.5 0v2H13v-2H8.5zM1 1v2h3.5V1H1zm4.5 0v2h5V1h-5zm6 0v2H15V1h-3.5zM1 7v2h3.5V7H1zm4.5 0v2h5V7h-5zm6 0v2H15V7h-3.5zM1 13v2h3.5v-2H1zm4.5 0v2h5v-2h-5zm6 0v2H15v-2h-3.5z" />
+                                </svg>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <script>
+                $(function ($) {
+                    $.fn.datepicker.dates['tr'] =
+                    {
+                        days: ["Pazar", "Pazartesi", "Salı", "Çarşamba", "Perşembe", "Cuma", "Cumartesi", "Pazar"],
+                        daysShort: ["Pz", "Pzt", "Sal", "Çrş", "Prş", "Cu", "Cts", "Pz"],
+                        daysMin: ["Pz", "Pzt", "Sa", "Çr", "Pr", "Cu", "Ct", "Pz"],
+                        months: ["Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran", "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"],
+                        monthsShort: ["Oca", "Şub", "Mar", "Nis", "May", "Haz", "Tem", "Ağu", "Eyl", "Eki", "Kas", "Ara"],
+                        today: "Bugün",
+                    };
+                });
+
+                $(function ($) {
+                    $("#datepicker1").datepicker(
+                        {
+                            language: "tr",
+                            format: "dd/mm/yyyy",
+                            autoclose: true
+                        });
+                });
+            </script>
+
+            <script>
+                $(function ($) {
+                    $.fn.datepicker.dates['tr'] =
+                    {
+                        days: ["Pazar", "Pazartesi", "Salı", "Çarşamba", "Perşembe", "Cuma", "Cumartesi", "Pazar"],
+                        daysShort: ["Pz", "Pzt", "Sal", "Çrş", "Prş", "Cu", "Cts", "Pz"],
+                        daysMin: ["Pz", "Pzt", "Sa", "Çr", "Pr", "Cu", "Ct", "Pz"],
+                        months: ["Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran", "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"],
+                        monthsShort: ["Oca", "Şub", "Mar", "Nis", "May", "Haz", "Tem", "Ağu", "Eyl", "Eki", "Kas", "Ara"],
+                        today: "Bugün",
+                    };
+                });
+
+                $(function ($) {
+                    $("#datepicker2").datepicker(
+                        {
+                            language: "tr",
+                            format: "dd/mm/yyyy",
+                            autoclose: true
+                        });
+                });
+            </script>
+
+            <div class="row d-flex justify-content-center">
+                <div class="col-lg-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <h3 class="card-title">Kalıp Tarama Sayı Grafiği</h3>
+                            <span style="margin-left:30px;">Seçilen Tarihlere Göre</span>
+                            <canvas id="SecColumn"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <script>
+            var Sec6Sayı = @Model.Where(a => a.TeslimT == "HOL-6").Count();
+            var Sec9Sayı = @Model.Where(a => a.TeslimT == "HOL-9").Count();
+            var SecOzdSayı = @Model.Where(a => a.TeslimT == "TAŞERON").Count();
+
+            var ctx = document.getElementById("SecColumn");
+            ctx.height = 100;
+            var myChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ["UHPC Kalıphane", "Ana Kalıphane", "Özdemir Model"],
+                    datasets: [
+                        {
+                            label: "Kalıphaneler",
+                            data: [Sec9Sayı, Sec6Sayı, SecOzdSayı],
+                            borderColor: "rgba(117, 113, 249, 0.9)",
+                            borderWidth: "0",
+                            backgroundColor: "rgba(117, 113, 249, 0.5)"
+                        }
+                    ]
+                },
+                options: {
+                    scales: {
+                        yAxes: [{
+                            ticks: {
+                                beginAtZero: true
+                            }
+                        }]
+                    }
+                }
+            });
+            </script>
+
+            <div class="row">
+                @{
+                    double imalatUhpcSayı = @Model.Where(a => a.TeslimT == "HOL-9").Select(a => a.IDT).Count();
+                    double imalatUhpcHata = @Model.Where(a => a.DurumT == "RED" && a.TeslimT == "HOL-9").Select(a => a.IDT).Count();
+                    double imalatUhpcSonuc = (imalatUhpcHata / imalatUhpcSayı) * 100;
+                    imalatUhpcSonuc = Math.Round(imalatUhpcSonuc, 0);
+
+                    double imalatAnaSayı = @Model.Where(a => a.TeslimT == "HOL-6").Select(a => a.IDT).Count();
+                    double imalatAnaHata = @Model.Where(a => a.DurumT == "RED" && a.TeslimT == "HOL-6").Select(a => a.IDT).Count();
+                    double imalatAnaSonuc = (imalatAnaHata / imalatAnaSayı) * 100;
+                    imalatAnaSonuc = Math.Round(imalatAnaSonuc, 0);
+
+                    double imalatOzdSayı = @Model.Where(a => a.TeslimT == "TAŞERON").Select(a => a.IDT).Count();
+                    double imalatOzdHata = @Model.Where(a => a.DurumT == "RED" && a.TeslimT == "TAŞERON").Select(a => a.IDT).Count();
+                    double imalatOzdSonuc = (imalatOzdHata / imalatOzdSayı) * 100;
+                    imalatOzdSonuc = Math.Round(imalatOzdSonuc, 0);
+
+                    double imalatCncSayı = @Model.Where(a => a.TeslimT == "CNC").Select(a => a.IDT).Count();
+                    double imalatCncHata = @Model.Where(a => a.DurumT == "RED" && a.TeslimT == "CNC").Select(a => a.IDT).Count();
+                    double imalatCncSonuc = (imalatCncHata / imalatCncSayı) * 100;
+                    imalatCncSonuc = Math.Round(imalatCncSonuc, 0);
+
+                    double totalSayı = Model.Where(a => a.MalzemeT != "BETON").Select(a => a.IDT).Count();
+
+
+                }
+                @{
+                    if (imalatUhpcHata == 0)
+                    {
+                        imalatUhpcSonuc = 0;
+                    }
+                    if (imalatAnaHata == 0)
+                    {
+                        imalatAnaSonuc = 0;
+                    }
+                    if (imalatOzdHata == 0)
+                    {
+                        imalatOzdSonuc = 0;
+                    }
+                    if (imalatCncHata == 0)
+                    {
+                        imalatCncSonuc = 0;
+                    }
+
+                    double imalatUhpcOran;
+                    double imalatAnaOran;
+                    double imalatOzdOran;
+                    double imalatCncOran;
+
+
+                    if (imalatUhpcSayı != 0)
+                    {
+                        imalatUhpcOran = (imalatUhpcSayı / totalSayı) * 100;
+                        imalatUhpcOran = Math.Round(imalatUhpcOran, 0);
+
+                    }
+                    else
+                    {
+                        imalatUhpcOran = 0;
+                    }
+
+                    if (imalatAnaSayı != 0)
+                    {
+                        imalatAnaOran = (imalatAnaSayı / totalSayı) * 100;
+                        imalatAnaOran = Math.Round(imalatAnaOran, 0);
+
+                    }
+                    else
+                    {
+                        imalatAnaOran = 0;
+                    }
+
+                    if (imalatOzdSayı != 0)
+                    {
+                        imalatOzdOran = (imalatOzdSayı / totalSayı) * 100;
+                        imalatOzdOran = Math.Round(imalatOzdOran, 0);
+
+                    }
+                    else
+                    {
+                        imalatOzdOran = 0;
+                    }
+
+                    if (imalatCncSayı != 0)
+                    {
+                        imalatCncOran = (imalatCncSayı / totalSayı) * 100;
+                        imalatCncOran = Math.Round(imalatCncOran, 0);
+
+                    }
+                    else
+                    {
+                        imalatCncOran = 0;
+                    }
+
+                    double totalOK = Model.Where(a => a.DurumT == "OK").Count();
+                    double t1 = Model.Where(a => a.DurumT == "OK" && a.SayıT == 1).Count();
+                    double t2 = Model.Where(a => a.DurumT == "OK" && a.SayıT == 2).Count();
+                    double t3 = Model.Where(a => a.DurumT == "OK" && a.SayıT == 3).Count();
+                    double t4 = Model.Where(a => a.DurumT == "OK" && a.SayıT == 4).Count();
+                    double t5 = Model.Where(a => a.DurumT == "OK" && a.SayıT == 5).Count();
+                    double t6 = Model.Where(a => a.DurumT == "OK" && a.SayıT == 6).Count();
+                    double t7 = Model.Where(a => a.DurumT == "OK" && a.SayıT == 7).Count();
+                    double t8 = Model.Where(a => a.DurumT == "OK" && a.SayıT == 8).Count();
+                    double t9 = Model.Where(a => a.DurumT == "OK" && a.SayıT == 9).Count();
+                    double t10 = Model.Where(a => a.DurumT == "OK" && a.SayıT == 10).Count();
+                    double t11 = Model.Where(a => a.DurumT == "OK" && a.SayıT == 11).Count();
+                    double t12 = Model.Where(a => a.DurumT == "OK" && a.SayıT == 12).Count();
+                    double t1Sonuc;
+                    double t2Sonuc;
+                    double t3Sonuc;
+                    double t4Sonuc;
+                    double t5Sonuc;
+                    double t6Sonuc;
+                    double t7Sonuc;
+                    double t8Sonuc;
+                    double t9Sonuc;
+                    double t10Sonuc;
+                    double t11Sonuc;
+                    double t12Sonuc;
+
+
+
+                    //Total
+                    if (t1 != 0)
+                    {
+                        t1Sonuc = (t1 / totalOK) * 100;
+                        t1Sonuc = Math.Round(t1Sonuc, 0);
+                    }
+                    else
+                    {
+                        t1Sonuc = 0;
+                    }
+
+                    if (t2 != 0)
+                    {
+                        t2Sonuc = (t2 / totalOK) * 100;
+                        t2Sonuc = Math.Round(t2Sonuc, 0);
+                    }
+                    else
+                    {
+                        t2Sonuc = 0;
+                    }
+
+                    if (t3 != 0)
+                    {
+                        t3Sonuc = (t3 / totalOK) * 100;
+                        t3Sonuc = Math.Round(t3Sonuc, 0);
+                    }
+                    else
+                    {
+                        t3Sonuc = 0;
+                    }
+
+                    if (t4 != 0)
+                    {
+                        t4Sonuc = (t4 / totalOK) * 100;
+                        t4Sonuc = Math.Round(t4Sonuc, 0);
+                    }
+                    else
+                    {
+                        t4Sonuc = 0;
+                    }
+                    if (t5 != 0)
+                    {
+                        t5Sonuc = (t5 / totalOK) * 100;
+                        t5Sonuc = Math.Round(t5Sonuc, 0);
+                    }
+                    else
+                    {
+                        t5Sonuc = 0;
+                    }
+                    if (t6 != 0)
+                    {
+                        t6Sonuc = (t6 / totalOK) * 100;
+                        t6Sonuc = Math.Round(t6Sonuc, 0);
+                    }
+                    else
+                    {
+                        t6Sonuc = 0;
+                    }
+                    if (t7 != 0)
+                    {
+                        t7Sonuc = (t7 / totalOK) * 100;
+                        t7Sonuc = Math.Round(t7Sonuc, 0);
+                    }
+                    else
+                    {
+                        t7Sonuc = 0;
+                    }
+                    if (t8 != 0)
+                    {
+                        t8Sonuc = (t8 / totalOK) * 100;
+                        t8Sonuc = Math.Round(t8Sonuc, 0);
+                    }
+                    else
+                    {
+                        t8Sonuc = 0;
+                    }
+                    if (t9 != 0)
+                    {
+                        t9Sonuc = (t9 / totalOK) * 100;
+                        t9Sonuc = Math.Round(t9Sonuc, 0);
+                    }
+                    else
+                    {
+                        t9Sonuc = 0;
+                    }
+                    if (t10 != 0)
+                    {
+                        t10Sonuc = (t10 / totalOK) * 100;
+                        t10Sonuc = Math.Round(t10Sonuc, 0);
+                    }
+                    else
+                    {
+                        t10Sonuc = 0;
+                    }
+                    if (t11 != 0)
+                    {
+                        t11Sonuc = (t11 / totalOK) * 100;
+                        t11Sonuc = Math.Round(t11Sonuc, 0);
+                    }
+                    else
+                    {
+                        t11Sonuc = 0;
+                    }
+                    if (t12 != 0)
+                    {
+                        t12Sonuc = (t12 / totalOK) * 100;
+                        t12Sonuc = Math.Round(t12Sonuc, 0);
+                    }
+                    else
+                    {
+                        t12Sonuc = 0;
+                    }
+
+                    //HOL-9
+
+
+                    double totalOK9 = Model.Where(a => a.DurumT == "OK" && a.TeslimT == "HOL-9").Count();
+                    double t1Hol9 = Model.Where(a => a.DurumT == "OK" && a.SayıT == 1 && a.TeslimT == "HOL-9").Count();
+                    double t2Hol9 = Model.Where(a => a.DurumT == "OK" && a.SayıT == 2 && a.TeslimT == "HOL-9").Count();
+                    double t3Hol9 = Model.Where(a => a.DurumT == "OK" && a.SayıT == 3 && a.TeslimT == "HOL-9").Count();
+                    double t4Hol9 = Model.Where(a => a.DurumT == "OK" && a.SayıT == 4 && a.TeslimT == "HOL-9").Count();
+                    double t5Hol9 = Model.Where(a => a.DurumT == "OK" && a.SayıT == 5 && a.TeslimT == "HOL-9").Count();
+                    double t6Hol9 = Model.Where(a => a.DurumT == "OK" && a.SayıT == 6 && a.TeslimT == "HOL-9").Count();
+                    double t7Hol9 = Model.Where(a => a.DurumT == "OK" && a.SayıT == 7 && a.TeslimT == "HOL-9").Count();
+                    double t8Hol9 = Model.Where(a => a.DurumT == "OK" && a.SayıT == 8 && a.TeslimT == "HOL-9").Count();
+                    double t9Hol9 = Model.Where(a => a.DurumT == "OK" && a.SayıT == 9 && a.TeslimT == "HOL-9").Count();
+                    double t10Hol9 = Model.Where(a => a.DurumT == "OK" && a.SayıT == 10 && a.TeslimT == "HOL-9").Count();
+                    double t11Hol9 = Model.Where(a => a.DurumT == "OK" && a.SayıT == 11 && a.TeslimT == "HOL-9").Count();
+                    double t12Hol9 = Model.Where(a => a.DurumT == "OK" && a.SayıT == 12 && a.TeslimT == "HOL-9").Count();
+                    double t1Sonuc9;
+                    double t2Sonuc9;
+                    double t3Sonuc9;
+                    double t4Sonuc9;
+                    double t5Sonuc9;
+                    double t6Sonuc9;
+                    double t7Sonuc9;
+                    double t8Sonuc9;
+                    double t9Sonuc9;
+                    double t10Sonuc9;
+                    double t11Sonuc9;
+                    double t12Sonuc9;
+
+
+                    if (t1Hol9 != 0)
+                    {
+                        t1Sonuc9 = (t1Hol9 / totalOK9) * 100;
+                        t1Sonuc9 = Math.Round(t1Sonuc9, 0);
+                    }
+                    else
+                    {
+                        t1Sonuc9 = 0;
+                    }
+
+                    if (t2Hol9 != 0)
+                    {
+                        t2Sonuc9 = (t2Hol9 / totalOK9) * 100;
+                        t2Sonuc9 = Math.Round(t2Sonuc9, 0);
+                    }
+                    else
+                    {
+                        t2Sonuc9 = 0;
+                    }
+
+                    if (t3Hol9 != 0)
+                    {
+                        t3Sonuc9 = (t3Hol9 / totalOK9) * 100;
+                        t3Sonuc9 = Math.Round(t3Sonuc9, 0);
+                    }
+                    else
+                    {
+                        t3Sonuc9 = 0;
+                    }
+
+                    if (t4Hol9 != 0)
+                    {
+                        t4Sonuc9 = (t4Hol9 / totalOK9) * 100;
+                        t4Sonuc9 = Math.Round(t4Sonuc9, 0);
+                    }
+                    else
+                    {
+                        t4Sonuc9 = 0;
+                    }
+                    if (t5Hol9 != 0)
+                    {
+                        t5Sonuc9 = (t5Hol9 / totalOK9) * 100;
+                        t5Sonuc9 = Math.Round(t5Sonuc9, 0);
+                    }
+                    else
+                    {
+                        t5Sonuc9 = 0;
+                    }
+                    if (t6Hol9 != 0)
+                    {
+                        t6Sonuc9 = (t6Hol9 / totalOK9) * 100;
+                        t6Sonuc9 = Math.Round(t6Sonuc9, 0);
+                    }
+                    else
+                    {
+                        t6Sonuc9 = 0;
+                    }
+                    if (t7Hol9 != 0)
+                    {
+                        t7Sonuc9 = (t7Hol9 / totalOK9) * 100;
+                        t7Sonuc9 = Math.Round(t7Sonuc9, 0);
+                    }
+                    else
+                    {
+                        t7Sonuc9 = 0;
+                    }
+                    if (t8Hol9 != 0)
+                    {
+                        t8Sonuc9 = (t8Hol9 / totalOK9) * 100;
+                        t8Sonuc9 = Math.Round(t8Sonuc9, 0);
+                    }
+                    else
+                    {
+                        t8Sonuc9 = 0;
+                    }
+                    if (t9Hol9 != 0)
+                    {
+                        t9Sonuc9 = (t9Hol9 / totalOK9) * 100;
+                        t9Sonuc9 = Math.Round(t9Sonuc9, 0);
+                    }
+                    else
+                    {
+                        t9Sonuc9 = 0;
+                    }
+                    if (t10Hol9 != 0)
+                    {
+                        t10Sonuc9 = (t10Hol9 / totalOK9) * 100;
+                        t10Sonuc9 = Math.Round(t10Sonuc9, 0);
+                    }
+                    else
+                    {
+                        t10Sonuc9 = 0;
+                    }
+                    if (t11Hol9 != 0)
+                    {
+                        t11Sonuc9 = (t11Hol9 / totalOK9) * 100;
+                        t11Sonuc9 = Math.Round(t11Sonuc9, 0);
+                    }
+                    else
+                    {
+                        t11Sonuc9 = 0;
+                    }
+                    if (t12Hol9 != 0)
+                    {
+                        t12Sonuc9 = (t12Hol9 / totalOK9) * 100;
+                        t12Sonuc9 = Math.Round(t12Sonuc9, 0);
+                    }
+                    else
+                    {
+                        t12Sonuc9 = 0;
+                    }
+
+
+                    //HOL-6
+
+                    double totalOK6 = Model.Where(a => a.DurumT == "OK" && a.TeslimT == "HOL-6").Count();
+                    double t1Hol6 = Model.Where(a => a.DurumT == "OK" && a.SayıT == 1 && a.TeslimT == "HOL-6").Count();
+                    double t2Hol6 = Model.Where(a => a.DurumT == "OK" && a.SayıT == 2 && a.TeslimT == "HOL-6").Count();
+                    double t3Hol6 = Model.Where(a => a.DurumT == "OK" && a.SayıT == 3 && a.TeslimT == "HOL-6").Count();
+                    double t4Hol6 = Model.Where(a => a.DurumT == "OK" && a.SayıT == 4 && a.TeslimT == "HOL-6").Count();
+                    double t5Hol6 = Model.Where(a => a.DurumT == "OK" && a.SayıT == 5 && a.TeslimT == "HOL-6").Count();
+                    double t6Hol6 = Model.Where(a => a.DurumT == "OK" && a.SayıT == 6 && a.TeslimT == "HOL-6").Count();
+                    double t7Hol6 = Model.Where(a => a.DurumT == "OK" && a.SayıT == 7 && a.TeslimT == "HOL-6").Count();
+                    double t8Hol6 = Model.Where(a => a.DurumT == "OK" && a.SayıT == 8 && a.TeslimT == "HOL-6").Count();
+                    double t9Hol6 = Model.Where(a => a.DurumT == "OK" && a.SayıT == 9 && a.TeslimT == "HOL-6").Count();
+                    double t10Hol6 = Model.Where(a => a.DurumT == "OK" && a.SayıT == 10 && a.TeslimT == "HOL-6").Count();
+                    double t11Hol6 = Model.Where(a => a.DurumT == "OK" && a.SayıT == 11 && a.TeslimT == "HOL-6").Count();
+                    double t12Hol6 = Model.Where(a => a.DurumT == "OK" && a.SayıT == 12 && a.TeslimT == "HOL-6").Count();
+                    double t1Sonuc6;
+                    double t2Sonuc6;
+                    double t3Sonuc6;
+                    double t4Sonuc6;
+                    double t5Sonuc6;
+                    double t6Sonuc6;
+                    double t7Sonuc6;
+                    double t8Sonuc6;
+                    double t9Sonuc6;
+                    double t10Sonuc6;
+                    double t11Sonuc6;
+                    double t12Sonuc6;
+
+
+                    if (t1Hol6 != 0)
+                    {
+                        t1Sonuc6 = (t1Hol6 / totalOK6) * 100;
+                        t1Sonuc6 = Math.Round(t1Sonuc6, 0);
+                    }
+                    else
+                    {
+                        t1Sonuc6 = 0;
+                    }
+
+                    if (t2Hol6 != 0)
+                    {
+                        t2Sonuc6 = (t2Hol6 / totalOK6) * 100;
+                        t2Sonuc6 = Math.Round(t2Sonuc6, 0);
+                    }
+                    else
+                    {
+                        t2Sonuc6 = 0;
+                    }
+
+                    if (t3Hol6 != 0)
+                    {
+                        t3Sonuc6 = (t3Hol6 / totalOK6) * 100;
+                        t3Sonuc6 = Math.Round(t3Sonuc6, 0);
+                    }
+                    else
+                    {
+                        t3Sonuc6 = 0;
+                    }
+
+                    if (t4Hol6 != 0)
+                    {
+                        t4Sonuc6 = (t4Hol6 / totalOK6) * 100;
+                        t4Sonuc6 = Math.Round(t4Sonuc6, 0);
+                    }
+                    else
+                    {
+                        t4Sonuc6 = 0;
+                    }
+                    if (t5Hol6 != 0)
+                    {
+                        t5Sonuc6 = (t5Hol6 / totalOK6) * 100;
+                        t5Sonuc6 = Math.Round(t5Sonuc6, 0);
+                    }
+                    else
+                    {
+                        t5Sonuc6 = 0;
+                    }
+                    if (t6Hol6 != 0)
+                    {
+                        t6Sonuc6 = (t6Hol6 / totalOK6) * 100;
+                        t6Sonuc6 = Math.Round(t6Sonuc6, 0);
+                    }
+                    else
+                    {
+                        t6Sonuc6 = 0;
+                    }
+                    if (t7Hol6 != 0)
+                    {
+                        t7Sonuc6 = (t7Hol6 / totalOK6) * 100;
+                        t7Sonuc6 = Math.Round(t7Sonuc6, 0);
+                    }
+                    else
+                    {
+                        t7Sonuc6 = 0;
+                    }
+                    if (t8Hol6 != 0)
+                    {
+                        t8Sonuc6 = (t8Hol6 / totalOK6) * 100;
+                        t8Sonuc6 = Math.Round(t8Sonuc6, 0);
+                    }
+                    else
+                    {
+                        t8Sonuc6 = 0;
+                    }
+                    if (t9Hol6 != 0)
+                    {
+                        t9Sonuc6 = (t9Hol6 / totalOK6) * 100;
+                        t9Sonuc6 = Math.Round(t9Sonuc6, 0);
+                    }
+                    else
+                    {
+                        t9Sonuc6 = 0;
+                    }
+                    if (t10Hol6 != 0)
+                    {
+                        t10Sonuc6 = (t10Hol6 / totalOK6) * 100;
+                        t10Sonuc6 = Math.Round(t10Sonuc6, 0);
+                    }
+                    else
+                    {
+                        t10Sonuc6 = 0;
+                    }
+                    if (t11Hol6 != 0)
+                    {
+                        t11Sonuc6 = (t11Hol6 / totalOK6) * 100;
+                        t11Sonuc6 = Math.Round(t11Sonuc6, 0);
+                    }
+                    else
+                    {
+                        t11Sonuc6 = 0;
+                    }
+                    if (t12Hol6 != 0)
+                    {
+                        t12Sonuc6 = (t12Hol6 / totalOK6) * 100;
+                        t12Sonuc6 = Math.Round(t12Sonuc6, 0);
+                    }
+                    else
+                    {
+                        t12Sonuc6 = 0;
+                    }
+
+
+
+                    double toplamSayı = Model.Where(a => a.SayıT == 1 && a.MalzemeT != "BETON").Count();
+                    double toplamHata = Model.Where(a => a.SayıT == 1 && a.MalzemeT != "BETON" && a.DurumT == "RED").Count();
+                    double toplamSonuc;
+
+                    if (toplamHata != 0)
+                    {
+                        toplamSonuc = (toplamHata / toplamSayı) * 100;
+                        toplamSonuc = Math.Round(toplamSonuc, 0);
+                    }
+                    else
+                    {
+                        toplamSonuc = 0;
+                    }
+
+                    double hol9Sayı = Model.Where(a => a.SayıT == 1 && a.MalzemeT != "BETON" && a.TeslimT == "HOL-9").Count();
+                    double hol9Hata = Model.Where(a => a.SayıT == 1 && a.MalzemeT != "BETON" && a.DurumT == "RED" && a.TeslimT == "HOL-9").Count();
+                    double hol9Sonuc;
+
+                    if (hol9Hata != 0)
+                    {
+                        hol9Sonuc = (hol9Hata / hol9Sayı) * 100;
+                        hol9Sonuc = Math.Round(hol9Sonuc, 0);
+                    }
+                    else
+                    {
+                        hol9Sonuc = 0;
+                    }
+
+                    double hol6Sayı = Model.Where(a => a.SayıT == 1 && a.MalzemeT != "BETON" && a.TeslimT == "HOL-6").Count();
+                    double hol6Hata = Model.Where(a => a.SayıT == 1 && a.MalzemeT != "BETON" && a.DurumT == "RED" && a.TeslimT == "HOL-6").Count();
+                    double hol6Sonuc;
+
+                    if (hol6Hata != 0)
+                    {
+                        hol6Sonuc = (hol6Hata / hol6Sayı) * 100;
+                        hol6Sonuc = Math.Round(hol6Sonuc, 0);
+                    }
+                    else
+                    {
+                        hol6Sonuc = 0;
+                    }
+
+                    double OzdSayı = Model.Where(a => a.SayıT == 1 && a.MalzemeT != "BETON" && a.TeslimT == "TAŞERON").Count();
+                    double OzdHata = Model.Where(a => a.SayıT == 1 && a.MalzemeT != "BETON" && a.DurumT == "RED" && a.TeslimT == "TAŞERON").Count();
+                    double OzdSonuc;
+
+                    if (OzdHata != 0)
+                    {
+                        OzdSonuc = (OzdHata / OzdSayı) * 100;
+                        OzdSonuc = Math.Round(OzdSonuc, 0);
+                    }
+                    else
+                    {
+                        OzdSonuc = 0;
+                    }
+                }
+
+
+
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-5">
+                                    <div class="card-body">
+                                        <h3 class="card-title" style="font-size:20px;">İmalat Yerine Göre Kalıp Tarama Oranları</h3>
+                                        <canvas id="imalatSec"></canvas>
+                                    </div>
+                                </div>
+                                <div class="col-5" style="margin-left:100px;">
+                                    <h4 class="mt-4">Tarama Konusuna Göre Yüzdelik Dağılım</h4>
+                                    <span style="font-size:14px;">Tarama Sayısı / Hata Sayısı </span>
+                                    <div class="mt-4">
+                                        <h5>UHPC Kalıphane</h5>
+                                        <h4>@Model.Where(a => a.TeslimT == "HOL-9").Select(a => a.IDT).Count() / @Model.Where(a => a.DurumT == "RED" && a.TeslimT == "HOL-9").Select(a => a.IDT).Count() <span class="pull-right">%@imalatUhpcSonuc</span></h4>
+                                        <div class="progress mb-3" style="height:9px;">
+                                            <div class="progress-bar gradient-1" style="width: @imalatUhpcSonuc%" role="progressbar"><span class="sr-only">%@imalatUhpcSonuc</span></div>
+                                        </div>
+                                    </div>
+                                    <hr />
+                                    <div class="mt-4">
+                                        <h5>Ahşap Kalıphane</h5>
+                                        <h4>@Model.Where(a => a.TeslimT == "HOL-6").Select(a => a.IDT).Count() / @Model.Where(a => a.DurumT == "RED" && a.TeslimT == "HOL-6").Select(a => a.IDT).Count() <span class="pull-right">%@imalatAnaSonuc</span></h4>
+                                        <div class="progress mb-3" style="height:9px;">
+                                            <div class="progress-bar gradient-2" style="width: @imalatAnaSonuc%" role="progressbar"><span class="sr-only">%@imalatAnaSonuc</span></div>
+                                        </div>
+                                    </div>
+                                    <hr />
+                                    <div class="mt-4">
+                                        <h5>Özdemir Model</h5>
+                                        <h4>@Model.Where(a => a.TeslimT == "TAŞERON").Select(a => a.IDT).Count() / @Model.Where(a => a.DurumT == "RED" && a.TeslimT == "TAŞERON").Select(a => a.IDT).Count() <span class="pull-right">%@imalatOzdSonuc</span></h4>
+                                        <div class="progress mb-3" style="height:9px;">
+                                            <div class="progress-bar gradient-3" style="width: @imalatOzdSonuc%" role="progressbar"><span class="sr-only">%@imalatOzdSonuc</span></div>
+                                        </div>
+                                    </div>
+                                    <hr />
+                                    <div class="mt-4">
+                                        <h5>CNC Kalıphane</h5>
+                                        <h4>@Model.Where(a => a.TeslimT == "CNC").Select(a => a.IDT).Count() / @Model.Where(a => a.DurumT == "RED" && a.TeslimT == "CNC").Select(a => a.IDT).Count() <span class="pull-right">%@imalatCncSonuc</span></h4>
+                                        <div class="progress mb-3" style="height:9px;">
+                                            <div class="progress-bar gradient-4" style="width: @imalatCncSonuc%" role="progressbar"><span class="sr-only">%@imalatCncSonuc</span></div>
+                                        </div>
+                                    </div>
+                                    <hr />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <script>
+                var anaSonucSec = @imalatAnaOran;
+                var uhpcSonucSec = @imalatUhpcOran;
+                var OzdSonucSec = @imalatOzdOran;
+                var cncSonucSec = @imalatCncOran;
+
+                var ctx = document.getElementById("imalatSec");
+                ctx.height = 150;
+                var myChart = new Chart(ctx, {
+                    type: 'polarArea',
+                    data: {
+                        datasets: [{
+                            data: [anaSonucSec, uhpcSonucSec, cncSonucSec, OzdSonucSec],
+                            backgroundColor: [
+                                "rgba(117, 113, 249,0.9)",
+                                "rgba(144,	104,	190,.9)",
+                                "#4d7cff",
+                                "rgba(117, 113, 249, 0.7)"
+                            ]
+
+                        }],
+                        labels: [
+                            "Ana Kalıphane",
+                            "UHPC Kalıphane",
+                            "CNC Kalıphane",
+                            "Özdemir Model"
+                        ]
+                    },
+                    options: {
+                        responsive: true
+                    }
+                });
+                </script>
+
+            </div>
+
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <h4 class="card-title">Tekrar Tarama / Onay Dağılım Grafiği</h4>
+                            <canvas id="tekrartaramaSec"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/raphael/2.1.0/raphael-min.js"></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/morris.js/0.5.1/morris.min.js"></script>
+            <script src="https://cdn.jsdelivr.net/chartist.js/latest/chartist.min.js"></script>
+
+            <script>
+             var birsonucTAy = @t1Sonuc;
+            var ikisonucTAy = @t2Sonuc;
+            var ucsonucTAy = @t3Sonuc;
+            var dortsonucTAy = @t4Sonuc;
+            var bessonucTAy = @t5Sonuc;
+            var altısonucTAy = @t6Sonuc;
+            var yedisonucTAy = @t7Sonuc;
+            var sekizsonucTAy = @t8Sonuc;
+            var dokuzsonucTAy = @t9Sonuc;
+            var onsonucTAy = @t10Sonuc;
+            var onbirsonucTAy = @t11Sonuc;
+            var onikisonucTAy = @t12Sonuc;
+
+            var birsonucT6Ay = @t1Sonuc6;
+            var ikisonucT6Ay = @t2Sonuc6;
+            var ucsonucT6Ay = @t3Sonuc6;
+            var dortsonucT6Ay = @t4Sonuc6;
+            var bessonucT6Ay = @t5Sonuc6;
+            var altısonucT6Ay = @t6Sonuc6;
+            var yedisonucT6Ay = @t7Sonuc6;
+            var sekizsonucT6Ay = @t8Sonuc6;
+            var dokuzsonucT6Ay = @t9Sonuc6;
+            var onsonucT6Ay = @t10Sonuc6;
+            var onbirsonucT6Ay = @t11Sonuc6;
+            var onikisonucT6Ay = @t12Sonuc6;
+
+            var birsonucT9Ay = @t1Sonuc9;
+            var ikisonucT9Ay = @t2Sonuc9;
+            var ucsonucT9Ay = @t3Sonuc9;
+            var dortsonucT9Ay = @t4Sonuc9;
+            var bessonucT9Ay = @t5Sonuc9;
+            var altısonucT9Ay = @t6Sonuc9;
+            var yedisonucT9Ay = @t7Sonuc9;
+            var sekizsonucT9Ay = @t8Sonuc9;
+            var dokuzsonucT9Ay = @t9Sonuc9;
+            var onsonucT9Ay = @t10Sonuc9;
+            var onbirsonucT9Ay = @t11Sonuc9;
+            var onikisonucT9Ay = @t12Sonuc9;
+
+
+        //bar chart
+        var ctx = document.getElementById("tekrartaramaSec");
+        ctx.height = 100;
+        var myChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ["1.Tarama", "2.Tarama", "3.Tarama", "4.Tarama", "5.Tarama", "6.Tarama", "7.Tarama", "8.Tarama", "9.Tarama", "10.Tarama", "11.Tarama","12.Tarama"],
+                datasets: [
+                    {
+                        label: "Ana Kalıphane",
+                        data: [birsonucT6Ay, ikisonucT6Ay, ucsonucT6Ay, dortsonucT6Ay, bessonucT6Ay, altısonucT6Ay, yedisonucT6Ay, sekizsonucT6Ay, dokuzsonucT6Ay, onsonucT6Ay, onbirsonucT6Ay, onikisonucT6Ay],
+                        borderColor: "rgba(117, 113, 249, 0.9)",
+                        borderWidth: "0",
+                        backgroundColor: "rgba(117, 113, 249, 0.5)"
+                    },
+                    {
+                        label: "Kalıphaneler Toplamı",
+                        data: [birsonucTAy, ikisonucTAy, ucsonucTAy, dortsonucTAy, bessonucTAy, altısonucTAy, yedisonucTAy, sekizsonucTAy, dokuzsonucTAy, onsonucTAy, onbirsonucTAy, onikisonucTAy],
+                        borderColor: "#4d7cff",
+                        borderWidth: "0",
+                        backgroundColor: "#4d7cff"
+                    },
+                    {
+                        label: "UHPC Kalıphane",
+                        data: [birsonucT9Ay, ikisonucT9Ay, ucsonucT9Ay, dortsonucT9Ay, bessonucT9Ay, altısonucT9Ay, yedisonucT9Ay, sekizsonucT9Ay, dokuzsonucT9Ay, onsonucT9Ay, onbirsonucT9Ay, onikisonucT9Ay],
+                        borderColor: "rgba(144,	104,	190,0.9)",
+                        borderWidth: "0",
+                        backgroundColor: "rgba(144,	104,	190,0.7)"
+                    }
+
+                ]
+            },
+            options: {
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero: true
+                        }
+                    }],
+                    xAxes: [{
+                        // Change here
+                        barPercentage: 0.2
+                    }]
+                }
+            }
+        });
+            </script>
+
+            <div class="row">
+                <div class="col-xl-3 col-lg-6 mb-4">
+                    <span class="pull-right" style="font-size:15px; color:gray; -webkit-transform: rotate(+30deg);margin-top:19px">İlk Tarama</span>
+                    <div class="bg-white rounded-lg p-5 shadow">
+                        <h2 class="h4 font-weight-bold text-center mb-4">Kalıphaneler Toplamı</h2>
+
+                        <div class="dProgress mx-auto" data-value='@toplamSonuc'>
+                            <span class="dProgress-left">
+                                <span class="dProgress-bar border-primary"></span>
+                            </span>
+                            <span class="dProgress-right">
+                                <span class="dProgress-bar border-primary"></span>
+                            </span>
+                            <div class="dProgress-value w-100 h-100 rounded-circle d-flex align-items-center justify-content-center">
+                                <div class="h2 font-weight-bold">@toplamSonuc<sup class="small">%</sup></div>
+                            </div>
+                        </div>
+                        <div class="row text-center mt-4">
+                            <div class="col-6 border-right">
+                                <div class="h3 font-weight-bold mb-0">@toplamSayı</div><i class="fa fa-circle" style="color:#7571F9;margin-right:5px;"></i><span class="text-gray">Tarama</span>
+                            </div>
+                            <div class="col-6">
+                                <div class="h3 font-weight-bold mb-0">@toplamHata</div><i class="fa fa-circle" style="color:#7571F9;margin-right:5px"></i><span class="text-gray">Hata</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xl-3 col-lg-6 mb-4">
+                    <span class="pull-right" style="font-size:15px; color:gray; -webkit-transform: rotate(+30deg);margin-top:19px">İlk Tarama</span>
+                    <div class="bg-white rounded-lg p-5 shadow">
+                        <h2 class="h4 font-weight-bold text-center mb-4">UHPC Kalıphane</h2>
+
+
+                        <div class="dProgress mx-auto" data-value='@hol9Sonuc'>
+                            <span class="dProgress-left">
+                                <span class="dProgress-bar border-danger"></span>
+                            </span>
+                            <span class="dProgress-right">
+                                <span class="dProgress-bar border-danger"></span>
+                            </span>
+                            <div class="dProgress-value w-100 h-100 rounded-circle d-flex align-items-center justify-content-center">
+                                <div class="h2 font-weight-bold">@hol9Sonuc<sup class="small">%</sup></div>
+                            </div>
+                        </div>
+                        <div class="row text-center mt-4">
+                            <div class="col-6 border-right">
+                                <div class="h3 font-weight-bold mb-0">@hol9Sayı</div><i class="fa fa-circle" style="color:#FF5E5E;margin-right:5px"></i><span class="text-gray">Tarama</span>
+                            </div>
+                            <div class="col-6">
+                                <div class="h3 font-weight-bold mb-0">@hol9Hata</div><i class="fa fa-circle" style="color:#FF5E5E;margin-right:5px"></i><span class="text-gray">Hata</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xl-3 col-lg-6 mb-4">
+                    <span class="pull-right" style="font-size:15px; color:gray; -webkit-transform: rotate(+30deg);margin-top:19px">İlk Tarama</span>
+                    <div class="bg-white rounded-lg p-5 shadow">
+                        <h2 class="h4 font-weight-bold text-center mb-4">Ana Kalıphane</h2>
+
+                        <div class="dProgress mx-auto" data-value='@hol6Sonuc'>
+                            <span class="dProgress-left">
+                                <span class="dProgress-bar border-success"></span>
+                            </span>
+                            <span class="dProgress-right">
+                                <span class="dProgress-bar border-success"></span>
+                            </span>
+                            <div class="dProgress-value w-100 h-100 rounded-circle d-flex align-items-center justify-content-center">
+                                <div class="h2 font-weight-bold">@hol6Sonuc<sup class="small">%</sup></div>
+                            </div>
+                        </div>
+                        <div class="row text-center mt-4">
+                            <div class="col-6 border-right">
+                                <div class="h3 font-weight-bold mb-0">@hol6Sayı</div><i class="fa fa-circle" style="color:#6FD96F;margin-right:5px"></i><span class="text-gray">Tarama</span>
+                            </div>
+                            <div class="col-6">
+                                <div class="h3 font-weight-bold mb-0">@hol6Hata</div><i class="fa fa-circle" style="color:#6FD96F;margin-right:5px"></i><span class="text-gray">Hata</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xl-3 col-lg-6 mb-4">
+                    <span class="pull-right" style="font-size:15px; color:gray; -webkit-transform: rotate(+30deg);margin-top:19px">İlk Tarama</span>
+                    <div class="bg-white rounded-lg p-5 shadow">
+                        <h2 class="h4 font-weight-bold text-center mb-4">Özdemir Model</h2>
+
+                        <div class="dProgress mx-auto" data-value='@OzdSonuc'>
+                            <span class="dProgress-left">
+                                <span class="dProgress-bar border-warning"></span>
+                            </span>
+                            <span class="dProgress-right">
+                                <span class="dProgress-bar border-warning"></span>
+                            </span>
+                            <div class="dProgress-value w-100 h-100 rounded-circle d-flex align-items-center justify-content-center">
+                                <div class="h2 font-weight-bold">@OzdSonuc<sup class="small">%</sup></div>
+                            </div>
+                        </div>
+                        <div class="row text-center mt-4">
+                            <div class="col-6 border-right">
+                                <div class="h3 font-weight-bold mb-0">@OzdSayı</div><i class="fa fa-circle" style="color:#F29D56;margin-right:5px"></i><span class="text-gray">Tarama</span>
+                            </div>
+                            <div class="col-6">
+                                <div class="h3 font-weight-bold mb-0">@OzdHata</div><i class="fa fa-circle" style="color:#F29D56;margin-right:5px"></i><span class="text-gray">Hata</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <script>
+                $(function () {
+
+                    $(".dProgress").each(function () {
+
+                        var value = $(this).attr('data-value');
+                        var left = $(this).find('.dProgress-left .dProgress-bar');
+                        var right = $(this).find('.dProgress-right .dProgress-bar');
+
+                        if (value > 0) {
+                            if (value <= 50) {
+                                right.css('transform', 'rotate(' + percentageToDegrees(value) + 'deg)')
+                            } else {
+                                right.css('transform', 'rotate(180deg)')
+                                left.css('transform', 'rotate(' + percentageToDegrees(value - 50) + 'deg)')
+                            }
+                        }
+
+                    })
+
+                    function percentageToDegrees(percentage) {
+
+                        return percentage / 100 * 360
+
+                    }
+
+                });
+            </script>
+
+
+        </div>
+    }
+
+</body>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.bundle.min.js"></script>
+
+<script src="~/quixlab-master/quixlab-master/plugins/common/common.min.js"></script>
+<script src="~/quixlab-master/quixlab-master/js/custom.min.js"></script>
+<script src="~/quixlab-master/quixlab-master/js/settings.js"></script>
+<script src="~/quixlab-master/quixlab-master/js/gleek.js"></script>
+<script src="~/quixlab-master/quixlab-master/js/styleSwitcher.js"></script>
+<script src="//cdn.jsdelivr.net/chartist.js/latest/chartist.min.js"></script>
+
+<script src="~/quixlab-master/quixlab-master/plugins/chartist/js/chartist.min.js"></script>
+<script src="~/quixlab-master/quixlab-master/plugins/chartist-plugin-tooltips/js/chartist-plugin-tooltip.min.js"></script>
+<script src="~/quixlab-master/quixlab-master/js/plugins-init/chartist.init.js"></script>
+
+<script src="~/quixlab-master/quixlab-master/plugins/raphael/raphael.min.js"></script>
+<script src="~/quixlab-master/quixlab-master/plugins/morris/morris.min.js"></script>
+<script src="~/quixlab-master/quixlab-master/js/plugins-init/morris-init.js"></script>
+
+<!-- Chartjs -->
+<script src="~/quixlab-master/quixlab-master/plugins/chart.js/Chart.bundle.min.js"></script>
+<!-- Circle progress -->
+<script src="~/quixlab-master/quixlab-master/plugins/circle-progress/circle-progress.min.js"></script>
+<!-- Datamap -->
+<script src="~/quixlab-master/quixlab-master/plugins/d3v3/index.js"></script>
+<script src="~/quixlab-master/quixlab-master/plugins/topojson/topojson.min.js"></script>
+<script src="~/quixlab-master/quixlab-master/plugins/datamaps/datamaps.world.min.js"></script>
+<!-- Morrisjs -->
+<script src="~/quixlab-master/quixlab-master/plugins/raphael/raphael.min.js"></script>
+<script src="~/quixlab-master/quixlab-master/plugins/morris/morris.min.js"></script>
+<!-- Pignose Calender -->
+<script src="~/quixlab-master/quixlab-master/plugins/moment/moment.min.js"></script>
+<script src="~/quixlab-master/quixlab-master/plugins/pg-calendar/js/pignose.calendar.min.js"></script>
+<!-- ChartistJS -->
+<script src="~/quixlab-master/quixlab-master/plugins/chartist/js/chartist.min.js"></script>
+<script src="~/quixlab-master/quixlab-master/plugins/chartist-plugin-tooltips/js/chartist-plugin-tooltip.min.js"></script>
+
+<script src="~/quixlab-master/quixlab-master/js/dashboard/dashboard-1.js"></script>
+
+<script src="~/quixlab-master/quixlab-master/plugins/bootstrap-material-datetimepicker/js/bootstrap-material-datetimepicker.js"></script>
+<!-- Clock Plugin JavaScript -->
+<script src="~/quixlab-master/quixlab-master/plugins/clockpicker/dist/jquery-clockpicker.min.js"></script>
+<!-- Color Picker Plugin JavaScript -->
+<script src="~/quixlab-master/quixlab-master/plugins/jquery-asColorPicker-master/libs/jquery-asColor.js"></script>
+<script src="~/quixlab-master/quixlab-master/plugins/jquery-asColorPicker-master/libs/jquery-asGradient.js"></script>
+<script src="~/quixlab-master/quixlab-master/plugins/jquery-asColorPicker-master/dist/jquery-asColorPicker.min.js"></script>
+<!-- Date Picker Plugin JavaScript -->
+<script src="~/quixlab-master/quixlab-master/plugins/bootstrap-datepicker/bootstrap-datepicker.min.js"></script>
+<!-- Date range Plugin JavaScript -->
+<script src="~/quixlab-master/quixlab-master/plugins/timepicker/bootstrap-timepicker.min.js"></script>
+<script src="~/quixlab-master/quixlab-master/plugins/bootstrap-daterangepicker/daterangepicker.js"></script>
+
+<script src="~/quixlab-master/quixlab-master/js/plugins-init/form-pickers-init.js"></script>

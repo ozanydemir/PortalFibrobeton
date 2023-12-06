@@ -1,0 +1,805 @@
+﻿@model IEnumerable<PortalFibrobeton.Models.Entity.AnketSorular>
+
+
+@{
+    ViewBag.Title = "Deneme";
+    Layout = "~/Views/Shared/_PeraLayout.cshtml";
+}
+
+<!DOCTYPE html>
+
+<style>
+    .likeL {
+        background: rgba(0,0,0,0);
+        border: none;
+        cursor: default;
+        outline: none;
+    }
+
+    table .w-10 {
+        width: 13%;
+    }
+
+    table .w-40 {
+        width: 25%;
+    }
+</style>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+</head>
+<body>
+
+    <div class="container-fluid flex-grow-1 container-p-y">
+        <div class="row">
+            <div class="col-xl-12">
+                <h6 class="text-muted">Aşamalar</h6>
+                <input type="hidden" id="anketID" data-value="@ViewBag.anketID"/>
+                <div class="nav-align-top mb-4">
+                    <ul class="nav nav-pills mb-3" role="tablist">
+                        <li class="nav-item">
+                            <button type="button"
+                                    class="nav-link active"
+                                    role="tab"
+                                    data-bs-toggle="tab"
+                                    data-bs-target="#navs-pills-top-proje"
+                                    aria-controls="navs-pills-top-proje"
+                                    aria-selected="true">
+                                Proje Aşaması
+                            </button>
+                        </li>
+                        <li class="nav-item">
+                            <button type="button"
+                                    class="nav-link"
+                                    role="tab"
+                                    data-bs-toggle="tab"
+                                    data-bs-target="#navs-pills-top-kalip"
+                                    aria-controls="navs-pills-top-kalip"
+                                    aria-selected="false">
+                                Kalıp Aşaması
+                            </button>
+                        </li>
+                        <li class="nav-item">
+                            <button type="button"
+                                    class="nav-link"
+                                    role="tab"
+                                    data-bs-toggle="tab"
+                                    data-bs-target="#navs-pills-top-karkas"
+                                    aria-controls="navs-pills-top-karkas"
+                                    aria-selected="false">
+                                Karkas
+                            </button>
+                        </li>
+                        <li class="nav-item">
+                            <button type="button"
+                                    class="nav-link"
+                                    role="tab"
+                                    data-bs-toggle="tab"
+                                    data-bs-target="#navs-pills-top-malzeme"
+                                    aria-controls="navs-pills-top-malzeme"
+                                    aria-selected="false">
+                                Malzeme
+                            </button>
+                        </li>
+                        <li class="nav-item">
+                            <button type="button"
+                                    class="nav-link"
+                                    role="tab"
+                                    data-bs-toggle="tab"
+                                    data-bs-target="#navs-pills-top-dokum"
+                                    aria-controls="navs-pills-top-dokum"
+                                    aria-selected="false">
+                                Döküm
+                            </button>
+                        </li>
+                        <li class="nav-item">
+                            <button type="button"
+                                    class="nav-link"
+                                    role="tab"
+                                    data-bs-toggle="tab"
+                                    data-bs-target="#navs-pills-top-sokum"
+                                    aria-controls="navs-pills-top-sokum"
+                                    aria-selected="false">
+                                Söküm
+                            </button>
+                        </li>
+                        <li class="nav-item">
+                            <button type="button"
+                                    class="nav-link"
+                                    role="tab"
+                                    data-bs-toggle="tab"
+                                    data-bs-target="#navs-pills-top-yuzey"
+                                    aria-controls="navs-pills-top-yuzey"
+                                    aria-selected="false">
+                                Yüzey
+                            </button>
+                        </li>
+                        <li class="nav-item">
+                            <button type="button"
+                                    class="nav-link"
+                                    role="tab"
+                                    data-bs-toggle="tab"
+                                    data-bs-target="#navs-pills-top-kalite"
+                                    aria-controls="navs-pills-top-kalite"
+                                    aria-selected="false">
+                                Kalite
+                            </button>
+                        </li>
+                        <li class="nav-item">
+                            <button type="button"
+                                    class="nav-link"
+                                    role="tab"
+                                    data-bs-toggle="tab"
+                                    data-bs-target="#navs-pills-top-sevkiyat"
+                                    aria-controls="navs-pills-top-sevkiyat"
+                                    aria-selected="false">
+                                Sevkiyat
+                            </button>
+                        </li>
+                        <li class="nav-item">
+                            <button type="button"
+                                    class="nav-link"
+                                    role="tab"
+                                    data-bs-toggle="tab"
+                                    data-bs-target="#navs-pills-top-maddi"
+                                    aria-controls="navs-pills-top-maddi"
+                                    aria-selected="false">
+                                Maddi Faktör
+                            </button>
+                        </li>
+                        <li class="nav-item">
+                            <button type="button"
+                                    class="nav-link"
+                                    role="tab"
+                                    data-bs-toggle="tab"
+                                    data-bs-target="#navs-pills-top-montaj"
+                                    aria-controls="navs-pills-top-montaj"
+                                    aria-selected="false">
+                                Montaj
+                            </button>
+                        </li>
+
+                    </ul>
+
+                    <div class="tab-content">
+
+
+                        <div class="tab-pane fade show active" id="navs-pills-top-proje" role="tabpanel">
+                            <div class="row">
+                                <h4 class="card-header" style="margin-top:-10px;">Proje Aşaması</h4>
+                                <div class="mb-4 mt-2">
+                                    <label>Genel Katsayı Değeri:</label>
+                                    <input id="projeGenel" style="margin-left:5px" type="text" class="col-sm-1 katsayi" />
+                                </div>
+
+                                <div class="table-responsive text-nowrap">
+                                    <table class="table table-striped w-auto" id="tblProje">
+                                        <thead class="table-dark">
+                                            <tr>
+                                                <th>No</th>
+                                                <th class="w-40">Soru</th>
+                                                <th>Katsayı-1</th>
+                                                <th>Katsayı-2</th>
+                                                <th>Katsayı-3</th>
+                                                <th>Katsayı-4</th>
+                                                <th>Katsayı-5</th>
+                                                <th class="w-10">Aşama</th>
+                                                <th>Anket Adı</th>
+                                                <th>Genel Katsayı</th>
+                                            </tr>
+                                        </thead>
+                                        @if (Session["checkTemp"].ToString() == "Yes")
+                                        {
+                                            foreach (var item in Model.Where(a => a.AsamaAdi == "Proje Aşaması"))
+                                            {
+                                                <tbody>
+                                                    <tr>
+                                                        @*<td id="txtNoProje">@item.SoruNo</td>
+                                                        <td class="col-sm-1"><input type="text" value="@item.Soru" class="col-sm-10" id="txtSoruProje" /></td>
+                                                        <td class="col-sm-1"><input type="text" class="col-sm-4" value="@item.K1" id="txtK1Proje" /></td>
+                                                        <td class="col-sm-1"><input type="text" class="col-sm-4" value="@item.K2" id="txtK2Proje" /></td>
+                                                        <td class="col-sm-1"><input type="text" class="col-sm-4" value="@item.K3" id="txtK3Proje" /></td>
+                                                        <td class="col-sm-1"><input type="text" class="col-sm-4" value="@item.K4" id="txtK4Proje" /></td>
+                                                        <td class="col-sm-1"><input type="text" class="col-sm-4" value="@item.K5" id="txtK5Proje" /></td>
+                                                        <td>@item.AsamaAdi</td>
+                                                        <td>@ViewBag.anketAdi</td>
+                                                        <td class="col-sm-1"><btn class="btn btnAddSablonProje" id="btnSablonAddProje_@item.SoruNo" value="EkleProje"><i class="bx bxs-message-alt-add bx-flip-horizontal" style="color:#07c91a;font-size:28px;"></i></btn>EkleŞa</td>*@
+                                                    </tr>
+                                                </tbody>
+                                                <tfoot>
+                                                    <tr>
+                                                        <td id="txtNoProje">@item.SoruNo</td>
+                                                        <td class="col-sm-1"><input type="text" value="@item.Soru" class="col-sm-10" id="txtSoruProje" /></td>
+                                                        <td class="col-sm-1"><input type="text" class="col-sm-4" value="@item.K1" id="txtK1Proje" /></td>
+                                                        <td class="col-sm-1"><input type="text" class="col-sm-4" value="@item.K2" id="txtK2Proje" /></td>
+                                                        <td class="col-sm-1"><input type="text" class="col-sm-4" value="@item.K3" id="txtK3Proje" /></td>
+                                                        <td class="col-sm-1"><input type="text" class="col-sm-4" value="@item.K4" id="txtK4Proje" /></td>
+                                                        <td class="col-sm-1"><input type="text" class="col-sm-4" value="@item.K5" id="txtK5Proje" /></td>
+                                                        <td>@item.AsamaAdi</td>
+                                                        <td>@ViewBag.anketAdi</td>
+                                                        <td class="col-sm-1"><btn class="btn btnAddSablonProje" id="btnSablonAddProje_@item.SoruNo" value="EkleProje"><i class="bx bxs-message-alt-add bx-flip-horizontal" style="color:#07c91a;font-size:28px;"></i></btn>EkleŞa</td>
+                                                    </tr>
+                                                </tfoot>
+
+                                            }
+
+                                        }
+
+                                        else
+                                        {
+                                            <tbody>
+                                            </tbody>
+                                            <tfoot>
+                                                <tr>
+                                                    <td class="col-1"><input type="text" class="likeL col-sm-3" id="txtNoProje" value="1" readonly /></td>
+                                                    <td class="col-sm-1"><input type="text" class="col-sm-10" id="txtSoruProje" /></td>
+                                                    <td class="col-sm-1"><input type="text" class="col-sm-4 katsayi" id="txtK1Proje" /></td>
+                                                    <td class="col-sm-1"><input type="text" class="col-sm-4 katsayi" id="txtK2Proje" /></td>
+                                                    <td class="col-sm-1"><input type="text" class="col-sm-4 katsayi" id="txtK3Proje" /></td>
+                                                    <td class="col-sm-1"><input type="text" class="col-sm-4 katsayi" id="txtK4Proje" /></td>
+                                                    <td class="col-sm-1"><input type="text" class="col-sm-4 katsayi" id="txtK5Proje" /></td>
+                                                    <td class="col-sm-1"><input type="text" id="txtAsamaProje" class="likeL col-lg-12" value="Proje Aşaması" readonly /></td>
+                                                    <td class="col-sm-2" style="color:black"><input type="text" id="anketAdi" class="likeL col-lg-12" value="@ViewBag.anketAdi" readonly /></td>
+                                                    <td class="col-sm-1"><btn class="btn" id="btnAddProje" value="EkleProje"><i class="bx bxs-message-alt-add bx-flip-horizontal" style="color:#07c91a;font-size:28px;"></i></btn>Ekle</td>
+                                                </tr>
+                                            </tfoot>
+                                        }
+
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        @*<script>
+                            $(document).on('click', '.btnAddSablonProje', function () {
+                                var row = $(this).closest('tr');
+                                var newRow = $("<tr>");
+                                var cols = "";
+
+                                // Add new cols
+                                cols += '<td>' + row.find('#txtNoProje').text() + '</td>';
+                                cols += '<td>' + row.find('#txtSoruProje').val() + '</td>';
+                                cols += '<td>' + row.find('#txtK1Proje').val() + '</td>';
+                                cols += '<td>' + row.find('#txtK2Proje').val() + '</td>';
+                                cols += '<td>' + row.find('#txtK3Proje').val() + '</td>';
+                                cols += '<td>' + row.find('#txtK4Proje').val() + '</td>';
+                                cols += '<td>' + row.find('#txtK5Proje').val() + '</td>';
+                                cols += '<td>' + row.find('td:eq(7)').text() + '</td>';
+                                cols += '<td>' + row.find('td:eq(8)').text() + '</td>';
+                                cols += '<td></td>';
+
+
+                                newRow.append(cols);
+                                row.after(newRow);
+
+                                // Update the no of the current row
+                                row.find('#txtNoProje').text(parseInt(row.find('#txtNoProje').text()) + 1);
+
+                                var clickedRow = $(this).closest('td').parent('tr');
+                                clickedRow.remove();
+                            });
+                        </script>*@
+
+                        <div class="tab-pane fade" id="navs-pills-top-kalip" role="tabpanel">
+                            <div class="row">
+                                <h5 class="card-header" style="margin-top:-10px">Kalıp Aşaması</h5>
+                                <div class="mb-4 mt-2">
+                                    <label>Genel Katsayı Değeri:</label>
+                                    <input id="kalipGenel" style="margin-left:5px" type="text" class="col-sm-1 katsayi" />
+                                </div>
+                                <div class="table-responsive text-nowrap">
+                                    <table class="table table-striped w-auto" id="tblKalip">
+                                        <thead class="table-dark">
+                                            <tr>
+                                                <th>No</th>
+                                                <th class="w-40">Soru</th>
+                                                <th>Katsayı-1</th>
+                                                <th>Katsayı-2</th>
+                                                <th>Katsayı-3</th>
+                                                <th>Katsayı-4</th>
+                                                <th>Katsayı-5</th>
+                                                <th class="w-10">Aşama</th>
+                                                <th>Anket Adı</th>
+                                                <th>Genel Katsayı</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @*foreach*@
+                                        </tbody>
+                                        <tfoot>
+                                            <tr>
+                                                <td class="col-1"><input type="text" class="likeL col-sm-3" id="txtNoKalip" value="1" readonly /></td>
+                                                <td class="col-sm-1"><input type="text" class="col-sm-10" id="txtSoruKalip" /></td>
+                                                <td class="col-sm-1"><input type="text" class="col-sm-4 katsayi" id="txtK1Kalip" /></td>
+                                                <td class="col-sm-1"><input type="text" class="col-sm-4 katsayi" id="txtK2Kalip" /></td>
+                                                <td class="col-sm-1"><input type="text" class="col-sm-4 katsayi" id="txtK3Kalip" /></td>
+                                                <td class="col-sm-1"><input type="text" class="col-sm-4 katsayi" id="txtK4Kalip" /></td>
+                                                <td class="col-sm-1"><input type="text" class="col-sm-4 katsayi" id="txtK5Kalip" /></td>
+                                                <td class="col-sm-1"><input type="text" id="txtAsamaKalip" class="likeL col-lg-12" value="Kalıp Aşaması" readonly /></td>
+                                                <td class="col-sm-2" style="color:black"><input type="text" id="anketAdi" class="likeL col-lg-12" value="@ViewBag.anketAdi" readonly /></td>
+                                                <td class="col-sm-1"><btn class="btn" id="btnAddKalip" value="EkleKalip"><i class="bx bxs-message-alt-add bx-flip-horizontal" style="color:#07c91a;font-size:28px;"></i></btn></td>
+                                            </tr>
+                                        </tfoot>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="tab-pane fade" id="navs-pills-top-karkas" role="tabpanel">
+                            <div class="row">
+                                <h5 class="card-header" style="margin-top:-10px">Karkas/Gömülüler</h5>
+                                <div class="mb-4 mt-2">
+                                    <label>Genel Katsayı Değeri:</label>
+                                    <input id="karkasGenel" style="margin-left:5px" type="text" class="col-sm-1 katsayi" />
+                                </div>
+                                <div class="table-responsive text-nowrap">
+                                    <table class="table table-striped w-auto" id="tblKarkas">
+                                        <thead class="table-dark">
+                                            <tr>
+                                                <th>No</th>
+                                                <th class="w-40">Soru</th>
+                                                <th>Katsayı-1</th>
+                                                <th>Katsayı-2</th>
+                                                <th>Katsayı-3</th>
+                                                <th>Katsayı-4</th>
+                                                <th>Katsayı-5</th>
+                                                <th class="w-10">Aşama</th>
+                                                <th>Anket Adı</th>
+                                                <th>Genel Katsayı</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @*foreach*@
+                                        </tbody>
+                                        <tfoot>
+                                            <tr>
+                                                <td class="col-1"><input type="text" class="likeL col-sm-3" id="txtNoKarkas" value="1" readonly /></td>
+                                                <td class="col-sm-1"><input type="text" class="col-sm-10" id="txtSoruKarkas" /></td>
+                                                <td class="col-sm-1"><input type="text" class="col-sm-4 katsayi" id="txtK1Karkas" /></td>
+                                                <td class="col-sm-1"><input type="text" class="col-sm-4 katsayi" id="txtK2Karkas" /></td>
+                                                <td class="col-sm-1"><input type="text" class="col-sm-4 katsayi" id="txtK3Karkas" /></td>
+                                                <td class="col-sm-1"><input type="text" class="col-sm-4 katsayi" id="txtK4Karkas" /></td>
+                                                <td class="col-sm-1"><input type="text" class="col-sm-4 katsayi" id="txtK5Karkas" /></td>
+                                                <td class="col-sm-1"><input type="text" id="txtAsamaKarkas" class="likeL col-lg-12" value="Karkas" readonly /></td>
+                                                <td class="col-sm-2" style="color:black"><input type="text" id="anketAdi" class="likeL col-lg-12" value="@ViewBag.anketAdi" readonly /></td>
+                                                <td class="col-sm-1"><btn class="btn" id="btnAddKarkas" value="EkleKarkas"><i class="bx bxs-message-alt-add bx-flip-horizontal" style="color:#07c91a;font-size:28px;"></i></btn></td>
+                                            </tr>
+                                        </tfoot>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="navs-pills-top-malzeme" class="tab-pane fade" role="tabpanel">
+                            <div class="row">
+                                <h5 class="card-header">Malzeme</h5>
+                                <div class="mb-4 mt-2">
+                                    <label>Genel Katsayı Değeri:</label>
+                                    <input id="malzemeGenel" style="margin-left:5px" type="text" class="col-sm-1 katsayi" />
+                                </div>
+                                <div class="table-responsive text-nowrap">
+                                    <table class="table table-striped w-auto" id="tblMalzeme">
+                                        <thead class="table-dark">
+                                            <tr>
+                                                <th>No</th>
+                                                <th class="w-40">Soru</th>
+                                                <th>Katsayı-1</th>
+                                                <th>Katsayı-2</th>
+                                                <th>Katsayı-3</th>
+                                                <th>Katsayı-4</th>
+                                                <th>Katsayı-5</th>
+                                                <th class="w-10">Aşama</th>
+                                                <th>Anket Adı</th>
+                                                <th>Genel Katsayı</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @*foreach*@
+                                        </tbody>
+                                        <tfoot>
+                                            <tr>
+                                                <td class="col-1"><input type="text" class="likeL col-sm-3" id="txtNoMalzeme" value="1" readonly /></td>
+                                                <td class="col-sm-1"><input type="text" class="col-sm-10" id="txtSoruMalzeme" /></td>
+                                                <td class="col-sm-1"><input type="text" class="col-sm-4 katsayi" id="txtK1Malzeme" /></td>
+                                                <td class="col-sm-1"><input type="text" class="col-sm-4 katsayi" id="txtK2Malzeme" /></td>
+                                                <td class="col-sm-1"><input type="text" class="col-sm-4 katsayi" id="txtK3Malzeme" /></td>
+                                                <td class="col-sm-1"><input type="text" class="col-sm-4 katsayi" id="txtK4Malzeme" /></td>
+                                                <td class="col-sm-1"><input type="text" class="col-sm-4 katsayi" id="txtK5Malzeme" /></td>
+                                                <td class="col-sm-1"><input type="text" id="txtAsamaMalzeme" class="likeL col-lg-12" value="Malzeme" readonly /></td>
+                                                <td class="col-sm-2" style="color:black"><input type="text" id="anketAdi" class="likeL col-lg-12" value="@ViewBag.anketAdi" readonly /></td>
+                                                <td class="col-sm-1"><btn class="btn" id="btnAddMalzeme" value="EkleMalzeme"><i class="bx bxs-message-alt-add bx-flip-horizontal" style="color:#07c91a;font-size:28px;"></i></btn></td>
+                                            </tr>
+                                        </tfoot>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="navs-pills-top-dokum" class="tab-pane fade" role="tabpanel">
+                            <div class="row">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h5 class="card-header">Döküm</h5>
+                                        <div class="mb-4 mt-2">
+                                            <label>Genel Katsayı Değeri:</label>
+                                            <input id="dokumGenel" style="margin-left:5px" type="text" class="col-sm-1 katsayi" />
+                                        </div>
+                                        <div class="table-responsive text-nowrap">
+                                            <table class="table table-striped w-auto" id="tblDokum">
+                                                <thead class="table-dark">
+                                                    <tr>
+                                                        <th>No</th>
+                                                        <th class="w-40">Soru</th>
+                                                        <th>Katsayı-1</th>
+                                                        <th>Katsayı-2</th>
+                                                        <th>Katsayı-3</th>
+                                                        <th>Katsayı-4</th>
+                                                        <th>Katsayı-5</th>
+                                                        <th class="w-10">Aşama</th>
+                                                        <th>Anket Adı</th>
+                                                        <th>Genel Katsayı</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @*foreach*@
+                                                </tbody>
+                                                <tfoot>
+                                                    <tr>
+                                                        <td class="col-1"><input type="text" class="likeL col-sm-3" id="txtNoDokum" value="1" readonly /></td>
+                                                        <td class="col-sm-1"><input type="text" class="col-sm-10" id="txtSoruDokum" /></td>
+                                                        <td class="col-sm-1"><input type="text" class="col-sm-4 katsayi" id="txtK1Dokum" /></td>
+                                                        <td class="col-sm-1"><input type="text" class="col-sm-4 katsayi" id="txtK2Dokum" /></td>
+                                                        <td class="col-sm-1"><input type="text" class="col-sm-4 katsayi" id="txtK3Dokum" /></td>
+                                                        <td class="col-sm-1"><input type="text" class="col-sm-4 katsayi" id="txtK4Dokum" /></td>
+                                                        <td class="col-sm-1"><input type="text" class="col-sm-4 katsayi" id="txtK5Dokum" /></td>
+                                                        <td class="col-sm-1"><input type="text" id="txtAsamaDokum" class="likeL col-lg-12" value="Döküm" readonly /></td>
+                                                        <td class="col-sm-2" style="color:black"><input type="text" id="anketAdi" class="likeL col-lg-12" value="@ViewBag.anketAdi" readonly /></td>
+                                                        <td class="col-sm-1"><btn class="btn" id="btnAddDokum" value="EkleDokum"><i class="bx bxs-message-alt-add bx-flip-horizontal" style="color:#07c91a;font-size:28px;"></i></btn></td>
+                                                    </tr>
+                                                </tfoot>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="navs-pills-top-sokum" class="tab-pane fade" role="tabpanel">
+                            <div class="row">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h5 class="card-header">Söküm</h5>
+                                        <div class="mb-4 mt-2">
+                                            <label>Genel Katsayı Değeri:</label>
+                                            <input id="sokumGenel" style="margin-left:5px" type="text" class="col-sm-1 katsayi" />
+                                        </div>
+                                        <div class="table-responsive text-nowrap">
+                                            <table class="table table-striped w-auto" id="tblSokum">
+                                                <thead class="table-dark">
+                                                    <tr>
+                                                        <th>No</th>
+                                                        <th class="w-40">Soru</th>
+                                                        <th>Katsayı-1</th>
+                                                        <th>Katsayı-2</th>
+                                                        <th>Katsayı-3</th>
+                                                        <th>Katsayı-4</th>
+                                                        <th>Katsayı-5</th>
+                                                        <th class="w-10">Aşama</th>
+                                                        <th>Anket Adı</th>
+                                                        <th>Genel Katsayı</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @*foreach*@
+                                                </tbody>
+                                                <tfoot>
+                                                    <tr>
+                                                        <td class="col-1"><input type="text" class="likeL col-sm-3" id="txtNoSokum" value="1" readonly /></td>
+                                                        <td class="col-sm-1"><input type="text" class="col-sm-10" id="txtSoruSokum" /></td>
+                                                        <td class="col-sm-1"><input type="text" class="col-sm-4 katsayi" id="txtK1Sokum" /></td>
+                                                        <td class="col-sm-1"><input type="text" class="col-sm-4 katsayi" id="txtK2Sokum" /></td>
+                                                        <td class="col-sm-1"><input type="text" class="col-sm-4 katsayi" id="txtK3Sokum" /></td>
+                                                        <td class="col-sm-1"><input type="text" class="col-sm-4 katsayi" id="txtK4Sokum" /></td>
+                                                        <td class="col-sm-1"><input type="text" class="col-sm-4 katsayi" id="txtK5Sokum" /></td>
+                                                        <td class="col-sm-1"><input type="text" id="txtAsamaSokum" class="likeL col-lg-12" value="Söküm" readonly /></td>
+                                                        <td class="col-sm-2" style="color:black"><input type="text" id="anketAdi" class="likeL col-lg-12" value="@ViewBag.anketAdi" readonly /></td>
+                                                        <td class="col-sm-1"><btn class="btn" id="btnAddSokum" value="EkleSokum"><i class="bx bxs-message-alt-add bx-flip-horizontal" style="color:#07c91a;font-size:28px;"></i></btn></td>
+                                                    </tr>
+                                                </tfoot>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="navs-pills-top-yuzey" class="tab-pane fade" role="tabpanel">
+                            <div class="row">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h5 class="card-header">Yüzey</h5>
+                                        <div class="mb-4 mt-2">
+                                            <label>Genel Katsayı Değeri:</label>
+                                            <input id="yuzeyGenel" style="margin-left:5px" type="text" class="col-sm-1 katsayi" />
+                                        </div>
+                                        <div class="table-responsive text-nowrap">
+                                            <table class="table table-striped w-auto" id="tblYuzey">
+                                                <thead class="table-dark">
+                                                    <tr>
+                                                        <th>No</th>
+                                                        <th class="w-40">Soru</th>
+                                                        <th>Katsayı-1</th>
+                                                        <th>Katsayı-2</th>
+                                                        <th>Katsayı-3</th>
+                                                        <th>Katsayı-4</th>
+                                                        <th>Katsayı-5</th>
+                                                        <th class="w-10">Aşama</th>
+                                                        <th>Anket Adı</th>
+                                                        <th>Genel Katsayı</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @*foreach*@
+                                                </tbody>
+                                                <tfoot>
+                                                    <tr>
+                                                        <td class="col-1"><input type="text" class="likeL col-sm-3" id="txtNoYuzey" value="1" readonly /></td>
+                                                        <td class="col-sm-1"><input type="text" class="col-sm-10" id="txtSoruYuzey" /></td>
+                                                        <td class="col-sm-1"><input type="text" class="col-sm-4 katsayi" id="txtK1Yuzey" /></td>
+                                                        <td class="col-sm-1"><input type="text" class="col-sm-4 katsayi" id="txtK2Yuzey" /></td>
+                                                        <td class="col-sm-1"><input type="text" class="col-sm-4 katsayi" id="txtK3Yuzey" /></td>
+                                                        <td class="col-sm-1"><input type="text" class="col-sm-4 katsayi" id="txtK4Yuzey" /></td>
+                                                        <td class="col-sm-1"><input type="text" class="col-sm-4 katsayi" id="txtK5Yuzey" /></td>
+                                                        <td class="col-sm-1"><input type="text" id="txtAsamaYuzey" class="likeL col-lg-12" value="Yüzey" readonly /></td>
+                                                        <td class="col-sm-2" style="color:black"><input type="text" id="anketAdi" class="likeL col-lg-12" value="@ViewBag.anketAdi" readonly /></td>
+                                                        <td class="col-sm-1"><btn class="btn" id="btnAddYuzey" value="EkleYuzey"><i class="bx bxs-message-alt-add bx-flip-horizontal" style="color:#07c91a;font-size:28px;"></i></btn></td>
+                                                    </tr>
+                                                </tfoot>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="navs-pills-top-kalite" class="tab-pane fade" role="tabpanel">
+                            <div class="row">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h5 class="card-header">Kalite</h5>
+                                        <div class="mb-4 mt-2">
+                                            <label>Genel Katsayı Değeri:</label>
+                                            <input id="kaliteGenel" style="margin-left:5px" type="text" class="col-sm-1 katsayi" />
+                                        </div>
+                                        <div class="table-responsive text-nowrap">
+                                            <table class="table table-striped w-auto" id="tblKalite">
+                                                <thead class="table-dark">
+                                                    <tr>
+                                                        <th>No</th>
+                                                        <th class="w-40">Soru</th>
+                                                        <th>Katsayı-1</th>
+                                                        <th>Katsayı-2</th>
+                                                        <th>Katsayı-3</th>
+                                                        <th>Katsayı-4</th>
+                                                        <th>Katsayı-5</th>
+                                                        <th class="w-10">Aşama</th>
+                                                        <th>Anket Adı</th>
+                                                        <th>Genel Katsayı</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @*foreach*@
+                                                </tbody>
+                                                <tfoot>
+                                                    <tr>
+                                                        <td class="col-1"><input type="text" class="likeL col-sm-3" id="txtNoKalite" value="1" readonly /></td>
+                                                        <td class="col-sm-1"><input type="text" class="col-sm-10" id="txtSoruKalite" /></td>
+                                                        <td class="col-sm-1"><input type="text" class="col-sm-4 katsayi" id="txtK1Kalite" /></td>
+                                                        <td class="col-sm-1"><input type="text" class="col-sm-4 katsayi" id="txtK2Kalite" /></td>
+                                                        <td class="col-sm-1"><input type="text" class="col-sm-4 katsayi" id="txtK3Kalite" /></td>
+                                                        <td class="col-sm-1"><input type="text" class="col-sm-4 katsayi" id="txtK4Kalite" /></td>
+                                                        <td class="col-sm-1"><input type="text" class="col-sm-4 katsayi" id="txtK5Kalite" /></td>
+                                                        <td class="col-sm-1"><input type="text" id="txtAsamaKalite" class="likeL col-lg-12" value="Kalite" readonly /></td>
+                                                        <td class="col-sm-2" style="color:black"><input type="text" id="anketAdi" class="likeL col-lg-12" value="@ViewBag.anketAdi" readonly /></td>
+                                                        <td class="col-sm-1"><btn class="btn" id="btnAddKalite" value="EkleKalite"><i class="bx bxs-message-alt-add bx-flip-horizontal" style="color:#07c91a;font-size:28px;"></i></btn></td>
+                                                    </tr>
+                                                </tfoot>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="navs-pills-top-sevkiyat" class="tab-pane fade" role="tabpanel">
+                            <div class="row">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h5 class="card-header">Sevkiyat</h5>
+                                        <div class="mb-4 mt-2">
+                                            <label>Genel Katsayı Değeri:</label>
+                                            <input id="sevkiyatGenel" style="margin-left:5px" type="text" class="col-sm-1 katsayi" />
+                                        </div>
+                                        <div class="table-responsive text-nowrap">
+                                            <table class="table table-striped w-auto" id="tblSevkiyat">
+                                                <thead class="table-dark">
+                                                    <tr>
+                                                        <th>No</th>
+                                                        <th class="w-40">Soru</th>
+                                                        <th>Katsayı-1</th>
+                                                        <th>Katsayı-2</th>
+                                                        <th>Katsayı-3</th>
+                                                        <th>Katsayı-4</th>
+                                                        <th>Katsayı-5</th>
+                                                        <th class="w-10">Aşama</th>
+                                                        <th>Anket Adı</th>
+                                                        <th>Genel Katsayı</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @*foreach*@
+                                                </tbody>
+                                                <tfoot>
+                                                    <tr>
+                                                        <td class="col-1"><input type="text" class="likeL col-sm-3" id="txtNoSevkiyat" value="1" readonly /></td>
+                                                        <td class="col-sm-1"><input type="text" class="col-sm-10" id="txtSoruSevkiyat" /></td>
+                                                        <td class="col-sm-1"><input type="text" class="col-sm-4 katsayi" id="txtK1Sevkiyat" /></td>
+                                                        <td class="col-sm-1"><input type="text" class="col-sm-4 katsayi" id="txtK2Sevkiyat" /></td>
+                                                        <td class="col-sm-1"><input type="text" class="col-sm-4 katsayi" id="txtK3Sevkiyat" /></td>
+                                                        <td class="col-sm-1"><input type="text" class="col-sm-4 katsayi" id="txtK4Sevkiyat" /></td>
+                                                        <td class="col-sm-1"><input type="text" class="col-sm-4 katsayi" id="txtK5Sevkiyat" /></td>
+                                                        <td class="col-sm-1"><input type="text" id="txtAsamaSevkiyat" class="likeL col-lg-12" value="Sevkiyat" readonly /></td>
+                                                        <td class="col-sm-2" style="color:black"><input type="text" id="anketAdi" class="likeL col-lg-12" value="@ViewBag.anketAdi" readonly /></td>
+                                                        <td class="col-sm-1"><btn class="btn" id="btnAddSevkiyat" value="EkleSevkiyat"><i class="bx bxs-message-alt-add bx-flip-horizontal" style="color:#07c91a;font-size:28px;"></i></btn></td>
+                                                    </tr>
+                                                </tfoot>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="navs-pills-top-maddi" class="tab-pane fade" role="tabpanel">
+                            <div class="row">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h5 class="card-header">Maddi Faktör</h5>
+                                        <div class="mb-4 mt-2">
+                                            <label>Genel Katsayı Değeri:</label>
+                                            <input id="maddiGenel" style="margin-left:5px" type="text" class="col-sm-1 katsayi" />
+                                        </div>
+                                        <div class="table-responsive text-nowrap">
+                                            <table class="table table-striped w-auto" id="tblMaddi">
+                                                <thead class="table-dark">
+                                                    <tr>
+                                                        <th>No</th>
+                                                        <th class="w-40">Soru</th>
+                                                        <th>Katsayı-1</th>
+                                                        <th>Katsayı-2</th>
+                                                        <th>Katsayı-3</th>
+                                                        <th>Katsayı-4</th>
+                                                        <th>Katsayı-5</th>
+                                                        <th class="w-10">Aşama</th>
+                                                        <th>Anket Adı</th>
+                                                        <th>Genel Katsayı</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @*foreach*@
+                                                </tbody>
+                                                <tfoot>
+                                                    <tr>
+                                                        <td class="col-1"><input type="text" class="likeL col-sm-3" id="txtNoMaddi" value="1" readonly /></td>
+                                                        <td class="col-sm-1"><input type="text" class="col-sm-10" id="txtSoruMaddi" /></td>
+                                                        <td class="col-sm-1"><input type="text" class="col-sm-4 katsayi" id="txtK1Maddi" /></td>
+                                                        <td class="col-sm-1"><input type="text" class="col-sm-4 katsayi" id="txtK2Maddi" /></td>
+                                                        <td class="col-sm-1"><input type="text" class="col-sm-4 katsayi" id="txtK3Maddi" /></td>
+                                                        <td class="col-sm-1"><input type="text" class="col-sm-4 katsayi" id="txtK4Maddi" /></td>
+                                                        <td class="col-sm-1"><input type="text" class="col-sm-4 katsayi" id="txtK5Maddi" /></td>
+                                                        <td class="col-sm-1"><input type="text" id="txtAsamaMaddi" class="likeL col-lg-12" value="Maddi Faktör" readonly /></td>
+                                                        <td class="col-sm-2" style="color:black"><input type="text" id="anketAdi" class="likeL col-lg-12" value="@ViewBag.anketAdi" readonly /></td>
+                                                        <td class="col-sm-1"><btn class="btn" id="btnAddMaddi" value="EkleMaddi"><i class="bx bxs-message-alt-add bx-flip-horizontal" style="color:#07c91a;font-size:28px;"></i></btn></td>
+                                                    </tr>
+                                                </tfoot>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="navs-pills-top-montaj" class="tab-pane fade" role="tabpanel">
+                            <div class="row">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h5 class="card-header">Montaj</h5>
+                                        <div class="mb-4 mt-2">
+                                            <label>Genel Katsayı Değeri:</label>
+                                            <input id="montajGenel" style="margin-left:5px" type="text" class="col-sm-1 katsayi" />
+                                        </div>
+                                        <div class="table-responsive text-nowrap">
+                                            <table class="table table-striped w-auto" id="tblMontaj">
+                                                <thead class="table-dark">
+                                                    <tr>
+                                                        <th>No</th>
+                                                        <th class="w-40">Soru</th>
+                                                        <th>Katsayı-1</th>
+                                                        <th>Katsayı-2</th>
+                                                        <th>Katsayı-3</th>
+                                                        <th>Katsayı-4</th>
+                                                        <th>Katsayı-5</th>
+                                                        <th class="w-10">Aşama</th>
+                                                        <th>Anket Adı</th>
+                                                        <th>Genel Katsayı</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @*foreach*@
+                                                </tbody>
+                                                <tfoot>
+                                                    <tr>
+                                                        <td class="col-1"><input type="text" class="likeL col-sm-3" id="txtNoMontaj" value="1" readonly /></td>
+                                                        <td class="col-sm-1"><input type="text" class="col-sm-10" id="txtSoruMontaj" /></td>
+                                                        <td class="col-sm-1"><input type="text" class="col-sm-4 katsayi" id="txtK1Montaj" /></td>
+                                                        <td class="col-sm-1"><input type="text" class="col-sm-4 katsayi" id="txtK2Montaj" /></td>
+                                                        <td class="col-sm-1"><input type="text" class="col-sm-4 katsayi" id="txtK3Montaj" /></td>
+                                                        <td class="col-sm-1"><input type="text" class="col-sm-4 katsayi" id="txtK4Montaj" /></td>
+                                                        <td class="col-sm-1"><input type="text" class="col-sm-4 katsayi" id="txtK5Montaj" /></td>
+                                                        <td class="col-sm-1"><input type="text" id="txtAsamaMontaj" class="likeL col-lg-12" value="Montaj" readonly /></td>
+                                                        <td class="col-sm-2" style="color:black"><input type="text" id="anketAdi" class="likeL col-lg-12" value="@ViewBag.anketAdi" readonly /></td>
+                                                        <td class="col-sm-1"><btn class="btn" id="btnAddMontaj" value="EkleMontaj"><i class="bx bxs-message-alt-add bx-flip-horizontal" style="color:#07c91a;font-size:28px;"></i></btn></td>
+                                                    </tr>
+                                                </tfoot>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <br />
+        <button class="btn btn-primary" id="btnSave" onclick="alert('Sorular başarıyla kaydedildi!'); location.href='@Url.Action("AnketSec", "Management")'">Soruların Tümünü Kaydet</button>
+    </div>
+
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+    <script type="text/javascript" src="http://ajax.cdnjs.com/ajax/libs/json2/20110223/json2.js"></script>
+
+
+    <script>
+        var katsayilar = document.querySelectorAll('.katsayi');
+        katsayilar.forEach(function (katsayi) {
+            katsayi.addEventListener('input', function () {
+                var regex = /[^0-9,]/g;
+                if (regex.test(this.value)) {
+                    this.value = this.value.replace(regex, '');
+                }
+            });
+        });
+    </script>
+
+
+    <script src="~/Content/jsFile/anketProje.js"></script>
+    <script src="~/Content/jsFile/anketKalip.js"></script>
+    <script src="~/Content/jsFile/anketKarkas.js"></script>
+    <script src="~/Content/jsFile/anketDokum.js"></script>
+    <script src="~/Content/jsFile/anketMalzeme.js"></script>
+    <script src="~/Content/jsFile/anketSokum.js"></script>
+    <script src="~/Content/jsFile/anketYuzey.js"></script>
+    <script src="~/Content/jsFile/anketKalite.js"></script>
+    <script src="~/Content/jsFile/anketSevkiyat.js"></script>
+    <script src="~/Content/jsFile/anketMaddi.js"></script>
+    <script src="~/Content/jsFile/anketMontaj.js"></script>
+    @*<script src="~/Content/jsFile/deneme.js"></script>*@
+
+</body>
+</html>
+
+

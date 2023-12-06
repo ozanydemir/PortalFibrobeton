@@ -1,0 +1,1360 @@
+﻿@*@model IEnumerable<PortalFibrobeton.Models.Entity.Tbl_Taramalar>*@
+@model PortalFibrobeton.Models.Class.Tarama.TaramaViewModel
+@using Newtonsoft.Json;
+
+@{
+    ViewBag.Title = "Kalıphaneler";
+    Layout = "~/Views/Shared/ScanLayout.cshtml";
+}
+
+<head>
+    <title>FibroSCAN - Kalıphane Raporlar</title>
+    <link rel="icon" type="image/png" sizes="19x19" href="~/quixlab-master/quixlab-master/images/favicon.png">
+
+    <link href="~/quixlab-master/quixlab-master/css/style.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/chartist.js/latest/chartist.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/morris.js/0.5.1/morris.css">
+
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/raphael/2.1.0/raphael-min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/morris.js/0.5.1/morris.min.js"></script>
+
+    <style>
+        .dProgress {
+            width: 150px;
+            height: 150px;
+            background: none;
+            position: relative;
+        }
+
+            .dProgress::after {
+                content: "";
+                width: 100%;
+                height: 100%;
+                border-radius: 50%;
+                border: 6px solid #eee;
+                position: absolute;
+                top: 0;
+                left: 0;
+            }
+
+            .dProgress > span {
+                width: 50%;
+                height: 100%;
+                overflow: hidden;
+                position: absolute;
+                top: 0;
+                z-index: 1;
+            }
+
+            .dProgress .dProgress-leftH {
+                left: 0;
+            }
+
+            .dProgress .dProgress-bar {
+                width: 100%;
+                height: 100%;
+                background: none;
+                border-width: 6px;
+                border-style: solid;
+                position: absolute;
+                top: 0;
+            }
+
+            .dProgress .dProgress-left .dProgress-bar {
+                left: 100%;
+                border-top-right-radius: 80px;
+                border-bottom-right-radius: 80px;
+                border-left: 0;
+                -webkit-transform-origin: center left;
+                transform-origin: center left;
+            }
+
+            .dProgress .dProgress-right {
+                right: 0;
+            }
+
+                .dProgress .dProgress-right .dProgress-bar {
+                    left: -100%;
+                    border-top-left-radius: 80px;
+                    border-bottom-left-radius: 80px;
+                    border-right: 0;
+                    -webkit-transform-origin: center right;
+                    transform-origin: center right;
+                }
+
+            .dProgress .dProgress-value {
+                position: absolute;
+                top: 0;
+                left: 0;
+            }
+
+
+
+
+        .rounded-lg {
+            border-radius: 1rem;
+        }
+
+        .text-gray {
+            color: #aaa;
+        }
+
+        div.h4 {
+            line-height: 1rem;
+        }
+    </style>
+
+    @{
+        double YuzdeHesap(double a, double b)
+        {
+            if (a != 0)
+            {
+                double sonuc = ((a / b) * 100);
+                sonuc = Math.Round(sonuc, 0);
+                return sonuc;
+            }
+            else
+            {
+                return 0;
+            }
+        }
+    }
+</head>
+
+<body>
+    <ul class="nav nav-pills mb-3 justify-content-end">
+        <li class="nav-item">
+            <a href="#yesterday" class="nav-link " data-toggle="tab" aria-expanded="false">Dün</a>
+        </li>
+        <li class="nav-item">
+            <a href="#week" class="nav-link active" data-toggle="tab" aria-expanded="false">Haftalık</a>
+        </li>
+        <li class="nav-item">
+            <a href="#month" class="nav-link" data-toggle="tab" aria-expanded="true">Aylık</a>
+        </li>
+        <li class="nav-item">
+            <a href="/Reports/KalıphanelerS" class="nav-link" aria-expanded="true">Seçilen Tarihlere Göre</a>
+        </li>
+    </ul>
+    <div class="tab-content br-n pn">
+        <div class="container-fluid tab-pane active" id="week">
+            <div class="row">
+                <div class="col-lg-3 col-sm-6">
+                    <div class="card gradient-1">
+                        <div class="card-body">
+                            <h3 class="card-title text-white">Toplam Tarama</h3>
+                            <div class="d-inline-block">
+                                <h2 class="text-white">@Model.LastWeekResults.Select(a => a.PozBarkodT).Count() / @Model.LastWeekResults.Sum(b => b.AlanT)</h2>
+                                <p class="text-white mb-0">Adet / m²</p>
+                            </div>
+                            <span class="float-right display-5 opacity-5"><i class="fa fa-cube"></i></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-sm-6">
+                    <div class="card gradient-2">
+                        <div class="card-body">
+                            <h3 class="card-title text-white">Süreler</h3>
+                            <div class="d-inline-block">
+                                <h2 class="text-white"> @Model.LastWeekResults.Sum(b => b.SureT) / @Model.LastWeekResults.Sum(b => b.SureR) </h2>
+                                <p class="text-white mb-0">Tarama (dak) / Rapor (dak)</p>
+                            </div>
+                            <span class="float-right display-5 opacity-5"><i class="fa fa-clock-o"></i></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-sm-6">
+                    <div class="card gradient-3">
+                        <div class="card-body">
+                            <h3 class="card-title text-white">Panel Tarama</h3>
+                            <div class="d-inline-block">
+                                <h2 class="text-white">@Model.LastWeekResults.Where(a => a.MalzemeT == "BETON").Count() / @Model.LastWeekResults.Where(a => a.MalzemeT == "BETON").Sum(a => a.AlanT) </h2>
+                                <p class="text-white mb-0">Adet / m²</p>
+                            </div>
+                            <span class="float-right display-5 opacity-5">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" class="bi bi-bricks" viewBox="0 0 16 16">
+                                    <path d="M0 .5A.5.5 0 0 1 .5 0h15a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-.5.5H14v2h1.5a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-.5.5H14v2h1.5a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-.5.5H.5a.5.5 0 0 1-.5-.5v-3a.5.5 0 0 1 .5-.5H2v-2H.5a.5.5 0 0 1-.5-.5v-3A.5.5 0 0 1 .5 6H2V4H.5a.5.5 0 0 1-.5-.5v-3zM3 4v2h4.5V4H3zm5.5 0v2H13V4H8.5zM3 10v2h4.5v-2H3zm5.5 0v2H13v-2H8.5zM1 1v2h3.5V1H1zm4.5 0v2h5V1h-5zm6 0v2H15V1h-3.5zM1 7v2h3.5V7H1zm4.5 0v2h5V7h-5zm6 0v2H15V7h-3.5zM1 13v2h3.5v-2H1zm4.5 0v2h5v-2h-5zm6 0v2H15v-2h-3.5z" />
+                                </svg>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            @*-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*@
+
+            @*Haftalık Sayı Grafik*@
+            <div class="row d-flex justify-content-center">
+                <div class="col-lg-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <h4 class="card-title" style="font-size:22px;">Kalıp Tarama Sayı Grafiği </h4>
+                            <span style="margin-left:30px;">Haftalık</span>
+                            <div id="haftalıksayı"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <script>
+                var sqlSorguDash = @Html.Raw(JsonConvert.SerializeObject(ViewBag.HaftalikTaramaChart));
+
+                var grafikVerileri = sqlSorguDash.map(function (item) {
+                    return {
+                        'tarih': item.Tarih, // Tarihi ekleyin
+                        'gun': item.Gun,
+                        'hol6': item.HOL6,
+                        'hol9': item.HOL9,
+                        'ozd': item.TASERON
+                    };
+                });
+
+                // Tarihleri kullanarak verileri sıralayın
+                grafikVerileri.sort(function (a, b) {
+                    return new Date(b.tarih) - new Date(a.tarih);
+                });
+
+                // Morris.js grafiği için verileri hazırlayın
+                var morrisVerileri = grafikVerileri.map(function (item) {
+                    return {
+                        '0': item.gun, // Gün adını kullanın
+                        'hol6': item.hol6,
+                        'hol9': item.hol9,
+                        'ozd': item.ozd
+                    };
+                });
+
+                new Morris.Area({
+                    // ID of the element in which to draw the chart.
+                    element: 'haftalıksayı',
+                    data: grafikVerileri, // Grafik verileri
+                    lineColors: ['#7571F9', '#4d7cff'],
+                    xkey: '0', // X ekseni (günler)
+                    ykeys: ['hol6', 'hol9', 'ozd'],
+                    labels: ['Ana Kalıphane', 'UHPC Kalıphane', 'Özdemir Model'],
+                    pointSize: 0,
+                    lineWidth: 0,
+                    parseTime: false,
+                    resize: true,
+                    fillOpacity: 0.8,
+                    behaveLikeLine: true,
+                    gridLineColor: 'transparent',
+                    hideHover: 'auto'
+                });
+            </script>
+
+
+
+            @*-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*@
+
+            @*Kalıphaneler Hata Oranı*@
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-5">
+                                    <div class="card-body">
+                                        <h4 class="card-title" style="font-size:20px;">İmalat Yerine Göre Kalıp Tarama Oranları</h4>
+                                        <canvas id="imalat"></canvas>
+                                    </div>
+                                </div>
+                                <div class="col-5" style="margin-left:100px;margin-top:50px">
+                                    <h4 class="mt-4">Tarama Konusuna Göre Yüzdelik Dağılım</h4>
+                                    <span style="font-size:14px;">Tarama Sayısı / Hata Sayısı </span>
+                                    <div class="mt-4">
+                                        <h5>UHPC Kalıphane</h5>
+                                        <h4>@Model.LastWeekResults.Where(a => a.TeslimT == "HOL-9").Select(a => a.IDT).Count() / @Model.LastWeekResults.Where(a => a.TeslimT == "HOL-9" && a.DurumT == "RED").Select(a => a.IDT).Count() <span class="pull-right">%@YuzdeHesap(Model.LastWeekResults.Where(a => a.TeslimT == "HOL-9" && a.DurumT == "RED").Select(a => a.IDT).Count(), Model.LastWeekResults.Where(a => a.TeslimT == "HOL-9").Select(a => a.IDT).Count())</span></h4>
+                                        <div class="progress mb-3" style="height:9px;">
+                                            <div class="progress-bar gradient-1" style="width: @YuzdeHesap(Model.LastWeekResults.Where(a => a.TeslimT == "HOL-9" && a.DurumT == "RED").Select(a => a.IDT).Count(), Model.LastWeekResults.Where(a => a.TeslimT == "HOL-9").Select(a => a.IDT).Count())%" role="progressbar"><span class="sr-only">%@YuzdeHesap(Model.LastWeekResults.Where(a => a.TeslimT == "HOL-9" && a.DurumT == "RED").Select(a => a.IDT).Count(), Model.LastWeekResults.Where(a => a.TeslimT == "HOL-9").Select(a => a.IDT).Count())</span></div>
+                                        </div>
+                                    </div>
+                                    <hr />
+                                    <div class="mt-4">
+                                        <h5>Ahşap Kalıphane</h5>
+                                        <h4>@Model.LastWeekResults.Where(a => a.TeslimT == "HOL-6").Select(a => a.IDT).Count() / @Model.LastWeekResults.Where(a => a.TeslimT == "HOL-6" && a.DurumT == "RED").Select(a => a.IDT).Count() <span class="pull-right">%@YuzdeHesap(Model.LastWeekResults.Where(a => a.TeslimT == "HOL-6" && a.DurumT == "RED").Select(a => a.IDT).Count(), Model.LastWeekResults.Where(a => a.TeslimT == "HOL-6").Select(a => a.IDT).Count())</span></h4>
+                                        <div class="progress mb-3" style="height:9px;">
+                                            <div class="progress-bar gradient-2" style="width: @YuzdeHesap(Model.LastWeekResults.Where(a => a.TeslimT == "HOL-6" && a.DurumT == "RED").Select(a => a.IDT).Count(), Model.LastWeekResults.Where(a => a.TeslimT == "HOL-6").Select(a => a.IDT).Count())%" role="progressbar"><span class="sr-only">%@YuzdeHesap(Model.LastWeekResults.Where(a => a.TeslimT == "HOL-6" && a.DurumT == "RED").Select(a => a.IDT).Count(), Model.LastWeekResults.Where(a => a.TeslimT == "HOL-6").Select(a => a.IDT).Count())</span></div>
+                                        </div>
+                                    </div>
+                                    <hr />
+                                    <div class="mt-4">
+                                        <h5>Özdemir Model</h5>
+                                        <h4>@Model.LastWeekResults.Where(a => a.TeslimT == "TAŞERON").Select(a => a.IDT).Count() / @Model.LastWeekResults.Where(a => a.TeslimT == "TAŞERON" && a.DurumT == "RED").Select(a => a.IDT).Count() <span class="pull-right">%@YuzdeHesap(Model.LastWeekResults.Where(a => a.TeslimT == "TAŞERON" && a.DurumT == "RED").Select(a => a.IDT).Count(), Model.LastWeekResults.Where(a => a.TeslimT == "TAŞERON").Select(a => a.IDT).Count())</span></h4>
+                                        <div class="progress mb-3" style="height:9px;">
+                                            <div class="progress-bar gradient-3" style="width: @YuzdeHesap(Model.LastWeekResults.Where(a => a.TeslimT == "TAŞERON" && a.DurumT == "RED").Select(a => a.IDT).Count(), Model.LastWeekResults.Where(a => a.TeslimT == "TAŞERON").Select(a => a.IDT).Count())%" role="progressbar"><span class="sr-only">%@YuzdeHesap(Model.LastWeekResults.Where(a => a.TeslimT == "TAŞERON" && a.DurumT == "RED").Select(a => a.IDT).Count(), Model.LastWeekResults.Where(a => a.TeslimT == "TAŞERON").Select(a => a.IDT).Count())</span></div>
+                                        </div>
+                                    </div>
+                                    <hr />
+                                    <div class="mt-4">
+                                        <h5>CNC Kalıphane</h5>
+                                        <h4>@Model.LastWeekResults.Where(a => a.TeslimT == "CNC").Select(a => a.IDT).Count() / @Model.LastWeekResults.Where(a => a.TeslimT == "CNC" && a.DurumT == "RED").Select(a => a.IDT).Count() <span class="pull-right">%@YuzdeHesap(Model.LastWeekResults.Where(a => a.TeslimT == "CNC" && a.DurumT == "RED").Select(a => a.IDT).Count(), Model.LastWeekResults.Where(a => a.TeslimT == "CNC").Select(a => a.IDT).Count())</span></h4>
+                                        <div class="progress mb-3" style="height:9px;">
+                                            <div class="progress-bar gradient-4" style="width: @YuzdeHesap(Model.LastWeekResults.Where(a => a.TeslimT == "CNC" && a.DurumT == "RED").Select(a => a.IDT).Count(), Model.LastWeekResults.Where(a => a.TeslimT == "CNC").Select(a => a.IDT).Count())%" role="progressbar"><span class="sr-only">%@YuzdeHesap(Model.LastWeekResults.Where(a => a.TeslimT == "CNC" && a.DurumT == "RED").Select(a => a.IDT).Count(), Model.LastWeekResults.Where(a => a.TeslimT == "CNC").Select(a => a.IDT).Count())</span></div>
+                                        </div>
+                                    </div>
+                                    <hr />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <script>
+
+            var anaSonuc = @YuzdeHesap(Model.LastWeekResults.Where(a => a.TeslimT == "HOL-6").Select(a => a.IDT).Count(), Model.LastWeekResults.Select(a => a.IDT).Count());
+            var UhpcSonuc = @YuzdeHesap(Model.LastWeekResults.Where(a => a.TeslimT == "HOL-9").Select(a => a.IDT).Count(), Model.LastWeekResults.Select(a => a.IDT).Count());
+            var CncSonuc = @YuzdeHesap(Model.LastWeekResults.Where(a => a.TeslimT == "CNC").Select(a => a.IDT).Count(), Model.LastWeekResults.Select(a => a.IDT).Count());
+            var TaseronSonuc = @YuzdeHesap(Model.LastWeekResults.Where(a => a.TeslimT == "TAŞERON").Select(a => a.IDT).Count(), Model.LastWeekResults.Select(a => a.IDT).Count());
+
+
+            var ctx = document.getElementById("imalat");
+            ctx.height = 150;
+            var myChart = new Chart(ctx, {
+                type: 'polarArea',
+                data: {
+                    datasets: [{
+                        data: [anaSonuc, UhpcSonuc, CncSonuc, TaseronSonuc],
+                        backgroundColor: [
+                            "rgba(117, 113, 249,0.9)",
+                            "rgba(144,	104,	190,.9)",
+                            "#4d7cff",
+                            "rgba(117, 113, 249, 0.7)"
+                        ]
+
+                    }],
+                    labels: [
+                        "Ana Kalıphane",
+                        "UHPC Kalıphane",
+                        "CNC Kalıphane",
+                        "Özdemir Model"
+                    ]
+                },
+                options: {
+                    responsive: true
+                }
+            });
+            </script>
+
+            @*-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*@
+
+            @*Tekrar Tarama Grafik*@
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <h4 class="card-title">Tekrar Tarama / Onay Dağılım Grafiği</h4>
+                            <canvas id="tekrartaramaHafta"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <script>
+               var yuzdeKaliphane6 = @Html.Raw(JsonConvert.SerializeObject(ViewBag.HaftalikHataYuzdeler6));
+               var yuzdeKaliphane9 = @Html.Raw(JsonConvert.SerializeObject(ViewBag.HaftalikHataYuzdeler9));
+               var yuzdeKaliphaneTop = @Html.Raw(JsonConvert.SerializeObject(ViewBag.HaftalikHataYuzdelerTop));
+
+                var ctx = document.getElementById("tekrartaramaHafta");
+                ctx.height = 100;
+                var myChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: ["1.Tarama", "2.Tarama", "3.Tarama", "4.Tarama", "5.Tarama", "6.Tarama", "7.Tarama", "8.Tarama", "9.Tarama", "10.Tarama"],
+                        datasets: [
+                            {
+                                label: "Ana Kalıphane",
+                                data: [yuzdeKaliphane6],
+                                borderColor: "rgba(117, 113, 249, 0.9)",
+                                borderWidth: "0",
+                                backgroundColor: "rgba(117, 113, 249, 0.5)"
+                            },
+                            {
+                                label: "Kalıphaneler Toplamı",
+                                data: [yuzdeKaliphaneTop],
+                                borderColor: "#4d7cff",
+                                borderWidth: "0",
+                                backgroundColor: "#4d7cff"
+                            },
+                            {
+                                label: "UHPC Kalıphane",
+                                data: [yuzdeKaliphane9],
+                                borderColor: "rgba(144,	104, 190,0.9)",
+                                borderWidth: "0",
+                                backgroundColor: "rgba(144,	104,190,0.7)"
+                            }
+
+                        ]
+                    },
+                    options: {
+                        scales: {
+                            yAxes: [{
+                                ticks: {
+                                    beginAtZero: true
+                                }
+                            }],
+                            xAxes: [{
+                                // Change here
+                                barPercentage: 0.2
+                            }]
+                        }
+                    }
+                });
+            </script>
+
+
+            @*-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*@
+
+            @*Kalıphane Hata Oranları*@
+            <div class="row">
+                <div class="col-xl-3 col-lg-6 mb-4">
+                    <span class="pull-right" style="font-size:15px; color:gray; -webkit-transform: rotate(+30deg);margin-top:19px">İlk Tarama</span>
+                    <div class="bg-white rounded-lg p-5 shadow">
+                        <h2 class="h4 font-weight-bold text-center mb-4">Kalıphaneler Toplamı</h2>
+
+                        <div class="dProgress mx-auto" data-value='@YuzdeHesap(Model.LastWeekResults.Where(a => a.DurumT == "RED" && a.SayıT == 1).Count(), Model.LastWeekResults.Where(a => a.SayıT == 1).Select(a => a.IDT).Count())'>
+                            <span class="dProgress-left">
+                                <span class="dProgress-bar border-primary"></span>
+                            </span>
+                            <span class="dProgress-right">
+                                <span class="dProgress-bar border-primary"></span>
+                            </span>
+                            <div class="dProgress-value w-100 h-100 rounded-circle d-flex align-items-center justify-content-center">
+                                <div class="h2 font-weight-bold">@YuzdeHesap(Model.LastWeekResults.Where(a => a.DurumT == "RED" && a.SayıT == 1).Count(), Model.LastWeekResults.Where(a => a.SayıT == 1).Select(a => a.IDT).Count())<sup class="small">%</sup></div>
+                            </div>
+                        </div>
+                        <div class="row text-center mt-4">
+                            <div class="col-6 border-right">
+                                <div class="h3 font-weight-bold mb-0">@Model.LastWeekResults.Where(a => a.SayıT == 1).Select(a => a.IDT).Count()</div><i class="fa fa-circle" style="color:#7571F9;margin-right:5px;"></i><span class="text-gray">Tarama</span>
+                            </div>
+                            <div class="col-6">
+                                <div class="h3 font-weight-bold mb-0">@Model.LastWeekResults.Where(a => a.DurumT == "RED" && a.SayıT == 1).Count()</div><i class="fa fa-circle" style="color:#7571F9;margin-right:5px"></i><span class="text-gray">Hata</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xl-3 col-lg-6 mb-4">
+                    <span class="pull-right" style="font-size:15px; color:gray; -webkit-transform: rotate(+30deg);margin-top:19px">İlk Tarama</span>
+                    <div class="bg-white rounded-lg p-5 shadow">
+                        <h2 class="h4 font-weight-bold text-center mb-4">UHPC Kalıphane</h2>
+
+
+                        <div class="dProgress mx-auto" data-value='@YuzdeHesap(Model.LastWeekResults.Where(a => a.DurumT == "RED" && a.SayıT == 1 && a.TeslimT == "HOL-9").Count(), Model.LastWeekResults.Where(a => a.SayıT == 1 && a.TeslimT == "HOL-9").Select(a => a.IDT).Count())'>
+                            <span class="dProgress-left">
+                                <span class="dProgress-bar border-danger"></span>
+                            </span>
+                            <span class="dProgress-right">
+                                <span class="dProgress-bar border-danger"></span>
+                            </span>
+                            <div class="dProgress-value w-100 h-100 rounded-circle d-flex align-items-center justify-content-center">
+                                <div class="h2 font-weight-bold">@YuzdeHesap(Model.LastWeekResults.Where(a => a.DurumT == "RED" && a.SayıT == 1 && a.TeslimT == "HOL-9").Count(), Model.LastWeekResults.Where(a => a.SayıT == 1 && a.TeslimT == "HOL-9").Select(a => a.IDT).Count())<sup class="small">%</sup></div>
+                            </div>
+                        </div>
+                        <div class="row text-center mt-4">
+                            <div class="col-6 border-right">
+                                <div class="h3 font-weight-bold mb-0">@Model.LastWeekResults.Where(a => a.TeslimT == "HOL-9" && a.SayıT == 1).Count()</div><i class="fa fa-circle" style="color:#FF5E5E;margin-right:5px"></i><span class="text-gray">Tarama</span>
+                            </div>
+                            <div class="col-6">
+                                <div class="h3 font-weight-bold mb-0">@Model.LastWeekResults.Where(a => a.TeslimT == "HOL-9" && a.DurumT == "RED" && a.SayıT == 1).Count()</div><i class="fa fa-circle" style="color:#FF5E5E;margin-right:5px"></i><span class="text-gray">Hata</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xl-3 col-lg-6 mb-4">
+                    <span class="pull-right" style="font-size:15px; color:gray; -webkit-transform: rotate(+30deg);margin-top:19px">İlk Tarama</span>
+                    <div class="bg-white rounded-lg p-5 shadow">
+                        <h2 class="h4 font-weight-bold text-center mb-4">Ana Kalıphane</h2>
+
+                        <div class="dProgress mx-auto" data-value='@YuzdeHesap(Model.LastWeekResults.Where(a => a.DurumT == "RED" && a.SayıT == 1 && a.TeslimT == "HOL-6").Count(), Model.LastWeekResults.Where(a => a.SayıT == 1 && a.TeslimT == "HOL-6").Select(a => a.IDT).Count())'>
+                            <span class="dProgress-left">
+                                <span class="dProgress-bar border-success"></span>
+                            </span>
+                            <span class="dProgress-right">
+                                <span class="dProgress-bar border-success"></span>
+                            </span>
+                            <div class="dProgress-value w-100 h-100 rounded-circle d-flex align-items-center justify-content-center">
+                                <div class="h2 font-weight-bold">@YuzdeHesap(Model.LastWeekResults.Where(a => a.DurumT == "RED" && a.SayıT == 1 && a.TeslimT == "HOL-6").Count(), Model.LastWeekResults.Where(a => a.SayıT == 1 && a.TeslimT == "HOL-6").Select(a => a.IDT).Count())<sup class="small">%</sup></div>
+                            </div>
+                        </div>
+                        <div class="row text-center mt-4">
+                            <div class="col-6 border-right">
+                                <div class="h3 font-weight-bold mb-0">@Model.LastWeekResults.Where(a => a.TeslimT == "HOL-6" && a.SayıT == 1).Count()</div><i class="fa fa-circle" style="color:#6FD96F;margin-right:5px"></i><span class="text-gray">Tarama</span>
+                            </div>
+                            <div class="col-6">
+                                <div class="h3 font-weight-bold mb-0">@Model.LastWeekResults.Where(a => a.TeslimT == "HOL-6" && a.DurumT == "RED" && a.SayıT == 1).Count()</div><i class="fa fa-circle" style="color:#6FD96F;margin-right:5px"></i><span class="text-gray">Hata</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xl-3 col-lg-6 mb-4">
+                    <span class="pull-right" style="font-size:15px; color:gray; -webkit-transform: rotate(+30deg);margin-top:19px">İlk Tarama</span>
+                    <div class="bg-white rounded-lg p-5 shadow">
+                        <h2 class="h4 font-weight-bold text-center mb-4">Özdemir Model</h2>
+
+                        <div class="dProgress mx-auto" data-value='@YuzdeHesap(Model.LastWeekResults.Where(a => a.DurumT == "RED" && a.SayıT == 1 && a.TeslimT == "TAŞERON").Count(), Model.LastWeekResults.Where(a => a.SayıT == 1 && a.TeslimT == "TAŞERON").Select(a => a.IDT).Count())'>
+                            <span class="dProgress-left">
+                                <span class="dProgress-bar border-warning"></span>
+                            </span>
+                            <span class="dProgress-right">
+                                <span class="dProgress-bar border-warning"></span>
+                            </span>
+                            <div class="dProgress-value w-100 h-100 rounded-circle d-flex align-items-center justify-content-center">
+                                <div class="h2 font-weight-bold">@YuzdeHesap(Model.LastWeekResults.Where(a => a.DurumT == "RED" && a.SayıT == 1 && a.TeslimT == "TAŞERON").Count(), Model.LastWeekResults.Where(a => a.SayıT == 1 && a.TeslimT == "TAŞERON").Select(a => a.IDT).Count())<sup class="small">%</sup></div>
+                            </div>
+                        </div>
+                        <div class="row text-center mt-4">
+                            <div class="col-6 border-right">
+                                <div class="h3 font-weight-bold mb-0">@Model.LastWeekResults.Where(a => a.TeslimT == "TAŞERON" && a.SayıT == 1).Count()</div><i class="fa fa-circle" style="color:#F29D56;margin-right:5px"></i><span class="text-gray">Tarama</span>
+                            </div>
+                            <div class="col-6">
+                                <div class="h3 font-weight-bold mb-0">@Model.LastWeekResults.Where(a => a.TeslimT == "TAŞERON" && a.DurumT == "RED" && a.SayıT == 1).Count()</div><i class="fa fa-circle" style="color:#F29D56;margin-right:5px"></i><span class="text-gray">Hata</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <script>
+                $(function () {
+
+                    $(".dProgress").each(function () {
+
+                        var value = $(this).attr('data-value');
+                        var left = $(this).find('.dProgress-left .dProgress-bar');
+                        var right = $(this).find('.dProgress-right .dProgress-bar');
+
+                        if (value > 0) {
+                            if (value <= 50) {
+                                right.css('transform', 'rotate(' + percentageToDegrees(value) + 'deg)')
+                            } else {
+                                right.css('transform', 'rotate(180deg)')
+                                left.css('transform', 'rotate(' + percentageToDegrees(value - 50) + 'deg)')
+                            }
+                        }
+
+                    })
+
+                    function percentageToDegrees(percentage) {
+
+                        return percentage / 100 * 360
+
+                    }
+
+                });
+            </script>
+        </div>
+
+        
+
+        @*----------------------------------------------------------------------------------DÜNÜN VERİLERİ------------------------------------------------------------------------------------------------------------*@
+
+        <div class="container-fluid tab-pane" id="yesterday">
+            <div class="row">
+                <div class="col-lg-3 col-sm-6">
+                    <div class="card gradient-1">
+                        <div class="card-body">
+                            <h3 class="card-title text-white">Toplam Tarama</h3>
+                            <div class="d-inline-block">
+                                <h2 class="text-white">@Model.LastDayResults.Select(a => a.PozBarkodT).Count() / @Model.LastDayResults.Sum(b => b.AlanT)</h2>
+                                <p class="text-white mb-0">Adet / m²</p>
+                            </div>
+                            <span class="float-right display-5 opacity-5"><i class="fa fa-cube"></i></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-sm-6">
+                    <div class="card gradient-2">
+                        <div class="card-body">
+                            <h3 class="card-title text-white">Süreler</h3>
+                            <div class="d-inline-block">
+                                <h2 class="text-white"> @Model.LastDayResults.Sum(b => b.SureT) / @Model.LastDayResults.Sum(b => b.SureR) </h2>
+                                <p class="text-white mb-0">Tarama (dak) / Rapor (dak)</p>
+                            </div>
+                            <span class="float-right display-5 opacity-5"><i class="fa fa-clock-o"></i></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-sm-6">
+                    <div class="card gradient-3">
+                        <div class="card-body">
+                            <h3 class="card-title text-white">Panel Tarama</h3>
+                            <div class="d-inline-block">
+                                <h2 class="text-white">@Model.LastDayResults.Where(a => a.MalzemeT == "BETON").Count() / @Model.LastDayResults.Where(a => a.MalzemeT == "BETON").Sum(a => a.AlanT) </h2>
+                                <p class="text-white mb-0">Adet / m²</p>
+                            </div>
+                            <span class="float-right display-5 opacity-5">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" class="bi bi-bricks" viewBox="0 0 16 16">
+                                    <path d="M0 .5A.5.5 0 0 1 .5 0h15a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-.5.5H14v2h1.5a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-.5.5H14v2h1.5a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-.5.5H.5a.5.5 0 0 1-.5-.5v-3a.5.5 0 0 1 .5-.5H2v-2H.5a.5.5 0 0 1-.5-.5v-3A.5.5 0 0 1 .5 6H2V4H.5a.5.5 0 0 1-.5-.5v-3zM3 4v2h4.5V4H3zm5.5 0v2H13V4H8.5zM3 10v2h4.5v-2H3zm5.5 0v2H13v-2H8.5zM1 1v2h3.5V1H1zm4.5 0v2h5V1h-5zm6 0v2H15V1h-3.5zM1 7v2h3.5V7H1zm4.5 0v2h5V7h-5zm6 0v2H15V7h-3.5zM1 13v2h3.5v-2H1zm4.5 0v2h5v-2h-5zm6 0v2H15v-2h-3.5z" />
+                                </svg>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            @*-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*@
+
+
+            @*Dün Tarama Sayı Column Grafiği*@
+            <div class="row d-flex justify-content-center">
+                <div class="col-lg-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <h3 class="card-title">Kalıp Tarama Sayı Grafiği</h3>
+                            <span style="margin-left:30px;">Dün</span>
+                            <canvas id="dunColumn"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <script>
+                var dun9Sayı = @Model.LastDayResults.Where(a => a.TeslimT == "HOL-9").Select(a => a.IDT).Count();
+                var dun6Sayı = @Model.LastDayResults.Where(a => a.TeslimT == "HOL-6").Select(a => a.IDT).Count();
+                var dunOzdSayı = @Model.LastDayResults.Where(a => a.TeslimT == "TAŞERON").Select(a => a.IDT).Count();
+
+                var ctx = document.getElementById("dunColumn");
+                ctx.height = 100;
+                var myChart = new Chart(ctx, {
+
+                    type: 'bar',
+                    data: {
+                        labels: ["UHPC Kalıphane", "Ana Kalıphane","Özdemir Model"],
+                        datasets: [
+                            {
+                                label: "Kalıphaneler",
+                                data: [dun9Sayı, dun6Sayı, dunOzdSayı],
+                                borderColor: "rgba(117, 113, 249, 0.9)",
+                                borderWidth: "0",
+                                backgroundColor: "rgba(117, 113, 249, 0.5)"
+                            }
+                        ]
+                    },
+                    options: {
+                        scales: {
+                            yAxes: [{
+                                ticks: {
+                                    beginAtZero: true
+                                }
+                            }]
+                        }
+                    }
+                });
+            </script>
+
+            @*-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*@
+
+            @*Kalıphaneler Hata Oranı*@
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-5">
+                                    <div class="card-body">
+                                        <h4 class="card-title" style="font-size:20px;">İmalat Yerine Göre Kalıp Tarama Oranları</h4>
+                                        <canvas id="imalatDun"></canvas>
+                                    </div>
+                                </div>
+                                <div class="col-5" style="margin-left:100px;margin-top:50px">
+                                    <h4 class="mt-4">Tarama Konusuna Göre Yüzdelik Dağılım</h4>
+                                    <span style="font-size:14px;">Tarama Sayısı / Hata Sayısı </span>
+                                    <div class="mt-4">
+                                        <h5>UHPC Kalıphane</h5>
+                                        <h4>@Model.LastDayResults.Where(a => a.TeslimT == "HOL-9").Select(a => a.IDT).Count() / @Model.LastDayResults.Where(a => a.TeslimT == "HOL-9" && a.DurumT == "RED").Select(a => a.IDT).Count() <span class="pull-right">%@YuzdeHesap(Model.LastDayResults.Where(a => a.TeslimT == "HOL-9" && a.DurumT == "RED").Select(a => a.IDT).Count(), Model.LastDayResults.Where(a => a.TeslimT == "HOL-9").Select(a => a.IDT).Count())</span></h4>
+                                        <div class="progress mb-3" style="height:9px;">
+                                            <div class="progress-bar gradient-1" style="width: @YuzdeHesap(Model.LastDayResults.Where(a => a.TeslimT == "HOL-9" && a.DurumT == "RED").Select(a => a.IDT).Count(), Model.LastDayResults.Where(a => a.TeslimT == "HOL-9").Select(a => a.IDT).Count())%" role="progressbar"><span class="sr-only">%@YuzdeHesap(Model.LastDayResults.Where(a => a.TeslimT == "HOL-9" && a.DurumT == "RED").Select(a => a.IDT).Count(), Model.LastDayResults.Where(a => a.TeslimT == "HOL-9").Select(a => a.IDT).Count())</span></div>
+                                        </div>
+                                    </div>
+                                    <hr />
+                                    <div class="mt-4">
+                                        <h5>Ahşap Kalıphane</h5>
+                                        <h4>@Model.LastDayResults.Where(a => a.TeslimT == "HOL-6").Select(a => a.IDT).Count() / @Model.LastDayResults.Where(a => a.TeslimT == "HOL-6" && a.DurumT == "RED").Select(a => a.IDT).Count() <span class="pull-right">%@YuzdeHesap(Model.LastDayResults.Where(a => a.TeslimT == "HOL-6" && a.DurumT == "RED").Select(a => a.IDT).Count(), Model.LastDayResults.Where(a => a.TeslimT == "HOL-6").Select(a => a.IDT).Count())</span></h4>
+                                        <div class="progress mb-3" style="height:9px;">
+                                            <div class="progress-bar gradient-2" style="width: @YuzdeHesap(Model.LastDayResults.Where(a => a.TeslimT == "HOL-6" && a.DurumT == "RED").Select(a => a.IDT).Count(), Model.LastDayResults.Where(a => a.TeslimT == "HOL-6").Select(a => a.IDT).Count())%" role="progressbar"><span class="sr-only">%@YuzdeHesap(Model.LastDayResults.Where(a => a.TeslimT == "HOL-6" && a.DurumT == "RED").Select(a => a.IDT).Count(), Model.LastDayResults.Where(a => a.TeslimT == "HOL-6").Select(a => a.IDT).Count())</span></div>
+                                        </div>
+                                    </div>
+                                    <hr />
+                                    <div class="mt-4">
+                                        <h5>Özdemir Model</h5>
+                                        <h4>@Model.LastDayResults.Where(a => a.TeslimT == "TAŞERON").Select(a => a.IDT).Count() / @Model.LastDayResults.Where(a => a.TeslimT == "TAŞERON" && a.DurumT == "RED").Select(a => a.IDT).Count() <span class="pull-right">%@YuzdeHesap(Model.LastDayResults.Where(a => a.TeslimT == "TAŞERON" && a.DurumT == "RED").Select(a => a.IDT).Count(), Model.LastDayResults.Where(a => a.TeslimT == "TAŞERON").Select(a => a.IDT).Count())</span></h4>
+                                        <div class="progress mb-3" style="height:9px;">
+                                            <div class="progress-bar gradient-3" style="width: @YuzdeHesap(Model.LastDayResults.Where(a => a.TeslimT == "TAŞERON" && a.DurumT == "RED").Select(a => a.IDT).Count(), Model.LastDayResults.Where(a => a.TeslimT == "TAŞERON").Select(a => a.IDT).Count())%" role="progressbar"><span class="sr-only">%@YuzdeHesap(Model.LastDayResults.Where(a => a.TeslimT == "TAŞERON" && a.DurumT == "RED").Select(a => a.IDT).Count(), Model.LastDayResults.Where(a => a.TeslimT == "TAŞERON").Select(a => a.IDT).Count())</span></div>
+                                        </div>
+                                    </div>
+                                    <hr />
+                                    <div class="mt-4">
+                                        <h5>CNC Kalıphane</h5>
+                                        <h4>@Model.LastDayResults.Where(a => a.TeslimT == "CNC").Select(a => a.IDT).Count() / @Model.LastDayResults.Where(a => a.TeslimT == "CNC" && a.DurumT == "RED").Select(a => a.IDT).Count() <span class="pull-right">%@YuzdeHesap(Model.LastDayResults.Where(a => a.TeslimT == "CNC" && a.DurumT == "RED").Select(a => a.IDT).Count(), Model.LastDayResults.Where(a => a.TeslimT == "CNC").Select(a => a.IDT).Count())</span></h4>
+                                        <div class="progress mb-3" style="height:9px;">
+                                            <div class="progress-bar gradient-4" style="width: @YuzdeHesap(Model.LastDayResults.Where(a => a.TeslimT == "CNC" && a.DurumT == "RED").Select(a => a.IDT).Count(), Model.LastDayResults.Where(a => a.TeslimT == "CNC").Select(a => a.IDT).Count())%" role="progressbar"><span class="sr-only">%@YuzdeHesap(Model.LastDayResults.Where(a => a.TeslimT == "CNC" && a.DurumT == "RED").Select(a => a.IDT).Count(), Model.LastDayResults.Where(a => a.TeslimT == "CNC").Select(a => a.IDT).Count())</span></div>
+                                        </div>
+                                    </div>
+                                    <hr />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <script>
+                var anaSonucDun = @YuzdeHesap(Model.LastDayResults.Where(a => a.TeslimT == "HOL-6").Select(a => a.IDT).Count(), Model.LastDayResults.Select(a => a.IDT).Count());
+                var UhpcSonucDun = @YuzdeHesap(Model.LastDayResults.Where(a => a.TeslimT == "HOL-9").Select(a => a.IDT).Count(), Model.LastDayResults.Select(a => a.IDT).Count());
+                var CncSonucDun = @YuzdeHesap(Model.LastDayResults.Where(a => a.TeslimT == "CNC").Select(a => a.IDT).Count(), Model.LastDayResults.Select(a => a.IDT).Count());
+                var TaseronSonucDun = @YuzdeHesap(Model.LastDayResults.Where(a => a.TeslimT == "TAŞERON").Select(a => a.IDT).Count(), Model.LastDayResults.Select(a => a.IDT).Count());
+
+                var ctx = document.getElementById("imalatDun");
+                ctx.height = 150;
+                var myChart = new Chart(ctx, {
+                    type: 'polarArea',
+                    data: {
+                        datasets: [{
+                            data: [anaSonucDun, UhpcSonucDun, CncSonucDun, TaseronSonucDun],
+                            backgroundColor: [
+                                "rgba(117, 113, 249,0.9)",
+                                "rgba(144,	104,	190,.9)",
+                                "#4d7cff",
+                                "rgba(117, 113, 249, 0.7)"
+                            ]
+
+                        }],
+                        labels: [
+                            "Ana Kalıphane",
+                            "UHPC Kalıphane",
+                            "CNC Kalıphane",
+                            "Özdemir Model"
+                        ]
+                    },
+                    options: {
+                        responsive: true
+                    }
+                    });
+            </script>
+
+
+            @*-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*@
+
+            @*Tekrar Tarama Grafik*@
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <h4 class="card-title">Tekrar Tarama / Onay Dağılım Grafiği</h4>
+                            <canvas id="tekrartaramaDun"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+            <script>
+                var yuzdeKaliphane6 = @Html.Raw(JsonConvert.SerializeObject(ViewBag.DunHataYuzdeler6));
+                var yuzdeKaliphane9 = @Html.Raw(JsonConvert.SerializeObject(ViewBag.DunHataYuzdeler9));
+                var yuzdeKaliphaneTop = @Html.Raw(JsonConvert.SerializeObject(ViewBag.DunHataYuzdelerTop));
+
+                var ctx = document.getElementById("tekrartaramaDun");
+                ctx.height = 100;
+                var myChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: ["1.Tarama", "2.Tarama", "3.Tarama", "4.Tarama", "5.Tarama", "6.Tarama", "7.Tarama", "8.Tarama", "9.Tarama", "10.Tarama"],
+                        datasets: [
+                            {
+                                label: "Ana Kalıphane",
+                                data: yuzdeKaliphane6,
+                                borderColor: "rgba(117, 113, 249, 0.9)",
+                                borderWidth: "0",
+                                backgroundColor: "rgba(117, 113, 249, 0.5)"
+                            },
+                            {
+                                label: "Kalıphaneler Toplamı",
+                                data: yuzdeKaliphaneTop,
+                                borderColor: "#4d7cff",
+                                borderWidth: "0",
+                                backgroundColor: "#4d7cff"
+                            },
+                            {
+                                label: "UHPC Kalıphane",
+                                data: yuzdeKaliphane9,
+                                borderColor: "rgba(144,	104,	190,0.9)",
+                                borderWidth: "0",
+                                backgroundColor: "rgba(144,	104,	190,0.7)"
+                            }
+
+                        ]
+                    },
+                    options: {
+                        scales: {
+                            yAxes: [{
+                                ticks: {
+                                    beginAtZero: true
+                                }
+                            }],
+                            xAxes: [{
+                                // Change here
+                                barPercentage: 0.2
+                            }]
+                        }
+                    }
+                });
+            </script>
+
+
+            @*-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*@
+
+            @*Kalıphane Hata Oranları*@
+            <div class="row">
+                <div class="col-xl-3 col-lg-6 mb-4">
+                    <span class="pull-right" style="font-size:15px; color:gray; -webkit-transform: rotate(+30deg);margin-top:19px">İlk Tarama</span>
+                    <div class="bg-white rounded-lg p-5 shadow">
+                        <h2 class="h4 font-weight-bold text-center mb-4">Kalıphaneler Toplamı</h2>
+
+                        <div class="dProgress mx-auto" data-value='@YuzdeHesap(Model.LastDayResults.Where(a => a.DurumT == "RED" && a.SayıT == 1).Count(), Model.LastDayResults.Where(a => a.SayıT == 1).Select(a => a.IDT).Count())'>
+                            <span class="dProgress-left">
+                                <span class="dProgress-bar border-primary"></span>
+                            </span>
+                            <span class="dProgress-right">
+                                <span class="dProgress-bar border-primary"></span>
+                            </span>
+                            <div class="dProgress-value w-100 h-100 rounded-circle d-flex align-items-center justify-content-center">
+                                <div class="h2 font-weight-bold">@YuzdeHesap(Model.LastDayResults.Where(a => a.DurumT == "RED" && a.SayıT == 1).Count(), Model.LastDayResults.Where(a => a.SayıT == 1).Select(a => a.IDT).Count())<sup class="small">%</sup></div>
+                            </div>
+                        </div>
+                        <div class="row text-center mt-4">
+                            <div class="col-6 border-right">
+                                <div class="h3 font-weight-bold mb-0">@Model.LastDayResults.Where(a => a.SayıT == 1).Select(a => a.IDT).Count()</div><i class="fa fa-circle" style="color:#7571F9;margin-right:5px;"></i><span class="text-gray">Tarama</span>
+                            </div>
+                            <div class="col-6">
+                                <div class="h3 font-weight-bold mb-0">@Model.LastDayResults.Where(a => a.DurumT == "RED" && a.SayıT == 1).Count()</div><i class="fa fa-circle" style="color:#7571F9;margin-right:5px"></i><span class="text-gray">Hata</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-lg-6 mb-4">
+                    <span class="pull-right" style="font-size:15px; color:gray; -webkit-transform: rotate(+30deg);margin-top:19px">İlk Tarama</span>
+                    <div class="bg-white rounded-lg p-5 shadow">
+                        <h2 class="h4 font-weight-bold text-center mb-4">UHPC Kalıphane</h2>
+
+
+                        <div class="dProgress mx-auto" data-value='@YuzdeHesap(Model.LastDayResults.Where(a => a.DurumT == "RED" && a.SayıT == 1 && a.TeslimT == "HOL-9").Count(), Model.LastDayResults.Where(a => a.SayıT == 1 && a.TeslimT == "HOL-9").Select(a => a.IDT).Count())'>
+                            <span class="dProgress-left">
+                                <span class="dProgress-bar border-danger"></span>
+                            </span>
+                            <span class="dProgress-right">
+                                <span class="dProgress-bar border-danger"></span>
+                            </span>
+                            <div class="dProgress-value w-100 h-100 rounded-circle d-flex align-items-center justify-content-center">
+                                <div class="h2 font-weight-bold">@YuzdeHesap(Model.LastDayResults.Where(a => a.DurumT == "RED" && a.SayıT == 1 && a.TeslimT == "HOL-9").Count(), Model.LastDayResults.Where(a => a.SayıT == 1 && a.TeslimT == "HOL-9").Select(a => a.IDT).Count())<sup class="small">%</sup></div>
+                            </div>
+                        </div>
+                        <div class="row text-center mt-4">
+                            <div class="col-6 border-right">
+                                <div class="h3 font-weight-bold mb-0">@Model.LastDayResults.Where(a => a.TeslimT == "HOL-9" && a.SayıT == 1).Count()</div><i class="fa fa-circle" style="color:#FF5E5E;margin-right:5px"></i><span class="text-gray">Tarama</span>
+                            </div>
+                            <div class="col-6">
+                                <div class="h3 font-weight-bold mb-0">@Model.LastDayResults.Where(a => a.TeslimT == "HOL-9" && a.DurumT == "RED" && a.SayıT == 1).Count()</div><i class="fa fa-circle" style="color:#FF5E5E;margin-right:5px"></i><span class="text-gray">Hata</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-lg-6 mb-4">
+                    <span class="pull-right" style="font-size:15px; color:gray; -webkit-transform: rotate(+30deg);margin-top:19px">İlk Tarama</span>
+                    <div class="bg-white rounded-lg p-5 shadow">
+                        <h2 class="h4 font-weight-bold text-center mb-4">Ana Kalıphane</h2>
+
+                        <div class="dProgress mx-auto" data-value='@YuzdeHesap(Model.LastDayResults.Where(a => a.DurumT == "RED" && a.SayıT == 1 && a.TeslimT == "HOL-6").Count(), Model.LastDayResults.Where(a => a.SayıT == 1 && a.TeslimT == "HOL-6").Select(a => a.IDT).Count())'>
+                            <span class="dProgress-left">
+                                <span class="dProgress-bar border-success"></span>
+                            </span>
+                            <span class="dProgress-right">
+                                <span class="dProgress-bar border-success"></span>
+                            </span>
+                            <div class="dProgress-value w-100 h-100 rounded-circle d-flex align-items-center justify-content-center">
+                                <div class="h2 font-weight-bold">@YuzdeHesap(Model.LastDayResults.Where(a => a.DurumT == "RED" && a.SayıT == 1 && a.TeslimT == "HOL-6").Count(), Model.LastDayResults.Where(a => a.SayıT == 1 && a.TeslimT == "HOL-6").Select(a => a.IDT).Count())<sup class="small">%</sup></div>
+                            </div>
+                        </div>
+                        <div class="row text-center mt-4">
+                            <div class="col-6 border-right">
+                                <div class="h3 font-weight-bold mb-0">@Model.LastDayResults.Where(a => a.TeslimT == "HOL-6" && a.SayıT == 1).Count()</div><i class="fa fa-circle" style="color:#6FD96F;margin-right:5px"></i><span class="text-gray">Tarama</span>
+                            </div>
+                            <div class="col-6">
+                                <div class="h3 font-weight-bold mb-0">@Model.LastDayResults.Where(a => a.TeslimT == "HOL-6" && a.DurumT == "RED" && a.SayıT == 1).Count()</div><i class="fa fa-circle" style="color:#6FD96F;margin-right:5px"></i><span class="text-gray">Hata</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-lg-6 mb-4">
+                    <span class="pull-right" style="font-size:15px; color:gray; -webkit-transform: rotate(+30deg);margin-top:19px">İlk Tarama</span>
+                    <div class="bg-white rounded-lg p-5 shadow">
+                        <h2 class="h4 font-weight-bold text-center mb-4">Özdemir Model</h2>
+
+                        <div class="dProgress mx-auto" data-value='@YuzdeHesap(Model.LastDayResults.Where(a => a.DurumT == "RED" && a.SayıT == 1 && a.TeslimT == "TAŞERON").Count(), Model.LastDayResults.Where(a => a.SayıT == 1 && a.TeslimT == "TAŞERON").Select(a => a.IDT).Count())'>
+                            <span class="dProgress-left">
+                                <span class="dProgress-bar border-warning"></span>
+                            </span>
+                            <span class="dProgress-right">
+                                <span class="dProgress-bar border-warning"></span>
+                            </span>
+                            <div class="dProgress-value w-100 h-100 rounded-circle d-flex align-items-center justify-content-center">
+                                <div class="h2 font-weight-bold">@YuzdeHesap(Model.LastDayResults.Where(a => a.DurumT == "RED" && a.SayıT == 1 && a.TeslimT == "TAŞERON").Count(), Model.LastDayResults.Where(a => a.SayıT == 1 && a.TeslimT == "TAŞERON").Select(a => a.IDT).Count())<sup class="small">%</sup></div>
+                            </div>
+                        </div>
+                        <div class="row text-center mt-4">
+                            <div class="col-6 border-right">
+                                <div class="h3 font-weight-bold mb-0">@Model.LastDayResults.Where(a => a.TeslimT == "TAŞERON" && a.SayıT == 1).Count()</div><i class="fa fa-circle" style="color:#F29D56;margin-right:5px"></i><span class="text-gray">Tarama</span>
+                            </div>
+                            <div class="col-6">
+                                <div class="h3 font-weight-bold mb-0">@Model.LastDayResults.Where(a => a.TeslimT == "TAŞERON" && a.DurumT == "RED" && a.SayıT == 1).Count()</div><i class="fa fa-circle" style="color:#F29D56;margin-right:5px"></i><span class="text-gray">Hata</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <script>
+                $(function () {
+
+                    $(".dProgress").each(function () {
+
+                        var value = $(this).attr('data-value');
+                        var left = $(this).find('.dProgress-left .dProgress-bar');
+                        var right = $(this).find('.dProgress-right .dProgress-bar');
+
+                        if (value > 0) {
+                            if (value <= 50) {
+                                right.css('transform', 'rotate(' + percentageToDegrees(value) + 'deg)')
+                            } else {
+                                right.css('transform', 'rotate(180deg)')
+                                left.css('transform', 'rotate(' + percentageToDegrees(value - 50) + 'deg)')
+                            }
+                        }
+
+                    })
+
+                    function percentageToDegrees(percentage) {
+
+                        return percentage / 100 * 360
+
+                    }
+
+                });
+            </script>
+
+        </div>
+
+        @*--------------------------------------------------------------------------------------------------AYLIK VERİLER--------------------------------------------------------------------------------*@
+
+    <div class="container-fluid tab-pane" id="month">
+        @*Veri Panelleri*@
+        <div class="row">
+            <div class="col-lg-3 col-sm-6">
+                <div class="card gradient-1">
+                    <div class="card-body">
+                        <h3 class="card-title text-white">Toplam Tarama</h3>
+                        <div class="d-inline-block">
+                            <h2 class="text-white">@Model.LastMonthResults.Select(a => a.PozBarkodT).Count() / @Model.LastMonthResults.Sum(b => b.AlanT)</h2>
+                            <p class="text-white mb-0">Adet / m²</p>
+                        </div>
+                        <span class="float-right display-5 opacity-5"><i class="fa fa-cube"></i></span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-sm-6">
+                <div class="card gradient-2">
+                    <div class="card-body">
+                        <h3 class="card-title text-white">Süreler</h3>
+                        <div class="d-inline-block">
+                            <h2 class="text-white"> @Model.LastMonthResults.Sum(b => b.SureT) / @Model.LastMonthResults.Sum(b => b.SureR) </h2>
+                            <p class="text-white mb-0">Tarama (dak) / Rapor (dak)</p>
+                        </div>
+                        <span class="float-right display-5 opacity-5"><i class="fa fa-clock-o"></i></span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-sm-6">
+                <div class="card gradient-3">
+                    <div class="card-body">
+                        <h3 class="card-title text-white">Panel Tarama</h3>
+                        <div class="d-inline-block">
+                            <h2 class="text-white">@Model.LastMonthResults.Where(a => a.MalzemeT == "BETON").Count() / @Model.LastMonthResults.Where(a => a.MalzemeT == "BETON").Sum(a => a.AlanT) </h2>
+                            <p class="text-white mb-0">Adet / m²</p>
+                        </div>
+                        <span class="float-right display-5 opacity-5">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" class="bi bi-bricks" viewBox="0 0 16 16">
+                                <path d="M0 .5A.5.5 0 0 1 .5 0h15a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-.5.5H14v2h1.5a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-.5.5H14v2h1.5a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-.5.5H.5a.5.5 0 0 1-.5-.5v-3a.5.5 0 0 1 .5-.5H2v-2H.5a.5.5 0 0 1-.5-.5v-3A.5.5 0 0 1 .5 6H2V4H.5a.5.5 0 0 1-.5-.5v-3zM3 4v2h4.5V4H3zm5.5 0v2H13V4H8.5zM3 10v2h4.5v-2H3zm5.5 0v2H13v-2H8.5zM1 1v2h3.5V1H1zm4.5 0v2h5V1h-5zm6 0v2H15V1h-3.5zM1 7v2h3.5V7H1zm4.5 0v2h5V7h-5zm6 0v2H15V7h-3.5zM1 13v2h3.5v-2H1zm4.5 0v2h5v-2h-5zm6 0v2H15v-2h-3.5z" />
+                            </svg>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @*-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*@
+        @*Aylık Tarama Sayı Column Grafiği*@
+        <div class="row d-flex justify-content-center">
+            <div class="col-lg-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h3 class="card-title">Kalıp Tarama Sayı Grafiği</h3>
+                        <span style="margin-left:30px;">Aylık</span>
+                        <canvas id="AyColumn"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <script>
+            var Ay6Sayı = @Model.LastMonthResults.Where(a => a.TeslimT == "HOL-6").Select(a => a.IDT).Count();
+            var Ay9Sayı = @Model.LastMonthResults.Where(a => a.TeslimT == "HOL-9").Select(a => a.IDT).Count();
+            var AyOzdSayı = @Model.LastMonthResults.Where(a => a.TeslimT == "TAŞERON").Select(a => a.IDT).Count();
+
+            var ctx = document.getElementById("AyColumn");
+
+            ctx.height = 100;
+            var myChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ["UHPC Kalıphane", "Ana Kalıphane","Özdemir Model"],
+                    datasets: [
+                        {
+                            label: "Kalıphaneler",
+                            data: [Ay9Sayı, Ay6Sayı, AyOzdSayı],
+                            borderColor: "rgba(117, 113, 249, 0.9)",
+                            borderWidth: "0",
+                            backgroundColor: "rgba(117, 113, 249, 0.5)"
+                        }
+                    ]
+                },
+                options: {
+                    scales: {
+                        yAxes: [{
+                            ticks: {
+                                beginAtZero: true
+                            }
+                        }]
+                    }
+                }
+            });
+        </script>
+
+        @*-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*@
+
+
+        @*Kalıphaneler Hata Oranı*@
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-5">
+                                <div class="card-body">
+                                    <h3 class="card-title" style="font-size:20px;">İmalat Yerine Göre Kalıp Tarama Oranları</h3>
+                                    <canvas id="imalatAy"></canvas>
+                                </div>
+                            </div>
+                            <div class="col-5" style="margin-left:100px;margin-top:50px">
+                                <h4 class="mt-4">Tarama Konusuna Göre Yüzdelik Dağılım</h4>
+                                <span style="font-size:14px;">Tarama Sayısı / Hata Sayısı </span>
+                                <div class="mt-4">
+                                    <h5>UHPC Kalıphane</h5>
+                                    <h4>@Model.LastMonthResults.Where(a => a.TeslimT == "HOL-9").Select(a => a.IDT).Count() / @Model.LastMonthResults.Where(a => a.TeslimT == "HOL-9" && a.DurumT == "RED").Select(a => a.IDT).Count() <span class="pull-right">%@YuzdeHesap(Model.LastMonthResults.Where(a => a.TeslimT == "HOL-9" && a.DurumT == "RED").Select(a => a.IDT).Count(), Model.LastMonthResults.Where(a => a.TeslimT == "HOL-9").Select(a => a.IDT).Count())</span></h4>
+                                    <div class="progress mb-3" style="height:9px;">
+                                        <div class="progress-bar gradient-1" style="width: @YuzdeHesap(Model.LastMonthResults.Where(a => a.TeslimT == "HOL-9" && a.DurumT == "RED").Select(a => a.IDT).Count(), Model.LastMonthResults.Where(a => a.TeslimT == "HOL-9").Select(a => a.IDT).Count())%" role="progressbar"><span class="sr-only">%@YuzdeHesap(Model.LastMonthResults.Where(a => a.TeslimT == "HOL-9" && a.DurumT == "RED").Select(a => a.IDT).Count(), Model.LastMonthResults.Where(a => a.TeslimT == "HOL-9").Select(a => a.IDT).Count())</span></div>
+                                    </div>
+                                </div>
+                                <hr />
+                                <div class="mt-4">
+                                    <h5>Ahşap Kalıphane</h5>
+                                    <h4>@Model.LastMonthResults.Where(a => a.TeslimT == "HOL-6").Select(a => a.IDT).Count() / @Model.LastMonthResults.Where(a => a.TeslimT == "HOL-6" && a.DurumT == "RED").Select(a => a.IDT).Count() <span class="pull-right">%@YuzdeHesap(Model.LastMonthResults.Where(a => a.TeslimT == "HOL-6" && a.DurumT == "RED").Select(a => a.IDT).Count(), Model.LastMonthResults.Where(a => a.TeslimT == "HOL-6").Select(a => a.IDT).Count())</span></h4>
+                                    <div class="progress mb-3" style="height:9px;">
+                                        <div class="progress-bar gradient-2" style="width: @YuzdeHesap(Model.LastMonthResults.Where(a => a.TeslimT == "HOL-6" && a.DurumT == "RED").Select(a => a.IDT).Count(), Model.LastMonthResults.Where(a => a.TeslimT == "HOL-6").Select(a => a.IDT).Count())%" role="progressbar"><span class="sr-only">%@YuzdeHesap(Model.LastMonthResults.Where(a => a.TeslimT == "HOL-6" && a.DurumT == "RED").Select(a => a.IDT).Count(), Model.LastMonthResults.Where(a => a.TeslimT == "HOL-6").Select(a => a.IDT).Count())</span></div>
+                                    </div>
+                                </div>
+                                <hr />
+                                <div class="mt-4">
+                                    <h5>Özdemir Model</h5>
+                                    <h4>@Model.LastMonthResults.Where(a => a.TeslimT == "TAŞERON").Select(a => a.IDT).Count() / @Model.LastMonthResults.Where(a => a.TeslimT == "TAŞERON" && a.DurumT == "RED").Select(a => a.IDT).Count() <span class="pull-right">%@YuzdeHesap(Model.LastMonthResults.Where(a => a.TeslimT == "TAŞERON" && a.DurumT == "RED").Select(a => a.IDT).Count(), Model.LastMonthResults.Where(a => a.TeslimT == "TAŞERON").Select(a => a.IDT).Count())</span></h4>
+                                    <div class="progress mb-3" style="height:9px;">
+                                        <div class="progress-bar gradient-3" style="width: @YuzdeHesap(Model.LastMonthResults.Where(a => a.TeslimT == "TAŞERON" && a.DurumT == "RED").Select(a => a.IDT).Count(), Model.LastMonthResults.Where(a => a.TeslimT == "TAŞERON").Select(a => a.IDT).Count())%" role="progressbar"><span class="sr-only">%@YuzdeHesap(Model.LastMonthResults.Where(a => a.TeslimT == "TAŞERON" && a.DurumT == "RED").Select(a => a.IDT).Count(), Model.LastMonthResults.Where(a => a.TeslimT == "TAŞERON").Select(a => a.IDT).Count())</span></div>
+                                    </div>
+                                </div>
+                                <hr />
+                                <div class="mt-4">
+                                    <h5>CNC Kalıphane</h5>
+                                    <h4>@Model.LastMonthResults.Where(a => a.TeslimT == "CNC").Select(a => a.IDT).Count() / @Model.LastMonthResults.Where(a => a.TeslimT == "CNC" && a.DurumT == "RED").Select(a => a.IDT).Count() <span class="pull-right">%@YuzdeHesap(Model.LastMonthResults.Where(a => a.TeslimT == "CNC" && a.DurumT == "RED").Select(a => a.IDT).Count(), Model.LastMonthResults.Where(a => a.TeslimT == "CNC").Select(a => a.IDT).Count())</span></h4>
+                                    <div class="progress mb-3" style="height:9px;">
+                                        <div class="progress-bar gradient-4" style="width: @YuzdeHesap(Model.LastMonthResults.Where(a => a.TeslimT == "CNC" && a.DurumT == "RED").Select(a => a.IDT).Count(), Model.LastMonthResults.Where(a => a.TeslimT == "CNC").Select(a => a.IDT).Count())%" role="progressbar"><span class="sr-only">%@YuzdeHesap(Model.LastMonthResults.Where(a => a.TeslimT == "CNC" && a.DurumT == "RED").Select(a => a.IDT).Count(), Model.LastMonthResults.Where(a => a.TeslimT == "CNC").Select(a => a.IDT).Count())</span></div>
+                                    </div>
+                                </div>
+                                <hr />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            var anaSonucAy = @YuzdeHesap(Model.LastMonthResults.Where(a => a.TeslimT == "HOL-6").Select(a => a.IDT).Count(), Model.LastMonthResults.Select(a => a.IDT).Count());
+            var UhpcSonucAy = @YuzdeHesap(Model.LastMonthResults.Where(a => a.TeslimT == "HOL-9").Select(a => a.IDT).Count(), Model.LastMonthResults.Select(a => a.IDT).Count());
+            var CncSonucAy = @YuzdeHesap(Model.LastMonthResults.Where(a => a.TeslimT == "CNC").Select(a => a.IDT).Count(), Model.LastMonthResults.Select(a => a.IDT).Count());
+            var TaseronSonucAy = @YuzdeHesap(Model.LastMonthResults.Where(a => a.TeslimT == "TAŞERON").Select(a => a.IDT).Count(), Model.LastMonthResults.Select(a => a.IDT).Count());
+
+            var ctx = document.getElementById("imalatAy");
+            ctx.height = 150;
+            var myChart = new Chart(ctx, {
+                type: 'polarArea',
+                data: {
+                    datasets: [{
+                        data: [anaSonucAy, UhpcSonucAy, CncSonucAy, TaseronSonucAy],
+                        backgroundColor: [
+                            "rgba(117, 113, 249,0.9)",
+                            "rgba(144,	104,	190,.9)",
+                            "#4d7cff",
+                            "rgba(117, 113, 249, 0.7)"
+                        ]
+
+                    }],
+                    labels: [
+                        "Ana Kalıphane",
+                        "UHPC Kalıphane",
+                        "CNC Kalıphane",
+                        "Özdemir Model"
+                    ]
+                },
+                options: {
+                    responsive: true
+                }
+            });
+        </script>
+
+        @*-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*@
+
+        @*Tekrar Tarama Grafik*@
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title">Tekrar Tarama / Onay Dağılım Grafiği</h4>
+                        <canvas id="tekrartaramaAy"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+
+
+
+        <script>
+            var yuzdeKaliphane6 = @Html.Raw(JsonConvert.SerializeObject(ViewBag.AyHataYuzdeler6));
+            var yuzdeKaliphane9 = @Html.Raw(JsonConvert.SerializeObject(ViewBag.AyHataYuzdeler9));
+            var yuzdeKaliphaneTop = @Html.Raw(JsonConvert.SerializeObject(ViewBag.AyHataYuzdelerTop));
+
+            //bar chart
+            var ctx = document.getElementById("tekrartaramaAy");
+            ctx.height = 100;
+            var myChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ["1.Tarama", "2.Tarama", "3.Tarama", "4.Tarama", "5.Tarama", "6.Tarama", "7.Tarama", "8.Tarama", "9.Tarama", "10.Tarama"],
+                    datasets: [
+                        {
+                            label: "Ana Kalıphane",
+                            data: yuzdeKaliphane6,
+                            borderColor: "rgba(117, 113, 249, 0.9)",
+                            borderWidth: "0",
+                            backgroundColor: "rgba(117, 113, 249, 0.5)"
+                        },
+                        {
+                            label: "Kalıphaneler Toplamı",
+                            data: yuzdeKaliphaneTop,
+                            borderColor: "#4d7cff",
+                            borderWidth: "0",
+                            backgroundColor: "#4d7cff"
+                        },
+                        {
+                            label: "UHPC Kalıphane",
+                            data: yuzdeKaliphane9,
+                            borderColor: "rgba(144,	104,	190,0.9)",
+                            borderWidth: "0",
+                            backgroundColor: "rgba(144,	104,	190,0.7)"
+                        }
+
+                    ]
+                },
+                options: {
+                    scales: {
+                        yAxes: [{
+                            ticks: {
+                                beginAtZero: true
+                            }
+                        }],
+                        xAxes: [{
+                            // Change here
+                            barPercentage: 0.2
+                        }]
+                    }
+                }
+            });
+        </script>
+
+        @*-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*@
+
+        @*Kalıphane Hata Oranları*@
+        <div class="row">
+            <div class="col-xl-3 col-lg-6 mb-4">
+                <span class="pull-right" style="font-size:15px; color:gray; -webkit-transform: rotate(+30deg);margin-top:19px">İlk Tarama</span>
+                <div class="bg-white rounded-lg p-5 shadow">
+                    <h2 class="h4 font-weight-bold text-center mb-4">Kalıphaneler Toplamı</h2>
+
+                    <div class="dProgress mx-auto" data-value='@YuzdeHesap(Model.LastMonthResults.Where(a => a.DurumT == "RED" && a.SayıT == 1).Count(), Model.LastMonthResults.Where(a => a.SayıT == 1).Select(a => a.IDT).Count())'>
+                        <span class="dProgress-left">
+                            <span class="dProgress-bar border-primary"></span>
+                        </span>
+                        <span class="dProgress-right">
+                            <span class="dProgress-bar border-primary"></span>
+                        </span>
+                        <div class="dProgress-value w-100 h-100 rounded-circle d-flex align-items-center justify-content-center">
+                            <div class="h2 font-weight-bold">@YuzdeHesap(Model.LastMonthResults.Where(a => a.DurumT == "RED" && a.SayıT == 1).Count(), Model.LastMonthResults.Where(a => a.SayıT == 1).Select(a => a.IDT).Count())<sup class="small">%</sup></div>
+                        </div>
+                    </div>
+                    <div class="row text-center mt-4">
+                        <div class="col-6 border-right">
+                            <div class="h3 font-weight-bold mb-0">@Model.LastMonthResults.Where(a => a.SayıT == 1).Select(a => a.IDT).Count()</div><i class="fa fa-circle" style="color:#7571F9;margin-right:5px;"></i><span class="text-gray">Tarama</span>
+                        </div>
+                        <div class="col-6">
+                            <div class="h3 font-weight-bold mb-0">@Model.LastMonthResults.Where(a => a.DurumT == "RED" && a.SayıT == 1).Count()</div><i class="fa fa-circle" style="color:#7571F9;margin-right:5px"></i><span class="text-gray">Hata</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-3 col-lg-6 mb-4">
+                <span class="pull-right" style="font-size:15px; color:gray; -webkit-transform: rotate(+30deg);margin-top:19px">İlk Tarama</span>
+                <div class="bg-white rounded-lg p-5 shadow">
+                    <h2 class="h4 font-weight-bold text-center mb-4">UHPC Kalıphane</h2>
+
+
+                    <div class="dProgress mx-auto" data-value='@YuzdeHesap(Model.LastMonthResults.Where(a => a.DurumT == "RED" && a.SayıT == 1 && a.TeslimT == "HOL-9").Count(), Model.LastMonthResults.Where(a => a.SayıT == 1 && a.TeslimT == "HOL-9").Select(a => a.IDT).Count())'>
+                        <span class="dProgress-left">
+                            <span class="dProgress-bar border-danger"></span>
+                        </span>
+                        <span class="dProgress-right">
+                            <span class="dProgress-bar border-danger"></span>
+                        </span>
+                        <div class="dProgress-value w-100 h-100 rounded-circle d-flex align-items-center justify-content-center">
+                            <div class="h2 font-weight-bold">@YuzdeHesap(Model.LastMonthResults.Where(a => a.DurumT == "RED" && a.SayıT == 1 && a.TeslimT == "HOL-9").Count(), Model.LastMonthResults.Where(a => a.SayıT == 1 && a.TeslimT == "HOL-9").Select(a => a.IDT).Count())<sup class="small">%</sup></div>
+                        </div>
+                    </div>
+                    <div class="row text-center mt-4">
+                        <div class="col-6 border-right">
+                            <div class="h3 font-weight-bold mb-0">@Model.LastMonthResults.Where(a => a.TeslimT == "HOL-9" && a.SayıT == 1).Count()</div><i class="fa fa-circle" style="color:#FF5E5E;margin-right:5px"></i><span class="text-gray">Tarama</span>
+                        </div>
+                        <div class="col-6">
+                            <div class="h3 font-weight-bold mb-0">@Model.LastMonthResults.Where(a => a.TeslimT == "HOL-9" && a.DurumT == "RED" && a.SayıT == 1).Count()</div><i class="fa fa-circle" style="color:#FF5E5E;margin-right:5px"></i><span class="text-gray">Hata</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-3 col-lg-6 mb-4">
+                <span class="pull-right" style="font-size:15px; color:gray; -webkit-transform: rotate(+30deg);margin-top:19px">İlk Tarama</span>
+                <div class="bg-white rounded-lg p-5 shadow">
+                    <h2 class="h4 font-weight-bold text-center mb-4">Ana Kalıphane</h2>
+
+                    <div class="dProgress mx-auto" data-value='@YuzdeHesap(Model.LastMonthResults.Where(a => a.DurumT == "RED" && a.SayıT == 1 && a.TeslimT == "HOL-6").Count(), Model.LastMonthResults.Where(a => a.SayıT == 1 && a.TeslimT == "HOL-6").Select(a => a.IDT).Count())'>
+                        <span class="dProgress-left">
+                            <span class="dProgress-bar border-success"></span>
+                        </span>
+                        <span class="dProgress-right">
+                            <span class="dProgress-bar border-success"></span>
+                        </span>
+                        <div class="dProgress-value w-100 h-100 rounded-circle d-flex align-items-center justify-content-center">
+                            <div class="h2 font-weight-bold">@YuzdeHesap(Model.LastMonthResults.Where(a => a.DurumT == "RED" && a.SayıT == 1 && a.TeslimT == "HOL-6").Count(), Model.LastMonthResults.Where(a => a.SayıT == 1 && a.TeslimT == "HOL-6").Select(a => a.IDT).Count())<sup class="small">%</sup></div>
+                        </div>
+                    </div>
+                    <div class="row text-center mt-4">
+                        <div class="col-6 border-right">
+                            <div class="h3 font-weight-bold mb-0">@Model.LastMonthResults.Where(a => a.TeslimT == "HOL-6" && a.SayıT == 1).Count()</div><i class="fa fa-circle" style="color:#6FD96F;margin-right:5px"></i><span class="text-gray">Tarama</span>
+                        </div>
+                        <div class="col-6">
+                            <div class="h3 font-weight-bold mb-0">@Model.LastMonthResults.Where(a => a.TeslimT == "HOL-6" && a.DurumT == "RED" && a.SayıT == 1).Count()</div><i class="fa fa-circle" style="color:#6FD96F;margin-right:5px"></i><span class="text-gray">Hata</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-3 col-lg-6 mb-4">
+                <span class="pull-right" style="font-size:15px; color:gray; -webkit-transform: rotate(+30deg);margin-top:19px">İlk Tarama</span>
+                <div class="bg-white rounded-lg p-5 shadow">
+                    <h2 class="h4 font-weight-bold text-center mb-4">Özdemir Model</h2>
+
+                    <div class="dProgress mx-auto" data-value='@YuzdeHesap(Model.LastMonthResults.Where(a => a.DurumT == "RED" && a.SayıT == 1 && a.TeslimT == "TAŞERON").Count(), Model.LastMonthResults.Where(a => a.SayıT == 1 && a.TeslimT == "TAŞERON").Select(a => a.IDT).Count())'>
+                        <span class="dProgress-left">
+                            <span class="dProgress-bar border-warning"></span>
+                        </span>
+                        <span class="dProgress-right">
+                            <span class="dProgress-bar border-warning"></span>
+                        </span>
+                        <div class="dProgress-value w-100 h-100 rounded-circle d-flex align-items-center justify-content-center">
+                            <div class="h2 font-weight-bold">@YuzdeHesap(Model.LastMonthResults.Where(a => a.DurumT == "RED" && a.SayıT == 1 && a.TeslimT == "TAŞERON").Count(), Model.LastMonthResults.Where(a => a.SayıT == 1 && a.TeslimT == "TAŞERON").Select(a => a.IDT).Count())<sup class="small">%</sup></div>
+                        </div>
+                    </div>
+                    <div class="row text-center mt-4">
+                        <div class="col-6 border-right">
+                            <div class="h3 font-weight-bold mb-0">@Model.LastMonthResults.Where(a => a.TeslimT == "TAŞERON" && a.SayıT == 1).Count()</div><i class="fa fa-circle" style="color:#F29D56;margin-right:5px"></i><span class="text-gray">Tarama</span>
+                        </div>
+                        <div class="col-6">
+                            <div class="h3 font-weight-bold mb-0">@Model.LastMonthResults.Where(a => a.TeslimT == "TAŞERON" && a.DurumT == "RED" && a.SayıT == 1).Count()</div><i class="fa fa-circle" style="color:#F29D56;margin-right:5px"></i><span class="text-gray">Hata</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <script>
+            $(function () {
+                $(".dProgress").each(function () {
+
+                    var value = $(this).attr('data-value');
+                    var left = $(this).find('.dProgress-left .dProgress-bar');
+                    var right = $(this).find('.dProgress-right .dProgress-bar');
+
+                    if (value > 0) {
+                        if (value <= 50) {
+                            right.css('transform', 'rotate(' + percentageToDegrees(value) + 'deg)')
+                        } else {
+                            right.css('transform', 'rotate(180deg)')
+                            left.css('transform', 'rotate(' + percentageToDegrees(value - 50) + 'deg)')
+                        }
+                    }
+
+                })
+                function percentageToDegrees(percentage) {
+                    return percentage / 100 * 360
+                }
+            });
+        </script>
+
+
+    </div>
+    </div>
+
+</body>
+
+<script src="https://cdn.jsdelivr.net/chartist.js/latest/chartist.min.js"></script>
+

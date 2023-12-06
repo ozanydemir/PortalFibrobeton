@@ -1,0 +1,414 @@
+﻿@model PortalFibrobeton.Models.Class.PeraRaporlar.PeraV4ReportsViewModel
+
+@{
+    ViewBag.Title = "UretimRaporu";
+    Layout = "~/Views/Shared/_PeraLayout.cshtml";
+}
+
+<head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link type="text/css" href="https://cdn.datatables.net/buttons/2.3.6/css/buttons.dataTables.min.css" rel="stylesheet" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css" />
+
+    <style>
+        .notStil.input:focus {
+            outline: none;
+        }
+
+        .form-control:focus {
+            border-color: inherit;
+            -webkit-box-shadow: none;
+            box-shadow: none;
+        }
+
+        button.fred {
+            background-color: limegreen;
+            border-color: limegreen;
+        }
+
+        button.pri {
+            background-color: royalblue;
+            border-color: steelblue
+        }
+
+        button.pedefe {
+            background-color: red;
+            border-color: firebrick;
+        }
+
+        button.kopya {
+            background-color: darkorange;
+            border-color: orange;
+        }
+    </style>
+
+</head>
+
+<body>
+    <div class="container-fluid flex-grow-1 container-p-y">
+        <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">PeraFIBRO /</span> Üretim Raporu</h4>
+
+        @using (Html.BeginForm("UretimRaporu", "PeraV4Raporlar", FormMethod.Post, new { onsubmit = "return validateForm();" }))
+        {
+            <div class="row mt-3">
+                <div class="col-xxl-6">
+                    <div class="card mt-2">
+                        <div class="card-header d-flex align-items-center justify-content-between">
+                            <h5 class="mb-0">Tarih Seç</h5>
+                            <small class="text-muted float-end"></small>
+                        </div>
+                        <div class="card-body">
+                            <div class="row mt-3 input-group">
+                                <label class="col-sm-2 col-form-label">Başlangıç</label>
+                                <input type="date" class="form-control datepicker" name="bas" style="cursor:pointer" />
+                                <label style="margin-left:10px" class="col-sm-2 col-form-label">Ekip</label>
+                                <select class="form-select" name="ekip" style="cursor:pointer">
+                                    <option selected></option>
+                                    <option>EKİP-1</option>
+                                    <option>EKİP-2</option>
+                                    <option>EKİP-3</option>
+                                    <option>EKİP-4</option>
+                                    <option>EKİP-5</option>
+                                    <option>EKİP-6</option>
+                                    <option>EKİP-7</option>
+                                    <option>EKİP-8</option>
+                                    <option>EKİP-9</option>
+                                    <option>LABORATUVAR</option>
+                                    <option>PREMIX</option>
+                                    <option>UHPC-1.EKİP</option>
+                                    <option>UHPC-2.EKİP</option>
+                                </select>
+                            </div>
+                            <div class="row mt-3 input-group">
+                                <label class="col-sm-2 col-form-label">Bitiş</label>
+                                <input type="date" class="form-control datepicker" name="bit" style="cursor:pointer" />
+                                <label style="margin-left:10px" class="col-sm-2 col-form-label">HAT</label>
+                                <select class="form-select" name="hat" style="cursor:pointer">
+                                    <option selected></option>
+                                    <option>HAT-1</option>
+                                    <option>HAT-2</option>
+                                    <option>HAT-3</option>
+                                    <option>HAT-4</option>
+                                    <option>HAT-5</option>
+                                    <option>HAT-6</option>
+                                    <option>HAT-7</option>
+                                    <option>HAT-8</option>
+                                    <option>HAT-9</option>
+                                    <option>LABORATUVAR</option>
+                                    <option>PREMIX</option>
+                                    <option>POLYESTER(GRP)</option>
+                                    <option>FİBROSİM</option>
+                                </select>
+                            </div>
+                            <div class="row mt-3 input-group">
+                                <label class="col-sm-2 col-form-label">POZ</label>
+                                <input type="text" class="form-control" name="poz" />
+                                <label class="col-sm-2 col-form-label">Proje</label>
+                                <select class="form-select selectpicker" name="proje" style="cursor:pointer">
+                                    <option selected></option>
+                                    @if (Model.Projeler != null)
+                                    {
+                                        foreach (var item in Model.Projeler)
+                                        {
+                                            <option>@item.PROJE_ADI</option>
+                                        }
+                                    }
+
+                                </select>
+                            </div>
+                            <div class="mt-3 text-center">
+                                <button type="submit" class="btn btn-primary">Ara</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mt-3">
+                <div class="card mt-5">
+                    <div class="card-body">
+                        <div class="table-responsive text-nowrap mt-4">
+                            <table id="uretimRaporu" class="table table-striped">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th style="color:#fff">Proje Adı</th>
+                                        <th style="color:#fff">Proje Türü</th>
+                                        <th style="color:#fff">Sipariş Tarihi</th>
+                                        <th style="color:#fff">Sipariş No</th>
+                                        <th style="color:#fff">Poz No</th>
+                                        <th style="color:#fff">Malzeme Adı</th>
+                                        <th style="color:#fff">Malzeme Cinsi</th>
+                                        <th style="color:#fff">En</th>
+                                        <th style="color:#fff">Boy</th>
+                                        <th style="color:#fff">Son Sipariş Miktarı</th>
+                                        <th style="color:#fff">Kalan Döküm</th>
+                                        <th style="color:#fff">Döküm Tarih</th>
+                                        <th style="color:#fff">Hat</th>
+                                        <th style="color:#fff">Dökülen Adet</th>
+                                        <th style="color:#fff">Sipariş (m2)</th>
+                                        <th style="color:#fff">Dök. Siparis (m2)</th>
+                                        <th style="color:#fff">Döküm (m2)</th>
+                                        <th style="color:#fff">Dök. Döküm (m2)</th>
+                                        <th style="color:#fff">Dök. Ürün Ağırlık</th>
+                                        <th style="color:#fff">Dök. Frame Ağırlık</th>
+                                        <th style="color:#fff">İş Emri Barkodu</th>
+                                        <th style="color:#fff">İş Emri Tarih</th>
+                                        <th style="color:#fff">Blok Adı</th>
+                                        <th style="color:#fff">Cephe Adı</th>
+                                        <th style="color:#fff">Poz Türü</th>
+                                        <th style="color:#fff">Döküm Ekip</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @if (Model != null)
+                                    {
+                                        foreach (var item in Model.UretimRaporu)
+                                        {
+                                            <tr>
+                                                <td>@item.PROJE_ADI</td>
+                                                <td>@item.PROJE_TURU</td>
+                                                <td>@(item.SIPARIS_TARIH.HasValue ? item.SIPARIS_TARIH.Value.ToString("dd/MM/yyyy") : "")</td>
+                                                <td>@item.SIPARIS_NO</td>
+                                                <td>@item.POZ_NO</td>
+                                                <td>@item.MALZEME_ADI</td>
+                                                <td>@item.MALZEME_CINSI</td>
+                                                <td>@item.EN</td>
+                                                <td>@item.BOY</td>
+                                                <td>@item.SON_SIPARIS_MIKTARI</td>
+                                                <td>@item.KALAN_DOKUM</td>
+                                                <td>@(item.DOKUM_TARIH.HasValue ? item.DOKUM_TARIH.Value.ToString("dd/MM/yyyy") : "")</td>
+                                                <td>@item.HAT</td>
+                                                <td>@item.DOKULEN_ADET</td>
+                                                <td>@item.SIPARIS_METREKARE</td>
+                                                <td>@item.DOKUM_SIPARIS_METREKARE</td>
+                                                <td>@item.DOKUM_METREKARE</td>
+                                                <td>@item.DOK_DOKUM_M2</td>
+                                                <td>@item.DOKUM_URUN_AGIRLIK</td>
+                                                <td>@item.DOKUM_FRAME_AGIRLIK</td>
+                                                <td>@item.IS_EMRI_BARKODU</td>
+                                                <td>@(item.IS_EMRI_TARIH.HasValue ? item.IS_EMRI_TARIH.Value.ToString("dd/MM/yyyy") : "")</td>
+                                                <td>@item.BLOK_ADI</td>
+                                                <td>@item.CEPHE_ADI</td>
+                                                <td>@item.POZ_TURU</td>
+                                                <td>@item.DOKUM_EKIP</td>
+                                            </tr>
+
+                                        }
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+
+            </div>
+            <div class="row mt-4">
+                <div class="col-md-2 col-lg-12 order-2 mb-4">
+                    <div class="card h-100">
+                        <div class="card-header d-flex align-items-center justify-content-between">
+                            <h5 class="card-title m-0 me-2">Genel Toplamlar</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-lg-3">
+                                    <div class="d-flex mb-1">
+                                        <div class="avatar flex-shrink-0 mt-2" style="cursor:default">
+                                            <div style="width: 25px; height: 25px; background-color: #d0aef0; border-radius: 7px; cursor: default"></div>
+                                        </div>
+                                        <div class="d-flex w-100 flex-wrap align-items-center justify-content-start gap-2">
+                                            <div class="me-2">
+                                                <h6 class="mb-0">Toplam Döküm</h6>
+                                            </div>
+                                            <div class="user-progress d-flex align-items-center gap-1">
+                                                <h6 class="mb-0">@Model.UretimRaporu.Sum(a => a.DOKULEN_ADET)</h6>
+                                                <span class="text-muted">Ad.</span>
+                                            </div>
+                                            <div class="user-progress d-flex align-items-center gap-1">
+                                                <h6 class="mb-0"> / @Math.Round(Model.UretimRaporu.Sum(a => a.DOK_DOKUM_M2) ?? 0.000, 3)</h6>
+                                                <span class="text-muted">m²</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="d-flex mb-1">
+                                        <div class="avatar flex-shrink-0 mt-2" style="cursor:default">
+                                            <div style="width: 25px; height: 25px; background-color: #aef0ae; border-radius: 7px; cursor: default"></div>
+                                        </div>
+                                        <div class="d-flex w-100 flex-warp align-items-center justify-content-start gap-2">
+                                            <div class="me-2">
+                                                <h6 class="mb-0">Top. Döküm Sipariş</h6>
+                                            </div>
+                                            <div class="user-progress d-flex align-items-center gap-1">
+                                                <h6 class="mb-0">@Math.Round(Model.UretimRaporu.Sum(a => a.DOKUM_SIPARIS_METREKARE) ?? 0.000, 3)</h6>
+                                                <span class="text-muted">m²</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="d-flex mb-1">
+                                        <div class="avatar flex-shrink-0 mt-2" style="cursor:default">
+                                            <div style="width: 25px; height: 25px; background-color: #aeeff0; border-radius: 7px; cursor: default"></div>
+                                        </div>
+                                        <div class="d-flex w-100 flex-warp align-items-center justify-content-start gap-2">
+                                            <div class="me-2">
+                                                <h6 class="mb-0">Top. Ürün Ağırlık</h6>
+                                            </div>
+                                            <div class="user-progress d-flex align-items-center gap-1">
+                                                <h6 class="mb-0">@Math.Round(Model.UretimRaporu.Sum(a => a.DOKUM_URUN_AGIRLIK) ?? 0.000,3)</h6>
+                                                <span class="text-muted">kg</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="d-flex mb-1">
+                                        <div class="avatar flex-shrink-0 mt-2" style="cursor:default">
+                                            <div style="width: 25px; height: 25px; background-color: #f0aeae; border-radius: 7px; cursor: default"></div>
+                                        </div>
+                                        <div class="d-flex w-100 flex-warp align-items-center justify-content-start gap-2">
+                                            <div class="me-2">
+                                                <h6 class="mb-0">Top. Frame Ağırlık</h6>
+                                            </div>
+                                            <div class="user-progress d-flex align-items-center gap-1">
+                                                <h6 class="mb-0">@Math.Round(Model.UretimRaporu.Sum(a => a.DOKUM_FRAME_AGIRLIK) ?? 0.000, 3)</h6>
+                                                <span class="text-muted">kg</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>                         
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+        }
+
+
+    </div>
+
+    <div id="overlay" style="display: none; position: fixed; top: 0; left: 0; height: 100%; width: 100%; z-index: 9999; background-color: rgba(255,255,255,0.9);">
+        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
+            <!-- Spinner -->
+            <div class="spinner-border spinner-border-lg text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+
+
+
+<script type="text/javascript" src="https://code.jquery.com/jquery-3.5.1.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/buttons/2.3.6/js/dataTables.buttons.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.html5.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.print.min.js"></script>
+
+<script>
+    $('#uretimRaporu').DataTable({
+        dom: 'Blfrtip',
+        buttons: [
+            {
+                extend: 'excel',
+                text: '<i class="fa fa-file-excel-o"></i>',
+                titleAttr: 'Excel',
+                className: 'fred',
+                exportOptions: {
+                    decimal: ','
+                },
+                excelStyles: [
+                    {
+                        template: 'green_medium',
+                    },
+                    {
+                        cells: 'sh',
+                        style: {
+                            font: {
+                                size: 14,
+                                b: false,
+                            },
+                            fill: {
+                                pattern: {
+                                    color: '1C3144'
+                                }
+                            }
+                        }
+                    }
+                ]
+            },
+
+            {
+                extend: 'copy',
+                text: '<i class="fa fa-clone"></i>',
+                titleAttr: 'Kopyala',
+                className: 'kopya'
+            }
+        ],
+        "lengthMenu": [[10, 25, 50, 100, 200, -1], [10, 25, 50, 100, 200, "Tümü"]],
+        "language": {
+            "lengthMenu": "Sayfada _MENU_ kayıt göster",
+            "zeroRecords": "Kayıt bulunamadı",
+            "info": "_TOTAL_ kayıttan _START_ - _END_ arası gösteriliyor",
+            "infoEmpty": "Kayıt yok",
+            "infoFiltered": "(_MAX_ kayıt içerisinden bulunan)",
+            "search": "Ara:",
+            "paginate": {
+                "first": "İlk",
+                "last": "Son",
+                "next": "Sonraki",
+                "previous": "Önceki"
+            }
+        },
+        "deferRender": true
+    });
+</script>
+
+@*Tarih Null Kontrol*@
+<script>
+    function validateForm() {
+        var bas = document.querySelector('input[name="bas"]').value;
+        var bit = document.querySelector('input[name="bit"]').value;
+
+        if (!bas || !bit) {
+            alert("Lütfen başlangıç ve bitiş tarihini seçiniz!");
+            return false;
+        }
+
+
+        document.getElementById("overlay").style.display = "block";
+
+        return true;
+    }
+
+</script>
+
+
+@*DateTimePicker LocalStorage*@
+<script>
+    $(document).ready(function () {
+        // datetimepicker'ların değerleri değiştiğinde localStorage'a kaydedin
+        $('.datepicker, selectpicker').on('change', function () {
+            localStorage.setItem($(this).attr('name'), $(this).val());
+        });
+
+        // sayfa yüklendiğinde, datetimepicker'ların değerlerini localStorage'dan yükleyin
+        $('.datepicker, selectpicker').each(function () {
+            var value = localStorage.getItem($(this).attr('name'));
+            if (value) {
+                $(this).val(value);
+            }
+        });
+    });
+</script>

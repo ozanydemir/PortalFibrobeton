@@ -1,0 +1,1641 @@
+﻿
+@model IEnumerable<PortalFibrobeton.Models.Entity.tuketim_degerleri>
+
+
+@{
+    ViewBag.Title = "HomePageCnc";
+    Layout = "~/Views/Shared/CncLayout.cshtml";
+}
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.0.1/mqttws31.js" type="text/javascript"></script>
+<script src="~/websocket/mqttws31.js"></script>
+<script src="~/websocket/iot-mqtt1.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+
+
+
+<style>
+    .buttons {
+        background: transparent;
+        border: none !important;
+        font-size: 0;
+        visibility: hidden;
+    }
+
+    .dashboard .sales-card .card-icon {
+        color: #FFFFFF;
+        background: #FFFFFF;
+    }
+
+    .dashboard .revenue-card .card-icon {
+        color: #FFFFFF;
+        background: #FFFFFF;
+    }
+
+    .dashboard .customers-card .card-icon {
+        color: #FFFFFF;
+        background: #FFFFFF;
+    }
+
+    .dot-green {
+        height: 20px;
+        width: 20px;
+        background-color: green;
+        border-radius: 50%;
+        display: inline-block;
+    }
+
+    .dot-red {
+        height: 20px;
+        width: 20px;
+        background-color: red;
+        border-radius: 50%;
+        display: inline-block;
+    }
+</style>
+<script>
+    document.addEventListener("visibilitychange", function () {
+        if (document.hidden) {
+        }
+        else {
+            window.location.reload();
+        }
+    });
+</script>
+
+@{
+    var MN01ListSure = Model.Where(a => a.makine_adi == "MN01").Select(a => a.tuketim).ToList();
+    var MN02ListSure = Model.Where(a => a.makine_adi == "MN02").Select(a => a.tuketim).ToList();
+    var CMA03ListSure = Model.Where(a => a.makine_adi == "CMA03").Select(a => a.tuketim).ToList();
+    var CMA04ListSure = Model.Where(a => a.makine_adi == "CMA04" || a.makine_adi == "CMA04 ").Select(a => a.tuketim).ToList();
+    var CMA05ListSure = Model.Where(a => a.makine_adi == "CMA05" || a.makine_adi == "CMA05 ").Select(a => a.tuketim).ToList();
+    var CMA06ListSure = Model.Where(a => a.makine_adi == "CMA06").Select(a => a.tuketim).ToList();
+    var CMA07ListSure = Model.Where(a => a.makine_adi == "CMA07").Select(a => a.tuketim).ToList();
+    var CMA08ListSure = Model.Where(a => a.makine_adi == "CMA08").Select(a => a.tuketim).ToList();
+
+
+    //MN01 Tüketim
+    List<double> MN01WattList = new List<double>(10);
+    MN01WattList = Model.Where(a => a.makine_adi == "MN01").Select(a => a.tuketim).Take(10).ToList();
+    MN01WattList.Reverse();
+
+    List<DateTime> MN01WattTarihList = new List<DateTime>(10);
+    MN01WattTarihList = Model.Where(a => a.makine_adi == "MN01").Select(a => a.tarih).Take(10).ToList();
+    MN01WattTarihList.Reverse();
+
+
+    //MN02 Tüketim
+    List<double> MN02WattList = new List<double>(10);
+    MN02WattList = Model.Where(a => a.makine_adi == "MN02").Select(a => a.tuketim).Take(10).ToList();
+    MN02WattList.Reverse();
+
+    List<DateTime> MN02WattTarihList = new List<DateTime>(10);
+    MN02WattTarihList = Model.Where(a => a.makine_adi == "MN02").Select(a => a.tarih).Take(10).ToList();
+    MN02WattTarihList.Reverse();
+
+
+    //CMA03 Tüketim
+    List<double> CMA03WattList = new List<double>(10);
+    CMA03WattList = Model.Where(a => a.makine_adi == "CMA03").Select(a => a.tuketim).Take(10).ToList();
+    CMA03WattList.Reverse();
+
+    List<DateTime> CMA03WattTarihList = new List<DateTime>(10);
+    CMA03WattTarihList = Model.Where(a => a.makine_adi == "CMA03").Select(a => a.tarih).Take(10).ToList();
+    CMA03WattTarihList.Reverse();
+
+
+    //CMA04 Tüketim
+    List<double> CMA04WattList = new List<double>(10);
+    CMA04WattList = Model.Where(a => a.makine_adi == "CMA04").Select(a => a.tuketim).Take(10).ToList();
+    CMA04WattList.Reverse();
+
+    List<DateTime> CMA04WattTarihList = new List<DateTime>(10);
+    CMA04WattTarihList = Model.Where(a => a.makine_adi == "CMA04").Select(a => a.tarih).Take(10).ToList();
+    CMA04WattTarihList.Reverse();
+
+
+    //CMA05 Tüketim
+    List<double> CMA05WattList = new List<double>(10);
+    CMA05WattList = Model.Where(a => a.makine_adi == "CMA05").Select(a => a.tuketim).Take(10).ToList();
+    CMA05WattList.Reverse();
+
+    List<DateTime> CMA05WattTarihList = new List<DateTime>(10);
+    CMA05WattTarihList = Model.Where(a => a.makine_adi == "CMA05").Select(a => a.tarih).Take(10).ToList();
+    CMA05WattTarihList.Reverse();
+
+
+    //CMA06 Tüketim
+    List<double> CMA06WattList = new List<double>(10);
+    CMA06WattList = Model.Where(a => a.makine_adi == "CMA06").Select(a => a.tuketim).Take(10).ToList();
+    CMA06WattList.Reverse();
+
+
+    List<DateTime> CMA06WattTarihList = new List<DateTime>(10);
+    CMA06WattTarihList = Model.Where(a => a.makine_adi == "CMA06").Select(a => a.tarih).Take(10).ToList();
+    CMA06WattTarihList.Reverse();
+
+
+    //CMA07 Tüketim
+    List<double> CMA07WattList = new List<double>(10);
+    CMA07WattList = Model.Where(a => a.makine_adi == "CMA07").Select(a => a.tuketim).Take(10).ToList();
+    CMA07WattList.Reverse();
+
+
+    List<DateTime> CMA07WattTarihList = new List<DateTime>(10);
+    CMA07WattTarihList = Model.Where(a => a.makine_adi == "CMA07").Select(a => a.tarih).Take(10).ToList();
+    CMA07WattTarihList.Reverse();
+
+
+}
+
+<script>
+    var MN01WattArray = [];
+    var MN01TarihArray = [];
+
+    var MN02WattArray = [];
+    var MN02TarihArray = [];
+
+    var CMA03WattArray = [];
+    var CMA03TarihArray = [];
+
+    var CMA04WattArray = [];
+    var CMA04TarihArray = [];
+
+    var CMA05WattArray = [];
+    var CMA05TarihArray = [];
+
+    var CMA06WattArray = [];
+    var CMA06TarihArray = [];
+
+    var CMA07WattArray = [];
+    var CMA07TarihArray = [];
+
+
+    //MN01 Grafik Verileri
+
+    @foreach (var d in MN01WattList)
+        {
+                @:MN01WattArray.push("@d");
+
+            }
+
+
+   @foreach(var d in MN01WattTarihList)
+            {
+                @:MN01TarihArray.push("@d");
+            }
+
+
+
+    //MN02 Grafik Verileri
+
+    @foreach (var d in MN02WattList)
+        {
+                @:MN02WattArray.push("@d");
+
+            }
+
+   @foreach(var d in MN02WattTarihList)
+            {
+                @:MN02TarihArray.push("@d");
+            }
+
+
+    //CMA03 Grafik Verileri
+
+    @foreach(var d in CMA03WattList)
+            {
+                @:CMA03WattArray.push("@d");
+            }
+    @foreach(var d in CMA03WattTarihList)
+            {
+                @:CMA03TarihArray.push("@d");
+            }
+
+
+    //CMA04 Grafik Verileri
+
+    @foreach(var d in CMA04WattList)
+            {
+                @:CMA04WattArray.push("@d");
+            }
+
+    @foreach(var d in CMA04WattTarihList)
+            {
+                @:CMA04TarihArray.push("@d");
+            }
+
+
+    //CMA05 Grafik Verileri
+
+    @foreach(var d in CMA05WattList)
+            {
+                @:CMA05WattArray.push("@d");
+            }
+
+    @foreach(var d in CMA05WattTarihList)
+            {
+                @:CMA05TarihArray.push("@d");
+            }
+
+
+    //CMA06 Grafik Verileri
+
+    @foreach(var d in CMA06WattList)
+            {
+                @:CMA06WattArray.push("@d");
+            }
+    @foreach(var d in CMA06WattTarihList)
+            {
+                @:CMA06TarihArray.push("@d");
+            }
+
+    //CMA07 Grafik Verileri
+
+    @foreach(var d in CMA07WattList)
+            {
+                @:CMA07WattArray.push("@d");
+            }
+
+    @foreach(var d in CMA07WattTarihList)
+            {
+                @:CMA07TarihArray.push("@d");
+            }
+</script>
+
+<section class="section dashboard">
+    <div class="row">
+        <div class="pagetitle">
+            <h1>CNC Takip</h1>
+            <nav>
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="index.html">Ana Sayfa</a></li>
+                    <li class="breadcrumb-item active">Dashboard</li>
+                </ol>
+            </nav>
+        </div>
+
+        <div class="col-lg-12">
+
+            <!--<div class="row">-->
+                @*Makinelerin Çalışma Süreleri*@
+                <!--<div class="col-lg-7">
+                    <div class="card">
+                        <div class="card-body">
+                            <h6 class="card-title">Makinelerin Çalışma Süreleri</h6>
+                            <div id="makinesureleriAna"></div>
+
+                            <p class="denemeMN01"></p>
+                            <p class="denemeMN02"></p>
+
+                        </div>
+                    </div>
+                </div>
+            </div>-->
+            
+
+
+
+            <div class="row">
+                <div class="col-xxl-6 col-md-6">
+                    <div class="card info-card sales-card">
+                        <div class="card-body">
+                            <div>
+                                <h5 style="font-size:25px" class="card-title"> <span><img id="lasercutMN01" src="~/Content/gifs/laser-cutting-off.png" style="height:70px;width:65px;margin-bottom:20px;margin-left:-10px" /></span> MN-01 <span>| Bugün</span> <span id="mn01durum" style="margin-left:185px;"></span></h5>
+                            </div>
+
+                            <div class="col-lg-12" style="margin-top:-17px;">
+
+                                <div class="row">
+
+                                    <div class="col-lg-6">
+                                        <div class="d-flex align-items-center" style="margin-left:30px">
+                                            <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                                                <img src="~/Content/Logo/MN01/power-green.png" style="margin-left:10px" /><h6 style="color:#012987;padding-left:10px;padding-right:15px;font-size:22px"> Durum:</h6>
+                                            </div>
+                                            <div>
+                                                <img id="bulbMN01" src="~/Content/icons/switch-on.png" style="padding-left:30px;" />
+                                            </div>
+                                        </div>
+                                        <div class="d-flex align-items-center" style="margin-left:23px">
+                                            <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                                                <img src="~/Content/Logo/MN01/time-green.png" /><h6 style="color:#012987;padding-left:10px;padding-right:15px;font-size:22px"> Süre:</h6>
+                                            </div>
+                                            <div class="ps-3">
+                                                <a class="timerDisplayMN01" style="padding-left: 0px; font-size: 28px; margin-top: 10px; color: #1CD3B2">00:00:00</a>
+                                                <a id="MN01durum"></a>
+                                                <div class="buttons">
+                                                    <button id="pauseTimerMN01"></button>
+                                                    <button id="startTimerMN01"></button>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+
+
+                                    <div class="col-lg-6">
+                                        <div class="d-flex align-items-center" style="margin-left:29px">
+                                            <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                                                <img src="~/Content/Logo/MN01/Watt-green.png" style="margin-left:-14px" /><h6 style="color:#012987;padding-left:10px;padding-right:15px;font-size:22px"> Watt:</h6>
+
+                                            </div>
+                                            <div>
+                                                <a style="padding-left:10px; font-size:28px; margin-top:10px; color:#1CD3B2" id="MN01W">0</a>
+                                            </div>
+
+                                        </div>
+                                        <div class="d-flex align-items-center" style="margin-left:32px">
+                                            <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                                                <img src="~/Content/Logo/MN01/speed-green.png" style="margin-left:10px" /><h6 style="color:#012987;padding-left:10px;padding-right:15px;font-size:22px"> Spindle:</h6>
+
+                                            </div>
+                                            <div class="ps-3">
+                                                <a style="padding-left:20px; font-size:28px; margin-top:10px; color:#1CD3B2" id="MN01Rpm">0</a>
+                                            </div>
+
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-lg-12 mt-5">
+                                        <div class="box columnbox">
+                                            <div id="MN01Watt"></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="col-xxl-6 col-md-6">
+                    <div class="card info-card sales-card">
+                        <div class="card-body">
+                            <div>
+                                <h5 style="font-size:25px" class="card-title"> <span><img id="lasercutMN02" src="~/Content/gifs/laser-cutting-off.png" style="height:70px;width:65px;margin-bottom:20px;margin-left:-10px" /></span> MN-02 <span>| Bugün</span> <span id="mn01durum" style="margin-left:185px;"></span></h5>
+                            </div>
+
+                            <div class="col-lg-12" style="margin-top:-17px;">
+
+                                <div class="row">
+
+                                    <div class="col-lg-6">
+                                        <div class="d-flex align-items-center" style="margin-left:30px">
+                                            <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                                                <img src="~/Content/Logo/MN02/power-purp.png" style="margin-left:10px" /><h6 style="color:#012987;padding-left:10px;padding-right:15px;font-size:22px"> Durum:</h6>
+                                            </div>
+                                            <div>
+                                                <img id="bulbMN02" src="~/Content/icons/switch-on.png" style="padding-left:30px;" />
+                                            </div>
+                                        </div>
+                                        <div class="d-flex align-items-center" style="margin-left:23px">
+                                            <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                                                <img src="~/Content/Logo/MN02/time-purp.png" /><h6 style="color:#012987;padding-left:10px;padding-right:15px;font-size:22px"> Süre:</h6>
+                                            </div>
+                                            <div class="ps-3">
+                                                <a class="timerDisplayMN02" style="padding-left: 0px; font-size: 28px; margin-top: 10px; color: #7193F8">00:00:00</a>
+                                                <a id="MN01durum"></a>
+                                                <div class="buttons">
+                                                    <button id="pauseTimerMN02"></button>
+                                                    <button id="startTimerMN02"></button>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+
+
+                                    <div class="col-lg-6">
+                                        <div class="d-flex align-items-center" style="margin-left:29px">
+                                            <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                                                <img src="~/Content/Logo/MN02/Watt-purp.png" style="margin-left:-14px" /><h6 style="color:#012987;padding-left:10px;padding-right:15px;font-size:22px"> Watt:</h6>
+
+                                            </div>
+                                            <div>
+                                                <a style="padding-left:10px; font-size:28px; margin-top:10px; color:#7193F8" id="MN02Watt">0</a>
+                                            </div>
+
+                                        </div>
+                                        <div class="d-flex align-items-center" style="margin-left:32px">
+                                            <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                                                <img src="~/Content/Logo/MN02/speed-purp.png" style="margin-left:10px" /><h6 style="color:#012987;padding-left:10px;padding-right:15px;font-size:22px"> Spindle:</h6>
+
+                                            </div>
+                                            <div class="ps-3">
+                                                <a style="padding-left:20px; font-size:28px; margin-top:10px; color:#7193F8" id="MN02Rpm">0</a>
+                                            </div>
+
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-lg-12 mt-5">
+                                        <div class="box columnbox">
+                                            <div id="MN02W"></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <script>
+
+                //MN01 Chart Watt
+                document.addEventListener("DOMContentLoaded", () => {
+                    new ApexCharts(document.querySelector("#MN01Watt"), {
+                        series: [{
+                            name: 'MN-01 Watt Tüketimi',
+                            data: MN01WattArray,
+
+
+                        }],
+                        chart: {
+                            foreColor: '#012970',
+                            height: 270,
+                            type: 'bar',
+                            toolbar: {
+                                show: false
+                            },
+                        },
+                        stroke: {
+                            width: 0
+                        },
+                        dataLabels: {
+                            enabled: false
+                        },
+                        grid: {
+                            borderColor: "#CAB3BD",
+                        },
+                        xaxis: {
+                            type: 'string',
+                            categories: MN01TarihArray,
+                            axisTicks: {
+                                color: '#333'
+                            },
+                            axisBorder: {
+                                color: "#333"
+                            },
+                            labels: {
+                                formatter: function (value) {
+                                    if (value !== undefined)
+                                        splittedCategories = value.split(" ")
+                                    HhMmSs = splittedCategories[1]
+                                    return HhMmSs;
+                                }
+                            }
+                        },
+                        fill: {
+                            type: 'gradient',
+                            gradient: {
+                                shade: 'dark',
+                                type: 'vertical',
+                                shadeIntensity: 0.5,
+                                inverseColors: false,
+                                opacityFrom: 1,
+                                opacityTo: 0.8,
+                                stops: [0, 100],
+                                gradientToColors: ['#2AF598',]
+                            }
+                        },
+                        tooltip: {
+                            theme: 'dark',
+                            //x: {
+                            //    formatter: function (val) {
+                            //        return moment(new Date(val)).format("HH:mm:ss")
+                            //    }
+                            //},
+
+                        },
+                        yaxis: {
+                            decimalsInFloat: 2,
+                            opposite: true,
+                            labels: {
+                                offsetX: -10
+                            },
+                        },
+                        title: {
+                            text: 'Ortalama Saatlik Tüketim',
+                            align: 'left',
+                            style: {
+                                fontSize: '15px'
+                            }
+                        },
+                        subtitle: {
+                            text: 'Watt',
+                            floating: true,
+                            align: 'right',
+                            offsetY: 0,
+                            style: {
+                                fontSize: '20px'
+                            }
+                        },
+
+                    }).render();
+                });
+
+
+
+                //MN02 Chart Watt
+                document.addEventListener("DOMContentLoaded", () => {
+                    new ApexCharts(document.querySelector("#MN02W"), {
+                        series: [{
+                            name: 'MN-02 Watt Tüketimi',
+                            data: MN02WattArray,
+
+
+                        }],
+                        chart: {
+                            foreColor: '#012970',
+                            height: 270,
+                            type: 'bar',
+                            toolbar: {
+                                show: false
+                            },
+                        },
+                        colors: '#7803FF',
+                        stroke: {
+                            width: 0
+                        },
+                        dataLabels: {
+                            enabled: false
+                        },
+                        grid: {
+                            borderColor: "#CAB3BD",
+                        },
+                        xaxis: {
+                            type: 'string',
+                            categories: MN02TarihArray,
+                            axisTicks: {
+                                color: '#333'
+                            },
+                            axisBorder: {
+                                color: "#333"
+                            },
+                            labels: {
+                                formatter: function (value) {
+                                    if (value !== undefined)
+                                        splittedCategories = value.split(" ")
+                                    HhMmSs = splittedCategories[1]
+                                    return HhMmSs;
+                                }
+                            }
+                        },
+                        fill: {
+                            type: 'gradient',
+                            gradient: {
+                                shade: 'dark',
+                                type: 'vertical',
+                                shadeIntensity: 0.5,
+                                inverseColors: false,
+                                opacityFrom: 1,
+                                opacityTo: 0.8,
+                                stops: [0, 100],
+                                gradientToColors: ['#FB28B6',]
+                            }
+                        },
+                        tooltip: {
+                            theme: 'dark',
+                            //x: {
+                            //    formatter: function (val) {
+                            //        return moment(new Date(val)).format("HH:mm:ss")
+                            //    }
+                            //},
+
+                        },
+                        yaxis: {
+                            decimalsInFloat: 2,
+                            opposite: true,
+                            labels: {
+                                offsetX: -10
+                            },
+                        },
+                        title: {
+                            text: 'Ortalama Saatlik Tüketim',
+                            align: 'left',
+                            style: {
+                                fontSize: '15px'
+                            }
+                        },
+                        subtitle: {
+                            text: 'Watt',
+                            floating: true,
+                            align: 'right',
+                            offsetY: 0,
+                            style: {
+                                fontSize: '20px'
+                            }
+                        },
+
+                    }).render();
+                });
+            </script>
+
+            <div class="row">
+                <div class="col-xxl-6 col-md-6">
+                    <div class="card info-card sales-card">
+                        <div class="card-body">
+                            <div>
+                                <h5 style="font-size:25px" class="card-title"> <span><img id="lasercutCMA03" style="height:70px;width:65px;margin-bottom:20px;margin-left:-10px" /></span> CMA-03 <span>| Bugün</span> <span id="cma03Durum" style="margin-left:185px;"></span></h5>
+                            </div>
+                            <div class="col-lg-12" style="margin-top:-17px;">
+                                <div class="row">
+                                    <div class="col-lg-6">
+                                        <div class="d-flex align-items-center" style="margin-left:30px">
+                                            <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                                                <img src="~/Content/Logo/CMA03/power-button.png" style="margin-left:10px" /><h6 style="color:#012987;padding-left:10px;padding-right:15px;font-size:22px"> Durum:</h6>
+
+                                            </div>
+                                            <div>
+                                                <img id="bulbCMA03" src="~/Content/icons/switch-off.png" style="padding-left:30px;" />
+                                            </div>
+
+                                        </div>
+                                        <div class="d-flex align-items-center" style="margin-left:23px">
+                                            <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                                                <img src="~/Content/Logo/CMA03/time-red.png" /><h6 style="color:#012987;padding-left:10px;padding-right:15px;font-size:22px"> Süre:</h6>
+                                            </div>
+                                            <div class="ps-3">
+                                                <a style="padding-left:0px; font-size:28px; margin-top:10px;color:#c21500" class="timerDisplayCMA03">00:00:00</a>
+                                                <a id="MN01durum"></a>
+                                                <div class="buttons">
+                                                    <button id="pauseTimerCMA03"></button>
+                                                    <button id="startTimerCMA03"></button>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+
+                                    <div class="col-lg-6">
+                                        <div class="d-flex align-items-center" style="margin-left:29px">
+                                            <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                                                <img src="~/Content/Logo/CMA03/Watt-red.png" style="margin-left:-14px" /><h6 style="color:#012987;padding-left:10px;padding-right:15px;font-size:22px"> Watt:</h6>
+
+                                            </div>
+                                            <div>
+                                                <a style="padding-left:10px; font-size:28px; margin-top:10px; color:#c21500" id="CMA03Watt">0</a>
+                                            </div>
+
+                                        </div>
+                                        <div class="d-flex align-items-center" style="margin-left:32px">
+                                            <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                                                <img src="~/Content/Logo/CMA03/speedometer.png" style="margin-left:10px" /><h6 style="color:#012987;padding-left:10px;padding-right:15px;font-size:22px"> Spindle:</h6>
+
+                                            </div>
+                                            <div class="ps-3">
+                                                <a style="padding-left:20px; font-size:28px; margin-top:10px; color:#c21500" id="CMA03Rpm">0</a>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                    @*<div class="col-lg-6">
+                                            <div>
+                                                <div id="CMA03AChart"></div>
+                                                <div style="padding-left:40px;" id="CMA03RpmChart"></div>
+                                            </div>
+                                        </div>*@
+                                </div>
+
+
+                                <div class="row">
+                                    <div class="col-lg-12 mt-5">
+                                        <div class="box columnbox">
+                                            <div id="CMA03W"></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="col-xxl-6 col-md-6">
+                    <div class="card info-card sales-card">
+                        <div class="card-body">
+                            <div>
+                                <h5 style="font-size:25px" class="card-title"> <span><img id="lasercutCMA04" src="~/Content/gifs/laser-cutting.gif" style="height:70px;width:65px;margin-bottom:20px;margin-left:-10px" /></span> CMA-04 <span>| Bugün</span> <span id="cma03Durum" style="margin-left:185px;"></span></h5>
+                            </div>
+                            <div class="col-lg-12" style="margin-top:-17px;">
+                                <div class="row">
+
+
+                                    <div class="col-lg-6">
+                                        <div class="d-flex align-items-center" style="margin-left:30px">
+                                            <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                                                <img src="~/Content/Logo/CMA04/power-dark.png" style="margin-left:10px" /><h6 style="color:#012987;padding-left:10px;padding-right:15px;font-size:22px"> Durum:</h6>
+
+                                            </div>
+                                            <div>
+                                                <img id="bulbCMA04" src="~/Content/icons/switch-on.png" style="padding-left:30px;" />
+                                            </div>
+
+                                        </div>
+                                        <div class="d-flex align-items-center" style="margin-left:23px">
+                                            <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                                                <img src="~/Content/Logo/CMA04/time-dark.png" /><h6 style="color:#012987;padding-left:10px;padding-right:15px;font-size:22px"> Süre:</h6>
+                                            </div>
+                                            <div class="ps-3">
+                                                <a style="padding-left:0px; font-size:28px; margin-top:10px;color:#4286f4" class="timerDisplayCMA04">00:00:00</a>
+                                                <a id="MN01durum"></a>
+                                                <div class="buttons">
+                                                    <button id="pauseTimerCMA04"></button>
+                                                    <button id="startTimerCMA04"></button>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+
+                                    <div class="col-lg-6">
+                                        <div class="d-flex align-items-center" style="margin-left:29px">
+                                            <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                                                <img src="~/Content/Logo/CMA04/watt-dark.png" style="margin-left:-14px" /><h6 style="color:#012987;padding-left:10px;padding-right:15px;font-size:22px"> Watt:</h6>
+
+                                            </div>
+                                            <div>
+                                                <a style="padding-left:10px; font-size:28px; margin-top:10px; color:#4286f4" id="CMA04Watt">0</a>
+                                            </div>
+
+                                        </div>
+                                        <div class="d-flex align-items-center" style="margin-left:32px">
+                                            <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                                                <img src="~/Content/Logo/CMA04/speedometer-dark.png" style="margin-left:10px" /><h6 style="color:#012987;padding-left:10px;padding-right:15px;font-size:22px"> Spindle:</h6>
+
+                                            </div>
+                                            <div class="ps-3">
+                                                <a style="padding-left:20px; font-size:28px; margin-top:10px; color:#4286f4" id="CMA04Rpm">0</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                                <div class="row">
+                                    <div class="col-lg-12 mt-5">
+                                        <div class="box columnbox">
+                                            <div id="CMA04W"></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <script>
+
+                //CMA03 Chart Watt
+                document.addEventListener("DOMContentLoaded", () => {
+                    new ApexCharts(document.querySelector("#CMA03W"), {
+                        series: [{
+                            name: 'CMA-03 Watt Tüketimi',
+                            data: CMA03WattArray,
+
+
+                        }],
+                        chart: {
+                            foreColor: '#012970',
+                            height: 270,
+                            type: 'bar',
+                            toolbar: {
+                                show: false
+                            },
+                        },
+                        colors: ['#ffc500'],
+                        stroke: {
+                            width: 0
+                        },
+                        dataLabels: {
+                            enabled: false
+                        },
+                        grid: {
+                            borderColor: "#CAB3BD",
+                        },
+                        xaxis: {
+                            type: 'string',
+                            categories: CMA03TarihArray,
+                            axisTicks: {
+                                color: '#333'
+                            },
+                            axisBorder: {
+                                color: "#333"
+                            },
+                            labels: {
+                                formatter: function (value) {
+                                    if (value !== undefined)
+                                        splittedCategories = value.split(" ")
+                                    HhMmSs = splittedCategories[1]
+                                    return HhMmSs;
+                                }
+                            }
+                        },
+                        fill: {
+                            type: 'gradient',
+                            gradient: {
+                                shade: 'dark',
+                                type: 'vertical',
+                                shadeIntensity: 0.5,
+                                inverseColors: false,
+                                opacityFrom: 1,
+                                opacityTo: 0.8,
+                                stops: [0, 100],
+                                gradientToColors: ['#c21500',]
+                            }
+                        },
+                        tooltip: {
+                            theme: 'dark',
+                            //x: {
+                            //    formatter: function (val) {
+                            //        return moment(new Date(val)).format("HH:mm:ss")
+                            //    }
+                            //},
+
+                        },
+                        yaxis: {
+                            decimalsInFloat: 2,
+                            opposite: true,
+                            labels: {
+                                offsetX: -10
+                            },
+                        },
+                        title: {
+                            text: 'Ortalama Saatlik Tüketim',
+                            align: 'left',
+                            style: {
+                                fontSize: '15px'
+                            }
+                        },
+                        subtitle: {
+                            text: 'Watt',
+                            floating: true,
+                            align: 'right',
+                            offsetY: 0,
+                            style: {
+                                fontSize: '20px'
+                            }
+                        },
+
+                    }).render();
+                });
+
+
+
+                //CMA04 Chart Watt
+                document.addEventListener("DOMContentLoaded", () => {
+                    new ApexCharts(document.querySelector("#CMA04W"), {
+                        series: [{
+                            name: 'CMA-04 Watt Tüketimi',
+                            data: CMA04WattArray,
+
+
+                        }],
+                        chart: {
+                            foreColor: '#012970',
+                            height: 270,
+                            type: 'bar',
+                            toolbar: {
+                                show: false
+                            },
+                        },
+                        colors: '#373B44',
+                        stroke: {
+                            width: 0
+                        },
+                        dataLabels: {
+                            enabled: false
+                        },
+                        grid: {
+                            borderColor: "#CAB3BD",
+                        },
+                        xaxis: {
+                            type: 'string',
+                            categories: CMA04TarihArray,
+                            axisTicks: {
+                                color: '#333'
+                            },
+                            axisBorder: {
+                                color: "#333"
+                            },
+                            labels: {
+                                formatter: function (value) {
+                                    if (value !== undefined)
+                                        splittedCategories = value.split(" ")
+                                    HhMmSs = splittedCategories[1]
+                                    return HhMmSs;
+                                }
+                            }
+                        },
+                        fill: {
+                            type: 'gradient',
+                            gradient: {
+                                shade: 'dark',
+                                type: 'vertical',
+                                shadeIntensity: 0.5,
+                                inverseColors: false,
+                                opacityFrom: 1,
+                                opacityTo: 0.8,
+                                stops: [0, 100],
+                                gradientToColors: ['#4286f4',]
+                            }
+                        },
+                        tooltip: {
+                            theme: 'dark',
+                            //x: {
+                            //    formatter: function (val) {
+                            //        return moment(new Date(val)).format("HH:mm:ss")
+                            //    }
+                            //},
+
+                        },
+                        yaxis: {
+                            decimalsInFloat: 2,
+                            opposite: true,
+                            labels: {
+                                offsetX: -10
+                            },
+                        },
+                        title: {
+                            text: 'Ortalama Saatlik Tüketim',
+                            align: 'left',
+                            style: {
+                                fontSize: '15px'
+                            }
+                        },
+                        subtitle: {
+                            text: 'Watt',
+                            floating: true,
+                            align: 'right',
+                            offsetY: 0,
+                            style: {
+                                fontSize: '20px'
+                            }
+                        },
+
+                    }).render();
+                });
+            </script>
+
+
+            <div class="row">
+                <div class="col-xxl-6 col-md-6">
+                    <div class="card info-card sales-card">
+                        <div class="card-body">
+                            <div>
+                                <h5 style="font-size:25px" class="card-title"> <span><img id="lasercutCMA05" src="~/Content/gifs/laser-cutting.gif" style="height:70px;width:65px;margin-bottom:20px;margin-left:-10px" /></span> CMA-05 <span>| Bugün</span> <span id="cma03Durum" style="margin-left:185px;"></span></h5>
+                            </div>
+                            <div class="col-lg-12" style="margin-top:-17px;">
+                                <div class="row">
+                                    <div class="col-lg-6">
+                                        <div class="d-flex align-items-center" style="margin-left:30px">
+                                            <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                                                <img src="~/Content/Logo/CMA05/power-yellow2.png" style="margin-left:10px" /><h6 style="color:#012987;padding-left:10px;padding-right:15px;font-size:22px"> Durum:</h6>
+
+                                            </div>
+                                            <div>
+                                                <img id="bulbCMA05" src="~/Content/icons/switch-on.png" style="padding-left:30px;" />
+                                            </div>
+
+                                        </div>
+                                        <div class="d-flex align-items-center" style="margin-left:23px">
+                                            <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                                                <img src="~/Content/Logo/CMA05/time-yellow2.png" /><h6 style="color:#012987;padding-left:10px;padding-right:15px;font-size:22px"> Süre:</h6>
+                                            </div>
+                                            <div class="ps-3">
+                                                <a style="padding-left:0px; font-size:28px; margin-top:10px;color:#432371" class="timerDisplayCMA05">00:00:00</a>
+                                                <a id="MN01durum"></a>
+                                                <div class="buttons">
+                                                    <button id="pauseTimerCMA05"></button>
+                                                    <button id="startTimerCMA05"></button>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+
+                                    <div class="col-lg-6">
+                                        <div class="d-flex align-items-center" style="margin-left:29px">
+                                            <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                                                <img src="~/Content/Logo/CMA05/watt-yellow2.png" style="margin-left:-14px" /><h6 style="color:#012987;padding-left:10px;padding-right:15px;font-size:22px"> Watt:</h6>
+
+                                            </div>
+                                            <div>
+                                                <a style="padding-left:10px; font-size:28px; margin-top:10px; color:#432371" id="CMA05Watt">0</a>
+                                            </div>
+
+                                        </div>
+                                        <div class="d-flex align-items-center" style="margin-left:32px">
+                                            <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                                                <img src="~/Content/Logo/CMA05/speedometer-yellow2.png" style="margin-left:10px" /><h6 style="color:#012987;padding-left:10px;padding-right:15px;font-size:22px"> Spindle:</h6>
+
+                                            </div>
+                                            <div class="ps-3">
+                                                <a style="padding-left:20px; font-size:28px; margin-top:10px; color:#432371" id="CMA05Rpm">0</a>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                                <div class="row">
+                                    <div class="col-lg-12 mt-5">
+                                        <div class="box columnbox">
+                                            <div id="CMA05W"></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="col-xxl-6 col-md-6">
+                    <div class="card info-card sales-card">
+                        <div class="card-body">
+                            <div>
+                                <h5 style="font-size:25px" class="card-title"> <span><img id="lasercutCMA06" src="~/Content/gifs/laser-cutting.gif" style="height:70px;width:65px;margin-bottom:20px;margin-left:-10px" /></span> CMA-06 <span>| Bugün</span> <span id="cma03Durum" style="margin-left:185px;"></span></h5>
+                            </div>
+                            <div class="col-lg-12" style="margin-top:-17px;">
+                                <div class="row">
+                                    <div class="col-lg-6">
+                                        <div class="d-flex align-items-center" style="margin-left:30px">
+                                            <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                                                <img src="~/Content/Logo/CMA06/power-red.png" style="margin-left:10px" /><h6 style="color:#012987;padding-left:10px;padding-right:15px;font-size:22px"> Durum:</h6>
+
+                                            </div>
+                                            <div>
+                                                <img id="bulbCMA06" src="~/Content/icons/switch-off.png" style="padding-left:30px;" />
+                                            </div>
+
+                                        </div>
+                                        <div class="d-flex align-items-center" style="margin-left:23px">
+                                            <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                                                <img src="~/Content/Logo/CMA06/time-red.png" /><h6 style="color:#012987;padding-left:10px;padding-right:15px;font-size:22px"> Süre:</h6>
+                                            </div>
+                                            <div class="ps-3">
+                                                <a style="padding-left:0px; font-size:28px; margin-top:10px; color:#870000" class="timerDisplayCMA06">00:00:00</a>
+                                                <a id="MN01durum"></a>
+                                                <div class="buttons">
+                                                    <button id="pauseTimerCMA06"></button>
+                                                    <button id="startTimerCMA06"></button>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+
+                                    <div class="col-lg-6">
+                                        <div class="d-flex align-items-center" style="margin-left:29px">
+                                            <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                                                <img src="~/Content/Logo/CMA06/watt-red.png" style="margin-left:-14px" /><h6 style="color:#012987;padding-left:10px;padding-right:15px;font-size:22px"> Watt:</h6>
+
+                                            </div>
+                                            <div>
+                                                <a style="padding-left:10px; font-size:28px; margin-top:10px; color:#870000" id="CMA06Watt">0</a>
+                                            </div>
+
+                                        </div>
+                                        <div class="d-flex align-items-center" style="margin-left:32px">
+                                            <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                                                <img src="~/Content/Logo/CMA06/speedometer-red.png" style="margin-left:10px" /><h6 style="color:#012987;padding-left:10px;padding-right:15px;font-size:22px"> Spindle:</h6>
+
+                                            </div>
+                                            <div class="ps-3">
+                                                <a style="padding-left:20px; font-size:28px; margin-top:10px; color:#870000" id="CMA06Rpm">0</a>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                                <div class="row">
+                                    <div class="col-lg-12 mt-5">
+                                        <div class="box columnbox">
+                                            <div id="CMA06W"></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <script>
+
+                //CMA05 Chart Watt
+                document.addEventListener("DOMContentLoaded", () => {
+                    new ApexCharts(document.querySelector("#CMA05W"), {
+                        series: [{
+                            name: 'CMA-05 Watt Tüketimi',
+                            data: CMA05WattArray,
+
+
+                        }],
+                        chart: {
+                            foreColor: '#012970',
+                            height: 270,
+                            type: 'bar',
+                            toolbar: {
+                                show: false
+                            },
+                        },
+                        colors: ['#FEED30'],
+                        stroke: {
+                            width: 0
+                        },
+                        dataLabels: {
+                            enabled: false
+                        },
+                        grid: {
+                            borderColor: "#CAB3BD",
+                        },
+                        xaxis: {
+                            type: 'string',
+                            categories: CMA05TarihArray,
+                            axisTicks: {
+                                color: '#333'
+                            },
+                            axisBorder: {
+                                color: "#333"
+                            },
+                            labels: {
+                                formatter: function (value) {
+                                    if (value !== undefined)
+                                        splittedCategories = value.split(" ")
+                                    HhMmSs = splittedCategories[1]
+                                    return HhMmSs;
+                                }
+                            }
+                        },
+                        fill: {
+                            type: 'gradient',
+                            gradient: {
+                                shade: 'dark',
+                                type: 'vertical',
+                                shadeIntensity: 0.5,
+                                inverseColors: false,
+                                opacityFrom: 1,
+                                opacityTo: 0.8,
+                                stops: [0, 100],
+                                gradientToColors: ['#432371',]
+                            }
+                        },
+                        tooltip: {
+                            theme: 'dark',
+                            //x: {
+                            //    formatter: function (val) {
+                            //        return moment(new Date(val)).format("HH:mm:ss")
+                            //    }
+                            //},
+
+                        },
+                        yaxis: {
+                            decimalsInFloat: 2,
+                            opposite: true,
+                            labels: {
+                                offsetX: -10
+                            },
+                        },
+                        title: {
+                            text: 'Ortalama Saatlik Tüketim',
+                            align: 'left',
+                            style: {
+                                fontSize: '15px'
+                            }
+                        },
+                        subtitle: {
+                            text: 'Watt',
+                            floating: true,
+                            align: 'right',
+                            offsetY: 0,
+                            style: {
+                                fontSize: '20px'
+                            }
+                        },
+
+                    }).render();
+                });
+
+
+
+                //CMA06 Chart Watt
+                document.addEventListener("DOMContentLoaded", () => {
+                    new ApexCharts(document.querySelector("#CMA06W"), {
+                        series: [{
+                            name: 'CMA-06 Watt Tüketimi',
+                            data: CMA06WattArray,
+
+
+                        }],
+                        chart: {
+                            foreColor: '#012970',
+                            height: 270,
+                            type: 'bar',
+                            toolbar: {
+                                show: false
+                            },
+                        },
+                        colors: '#190A05',
+                        stroke: {
+                            width: 0
+                        },
+                        dataLabels: {
+                            enabled: false
+                        },
+                        grid: {
+                            borderColor: "#CAB3BD",
+                        },
+                        xaxis: {
+                            type: 'string',
+                            categories: CMA06TarihArray,
+                            axisTicks: {
+                                color: '#333'
+                            },
+                            axisBorder: {
+                                color: "#333"
+                            },
+                            labels: {
+                                formatter: function (value) {
+                                    if (value !== undefined)
+                                        splittedCategories = value.split(" ")
+                                    HhMmSs = splittedCategories[1]
+                                    return HhMmSs;
+                                }
+                            }
+                        },
+                        fill: {
+                            type: 'gradient',
+                            gradient: {
+                                shade: 'dark',
+                                type: 'vertical',
+                                shadeIntensity: 0.5,
+                                inverseColors: false,
+                                opacityFrom: 1,
+                                opacityTo: 0.8,
+                                stops: [0, 100],
+                                gradientToColors: ['#870000',]
+                            }
+                        },
+                        tooltip: {
+                            theme: 'dark',
+                            //x: {
+                            //    formatter: function (val) {
+                            //        return moment(new Date(val)).format("HH:mm:ss")
+                            //    }
+                            //},
+
+                        },
+                        yaxis: {
+                            decimalsInFloat: 2,
+                            opposite: true,
+                            labels: {
+                                offsetX: -10
+                            },
+                        },
+                        title: {
+                            text: 'Ortalama Saatlik Tüketim',
+                            align: 'left',
+                            style: {
+                                fontSize: '15px'
+                            }
+                        },
+                        subtitle: {
+                            text: 'Watt',
+                            floating: true,
+                            align: 'right',
+                            offsetY: 0,
+                            style: {
+                                fontSize: '20px'
+                            }
+                        },
+
+                    }).render();
+                });
+            </script>
+
+
+            <div class="row">
+                <div class="col-xxl-6 col-md-6">
+                    <div class="card info-card sales-card">
+                        <div class="card-body">
+                            <div>
+                                <h5 style="font-size:25px" class="card-title"> <span><img id="lasercutCMA07" style="height:70px;width:65px;margin-bottom:20px;margin-left:-10px" /></span> CMA-07 <span>| Bugün</span> <span id="cma03Durum" style="margin-left:185px;"></span></h5>
+                            </div>
+                            <div class="col-lg-12" style="margin-top:-17px;">
+                                <div class="row">
+                                    <div class="col-lg-6">
+                                        <div class="d-flex align-items-center" style="margin-left:30px">
+                                            <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                                                <img src="~/Content/Logo/CMA07/power-greenlight.png" style="margin-left:10px" /><h6 style="color:#012987;padding-left:10px;padding-right:15px;font-size:22px"> Durum:</h6>
+
+                                            </div>
+                                            <div>
+                                                <img id="bulbCMA07" src="~/Content/icons/switch-off.png" style="padding-left:30px;" />
+                                            </div>
+
+                                        </div>
+                                        <div class="d-flex align-items-center" style="margin-left:23px">
+                                            <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                                                <img src="~/Content/Logo/CMA07/time-greenlight.png" /><h6 style="color:#012987;padding-left:10px;padding-right:15px;font-size:22px"> Süre:</h6>
+                                            </div>
+                                            <div class="ps-3">
+                                                <a style="padding-left:0px; font-size:28px; margin-top:10px;color:#52c234" class="timerDisplayCMA07">00:00:00</a>
+                                                <div class="buttons">
+                                                    <button id="pauseTimerCMA07"></button>
+                                                    <button id="startTimerCMA07"></button>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <div class="d-flex align-items-center" style="margin-left:29px">
+                                            <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                                                <img src="~/Content/Logo/CMA07/Watt-greenlight.png" style="margin-left:-14px" /><h6 style="color:#012987;padding-left:10px;padding-right:15px;font-size:22px"> Watt:</h6>
+
+                                            </div>
+                                            <div>
+                                                <a style="padding-left:10px; font-size:28px; margin-top:10px; color:#52c234" id="CMA07Watt">0</a>
+                                            </div>
+
+                                        </div>
+                                        <div class="d-flex align-items-center" style="margin-left:32px">
+                                            <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                                                <img src="~/Content/Logo/CMA07/speedometer-greenlight.png" style="margin-left:10px" /><h6 style="color:#012987;padding-left:10px;padding-right:15px;font-size:22px"> Spindle:</h6>
+
+                                            </div>
+                                            <div class="ps-3">
+                                                <a style="padding-left:20px; font-size:28px; margin-top:10px; color:#52c234" id="CMA07Rpm">0</a>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                                <div class="row">
+                                    <div class="col-lg-12 mt-5">
+                                        <div class="box columnbox">
+                                            <div id="CMA07W"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <p class="denemeMN01" style="visibility:hidden"></p>
+                                <p class="denemeMN02" style="visibility:hidden"></p>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <script>
+
+                //CMA07 Chart Watt
+                document.addEventListener("DOMContentLoaded", () => {
+                    new ApexCharts(document.querySelector("#CMA07W"), {
+                        series: [{
+                            name: 'CMA-07 Watt Tüketimi',
+                            data: CMA07WattArray,
+
+
+                        }],
+                        chart: {
+                            foreColor: '#012970',
+                            height: 270,
+                            type: 'bar',
+                            toolbar: {
+                                show: false
+                            },
+                        },
+                        colors: ['#373B44'],
+                        stroke: {
+                            width: 0
+                        },
+                        dataLabels: {
+                            enabled: false
+                        },
+                        grid: {
+                            borderColor: "#CAB3BD",
+                        },
+                        xaxis: {
+                            type: 'string',
+                            categories: CMA07TarihArray,
+                            axisTicks: {
+                                color: '#333'
+                            },
+                            axisBorder: {
+                                color: "#333"
+                            },
+                            labels: {
+                                formatter: function (value) {
+                                    if (value !== undefined)
+                                        splittedCategories = value.split(" ")
+                                    HhMmSs = splittedCategories[1]
+                                    return HhMmSs;
+                                }
+                            }
+                        },
+                        fill: {
+                            type: 'gradient',
+                            gradient: {
+                                shade: 'dark',
+                                type: 'vertical',
+                                shadeIntensity: 0.5,
+                                inverseColors: false,
+                                opacityFrom: 1,
+                                opacityTo: 0.8,
+                                stops: [0, 100],
+                                gradientToColors: ['#52c234',]
+                            }
+                        },
+                        tooltip: {
+                            theme: 'dark',
+                            //x: {
+                            //    formatter: function (val) {
+                            //        return moment(new Date(val)).format("HH:mm:ss")
+                            //    }
+                            //},
+
+                        },
+                        yaxis: {
+                            decimalsInFloat: 2,
+                            opposite: true,
+                            labels: {
+                                offsetX: -10
+                            },
+                        },
+                        title: {
+                            text: 'Ortalama Saatlik Tüketim',
+                            align: 'left',
+                            style: {
+                                fontSize: '15px'
+                            }
+                        },
+                        subtitle: {
+                            text: 'Watt',
+                            floating: true,
+                            align: 'right',
+                            offsetY: 0,
+                            style: {
+                                fontSize: '20px'
+                            }
+                        },
+
+                    }).render();
+                });
+            </script>
+        </div>
+    </div>
+
+
+
+    <script>
+        let denemeDegisken = document.querySelector('.denemeMN02').innerHTML;
+        //console.log(denemeDegisken + ' mn02');
+    </script>
+
+
+    <script>
+        function drawChart() {
+            // denemeDegisken'in değerini al
+            let denemeDegisken = document.querySelector('.denemeMN02').innerHTML;
+
+            //Ana Sayfa Chart
+
+            let deneme = 150;
+            let deneme2 = 170;
+            document.addEventListener("DOMContentLoaded", () => {
+                new ApexCharts(document.querySelector("#makinesureleriAna"), {
+                    series: [{
+                        name: "Çalışma Süresi:",
+                        data: [deneme, deneme2]
+                    }],
+
+                    chart: {
+                        type: 'bar',
+                        height: 300
+                    },
+                    plotOptions: {
+                        bar: {
+                            borderRadius: 4,
+                            horizontal: true,
+                            dataLabels: 'top',
+
+                        }
+                    },
+
+                    dataLabels: {
+                        enabled: true,
+                        style: {
+                            colors: ['#012970']
+                        },
+                        textAnchor: 'right',
+                        //offsetX: 30,
+                        formatter: function (value) {
+                            let total_seconds = parseInt(Math.floor(value / 1000));
+                            let total_minutes = parseInt(Math.floor(total_seconds / 60));
+                            let total_hours = parseInt(Math.floor(total_minutes / 60));
+                            let days = parseInt(Math.floor(total_hours / 24));
+
+                            let seconds = parseInt(total_seconds % 60);
+                            let minutes = parseInt(total_minutes % 60);
+                            let hours = parseInt(total_hours % 24);
+
+                            if (value >= 86400000) {
+                                return days + ":" + hours + ":" + minutes + ":" + seconds;
+                            }
+                            else {
+                                return hours + ":" + minutes + ":" + seconds;
+                            }
+                        }
+                    },
+                    stroke: {
+                        show: true,
+                        width: 1,
+                        colors: ['#fff']
+                    },
+                    xaxis: {
+                        categories: ['MN-01', 'MN-02', 'CMA-03', 'CMA-04', 'CMA-05', 'CMA-06', 'CMA-07'],
+                        labels: {
+                            formatter: function (val, index) {
+                                if (val == 86400000) {
+                                    return "24";
+                                }
+                                else {
+                                    let totsec = parseInt(Math.floor(val / 1000));
+                                    let totmin = parseInt(Math.floor(totsec / 60));
+                                    let tothour = parseInt(Math.floor(totmin / 60));
+
+                                    return tothour;
+                                }
+                            }
+                        }
+                    },
+                    tooltip: {
+                        shared: true,
+                        intersect: false,
+                        y: {
+                            formatter: function (value) {
+                                let total_seconds = parseInt(Math.floor(value / 1000));
+                                let total_minutes = parseInt(Math.floor(total_seconds / 60));
+                                let total_hours = parseInt(Math.floor(total_minutes / 60));
+                                let days = parseInt(Math.floor(total_hours / 24));
+
+                                let seconds = parseInt(total_seconds % 60);
+                                let minutes = parseInt(total_minutes % 60);
+                                let hours = parseInt(total_hours % 24);
+
+                                if (value >= 86400000) {
+                                    return days + " Gün " + hours + " saat " + minutes + " dakika " + seconds + " saniye";
+                                }
+                                else {
+                                    return hours + " saat " + minutes + " dakika " + seconds + " saniye ";
+                                }
+                            }
+                        },
+                    }
+                }).render();
+            });
+        }
+            
+    </script>
+
+
+    <script>
+        
+
+    </script>
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min.js"></script>
+
+
+</section>
+
+

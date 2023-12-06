@@ -1,0 +1,733 @@
+﻿@model PortalFibrobeton.Models.Entity.MultipleModelCnc
+@using PortalFibrobeton.Models.Entity
+
+@{
+    ViewBag.Title = "CncReports";
+    Layout = "~/Views/Shared/CncLayout.cshtml";
+}
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.3.0/css/datepicker3.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.3.0/js/bootstrap-datepicker.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/chartist.js/latest/chartist.min.css">
+<script src="https://cdn.jsdelivr.net/chartist.js/latest/chartist.min.js"></script>
+
+
+
+<script src="~/Scripts/chartist-plugin-pointlabels.js"></script>
+<link href="~/chartist-plugin-tooltip-master/dist/chartist-plugin-tooltip.css" rel="stylesheet" />
+<script src="~/chartist-plugin-tooltip-master/dist/chartist-plugin-tooltip.js"></script>
+<script src="~/chartist-plugin-tooltip-master/src/scripts/chartist-plugin-tooltip.js"></script>
+<link href="~/chartist-plugin-tooltip-master/src/css/chartist-plugin-tooltip.css" rel="stylesheet" />
+
+<style>
+    input {
+        cursor: pointer;
+    }
+
+        input::-webkit-calendar-picker-indicator {
+            cursor: pointer;
+        }
+
+
+    .dProgress {
+        width: 150px;
+        height: 150px;
+        background: none;
+        position: relative;
+    }
+
+        .dProgress::after {
+            content: "";
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 6px solid #eee;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        .dProgress > span {
+            width: 50%;
+            height: 100%;
+            overflow: hidden;
+            position: absolute;
+            top: 0;
+            z-index: 1;
+        }
+
+        .dProgress .dProgress-leftH {
+            left: 0;
+        }
+
+        .dProgress .dProgress-bar {
+            width: 100%;
+            height: 100%;
+            background: none;
+            border-width: 6px;
+            border-style: solid;
+            position: absolute;
+            top: 0;
+        }
+
+        .dProgress .dProgress-left .dProgress-bar {
+            left: 100%;
+            border-top-right-radius: 80px;
+            border-bottom-right-radius: 80px;
+            border-left: 0;
+            -webkit-transform-origin: center left;
+            transform-origin: center left;
+        }
+
+        .dProgress .dProgress-right {
+            right: 0;
+        }
+
+            .dProgress .dProgress-right .dProgress-bar {
+                left: -100%;
+                border-top-left-radius: 80px;
+                border-bottom-left-radius: 80px;
+                border-right: 0;
+                -webkit-transform-origin: center right;
+                transform-origin: center right;
+            }
+
+        .dProgress .dProgress-value {
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+</style>
+
+
+
+
+<div class="pagetitle">
+    <h1>Cnc Takip</h1>
+    <nav>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/CncHome/HomePageCnc">Ana Sayfa</a></li>
+            <li class="breadcrumb-item active">Raporlar</li>
+        </ol>
+    </nav>
+</div>
+
+
+@{
+
+    //Dün Veriler Verimlilik
+
+
+    var totalsaniye = Model.CncYestReports.Select(a => a.calisma_saati).Sum();
+
+    var MN01DunS = Model.CncYestReports.Where(a => a.makine_adi == "MN01").Sum(a => a.calisma_saati);
+    TimeSpan MN01DunT = TimeSpan.FromMilliseconds(MN01DunS);
+    string MN01DunA = MN01DunT.ToString(@"dd\:hh\:mm\:ss");
+
+    var MN01DunVerimlilikGet = (MN01DunS / ViewBag.diff) * 100;
+    MN01DunVerimlilikGet = Math.Round(MN01DunVerimlilikGet, 0);
+
+
+    var MN02DunS = Model.CncYestReports.Where(a => a.makine_adi == "MN02").Sum(a => a.calisma_saati);
+    TimeSpan MN02DunT = TimeSpan.FromMilliseconds(MN02DunS);
+    string MN02DunA = MN02DunT.ToString(@"dd\:hh\:mm\:ss");
+
+    var MN02DunVerimlilikGet = (MN02DunS / ViewBag.diff) * 100;
+    MN02DunVerimlilikGet = Math.Round(MN02DunVerimlilikGet, 0);
+
+
+    var cma03DunS = Model.CncYestReports.Where(a => a.makine_adi == "cma03").Sum(a => a.calisma_saati);
+    TimeSpan cma03DunT = TimeSpan.FromMilliseconds(cma03DunS);
+    string cma03DunA = cma03DunT.ToString(@"dd\:hh\:mm\:ss");
+
+    var CMA03DunVerimlilikGet = (cma03DunS / ViewBag.diff) * 100;
+    CMA03DunVerimlilikGet = Math.Round(CMA03DunVerimlilikGet, 0);
+
+    var cma04DunS = Model.CncYestReports.Where(a => a.makine_adi == "cma04 " || a.makine_adi == "cma04").Sum(a => a.calisma_saati);
+    TimeSpan cma04DunT = TimeSpan.FromMilliseconds(cma04DunS);
+    string cma04DunA = cma04DunT.ToString(@"dd\:hh\:mm\:ss");
+
+    var cma04DunVerimlilikGet = (cma04DunS / ViewBag.diff) * 100;
+    cma04DunVerimlilikGet = Math.Round(cma04DunVerimlilikGet, 0);
+
+    var cma05DunS = Model.CncYestReports.Where(a => a.makine_adi == "cma05 " || a.makine_adi == "cma05").Sum(a => a.calisma_saati);
+    TimeSpan cma05DunT = TimeSpan.FromMilliseconds(cma05DunS);
+    string cma05DunA = cma05DunT.ToString(@"dd\:hh\:mm\:ss");
+
+    var cma05DunVerimlilikGet = (cma05DunS / ViewBag.diff) * 100;
+    cma05DunVerimlilikGet = Math.Round(cma05DunVerimlilikGet, 0);
+
+    var cma06DunS = Model.CncYestReports.Where(a => a.makine_adi == "cma06").Sum(a => a.calisma_saati);
+    TimeSpan cma06DunT = TimeSpan.FromMilliseconds(cma06DunS);
+    string cma06DunA = cma06DunT.ToString(@"dd\:hh\:mm\:ss");
+
+    var cma06DunVerimlilikGet = (cma06DunS / ViewBag.diff) * 100;
+    cma06DunVerimlilikGet = Math.Round(cma06DunVerimlilikGet, 0);
+
+    var cma07DunS = Model.CncYestReports.Where(a => a.makine_adi == "cma07Dun").Sum(a => a.calisma_saati);
+    TimeSpan cma07DunT = TimeSpan.FromMilliseconds(cma07DunS);
+    string cma07DunA = cma07DunT.ToString(@"dd\:hh\:mm\:ss");
+
+    var cma07DunVerimlilikGet = (cma07DunS / ViewBag.diff) * 100;
+    cma07DunVerimlilikGet = Math.Round(cma07DunVerimlilikGet, 0);
+
+    var cma08DunS = Model.CncYestReports.Where(a => a.makine_adi == "cma08").Sum(a => a.calisma_saati);
+    TimeSpan cma08DunT = TimeSpan.FromMilliseconds(cma08DunS);
+    string cma08DunA = cma08DunT.ToString(@"dd\:hh\:mm\:ss");
+
+    var CMA08DunVerimlilikGet = (cma08DunS / ViewBag.diff) * 100;
+    CMA08DunVerimlilikGet = Math.Round(CMA08DunVerimlilikGet, 0);
+
+    var MN01DunVerPie = (MN01DunS / totalsaniye) * 100;
+    MN01DunVerPie = Math.Round(MN01DunVerPie, 0);
+
+    var MN02DunVerPie = (MN02DunS / totalsaniye) * 100;
+    MN02DunVerPie = Math.Round(MN02DunVerPie, 0);
+
+    var CMA03DunVerPie = (cma03DunS / totalsaniye) * 100;
+    CMA03DunVerPie = Math.Round(CMA03DunVerPie, 0);
+
+    var CMA04DunVerPie = (cma04DunS / totalsaniye) * 100;
+    CMA04DunVerPie = Math.Round(CMA04DunVerPie, 0);
+
+    var CMA05DunVerPie = (cma05DunS / totalsaniye) * 100;
+    CMA05DunVerPie = Math.Round(CMA05DunVerPie, 0);
+
+    var CMA06DunVerPie = (cma06DunS / totalsaniye) * 100;
+    CMA06DunVerPie = Math.Round(CMA06DunVerPie, 0);
+
+    var CMA07DunVerPie = (cma07DunS / totalsaniye) * 100;
+    CMA07DunVerPie = Math.Round(CMA07DunVerPie, 0);
+
+    var CMA08DunVerPie = (cma08DunS / totalsaniye) * 100;
+    CMA08DunVerPie = Math.Round(CMA08DunVerPie, 0);
+
+
+    //Aylık Veriler Çalışma Süresi
+
+    //MN01
+    var MN01calismaAy = Model.CncMonthReport.Where(a => a.makine_adi == "MN01").Select(a => a.calisma_saati).ToList();
+    var MN01sureAy = Model.CncMonthReport.Where(a => a.makine_adi == "MN01").Select(a => a.tarih).ToList();
+    var MN01WattAy = Model.CNCMonthWattMN01.Where(a => a.makine_adi == "MN01").Select(a => a.tuketim).ToList();
+
+
+    //Çalışma Süresi
+    var MN01MonthTotalS = Model.CncMonthReport.Where(a => a.makine_adi == "MN01").Select(a => a.calisma_saati).Sum();
+    TimeSpan MN01MonthT = TimeSpan.FromMilliseconds(MN01MonthTotalS);
+    string MN01MonthTotalA = MN01MonthT.ToString(@"dd\:hh\:mm\:ss");
+
+    //kW
+
+    var MN01MonthKW = Model.CNCMonthWattMN01.Select(a => a.tuketim).Sum();
+    MN01MonthKW = MN01MonthKW / 1000;
+    var MN01MonthKWDiff = (MN01MonthKW - ViewBag.MN01LastMkW);
+    var MN01MonthKWPer = (MN01MonthKWDiff / ViewBag.MN01LastMkW) * 100;
+    MN01MonthKWPer = Math.Round(MN01MonthKWPer, 0);
+
+
+
+
+    //Verimlilik
+    var MN01MonthVerimlilik = (MN01MonthTotalS / ViewBag.currentDayMs) * 100;
+    MN01MonthVerimlilik = Math.Round(MN01MonthVerimlilik, 0);
+
+    //Geçen Ay Verimlilik
+    var MN01LastMonthDiff = (MN01MonthTotalS - ViewBag.MN01LastMCalisma);
+    var MN01LastMonthPer = (MN01LastMonthDiff / ViewBag.MN01LastMCalisma) * 100;
+    MN01LastMonthPer = Math.Round(MN01LastMonthPer, 0);
+
+
+
+
+
+    //CMA06
+    var cma06calismaAy = Model.CncMonthReport.Where(a => a.makine_adi == "CMA06").Select(a => a.calisma_saati).ToList();
+    var cma06TarihAy = Model.CncMonthReport.Where(a => a.makine_adi == "CMA06").Select(a => a.tarih).ToList();
+    var cma06WattAy = Model.CNCMonthWattCMA06.Where(a => a.makine_adi == "CMA06").Select(a => a.tuketim).ToList();
+    cma06WattAy = cma06WattAy.Select(a => Math.Round(a, 0)).ToList();
+
+    //HH:MM:SS Çevirici
+    var cma06MonthTotalS = Model.CncMonthReport.Where(a => a.makine_adi == "CMA06").Select(a => a.calisma_saati).Sum();
+    TimeSpan cma06MonthT = TimeSpan.FromMilliseconds(cma06MonthTotalS);
+    string cma06MonthTotalA = cma06MonthT.ToString(@"dd\:hh\:mm\:ss");
+
+    //Aylık Verimlikik Hesabı
+    var cma06MonthVerGet = (cma06MonthTotalS / ViewBag.DaysToMsInMonth) * 100;
+    cma06MonthVerGet = Math.Round(cma06MonthVerGet, 0);
+
+
+    //CMA05
+    var cma05calismaAy = Model.CncMonthReport.Where(a => a.makine_adi == "CMA05").Select(a => a.calisma_saati).ToList();
+    var cma05TarihAy = Model.CncMonthReport.Where(a => a.makine_adi == "CMA05").Select(a => a.calisma_saati).ToList();
+    var cma05WattAy = Model.CNCMonthWattCMA05.Where(a => a.makine_adi == "CMA05").Select(a => a.tuketim).ToList();
+
+    //HH:MM:SS Çevirici
+
+}
+
+<body>
+
+    <script>
+
+        //MN01
+        var MN01calismaArrayAy = [];
+        var MN01WattArrayAy = [];
+        var MN01TarihArrayAy = [];
+
+        //CMA06
+        var cma06calismaArrayAy = [];
+        var cma06WattArrayAy = [];
+        var cma06TarihArrayAy = [];
+
+        var last6ArrayT = [];
+        var last6ArrayWatt = [];
+
+        @foreach(var d in Model.CNCMonthLast6WattMN01)
+            {
+                @:last6ArrayWatt.push("@d");
+            }
+
+        @foreach(var d in Model.CncMonthLast6)
+            {
+                @:last6ArrayT.push("@d");
+            }
+
+        console.log(last6ArrayWatt);
+
+        //MN01
+
+        @foreach (var d in MN01calismaAy)
+        {
+                @:MN01calismaArrayAy.push("@d");
+         }
+
+         @foreach (var d in MN01WattAy)
+         {
+
+             @:MN01WattArrayAy.push("@d");
+          }
+
+        @foreach (var d in MN01sureAy)
+        {
+                @:MN01TarihArrayAy.push("@d");
+            }
+
+        //CMA06
+
+        @foreach (var d in cma06calismaAy)
+        {
+                @:cma06calismaArrayAy.push("@d");
+            }
+        @foreach (var d in cma06TarihAy)
+        {
+                @:cma06TarihArrayAy.push("@d");
+            }
+        @foreach (var d in cma06WattAy)
+        {
+                @:cma06WattArrayAy.push(@d * 2000);
+            }
+
+    </script>
+
+    <ul class="nav nav-pills mb-3 justify-content-end" id="pills-tab" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="pills-yesterday-tab" data-bs-toggle="pill" data-bs-target="#pills-yesterday" type="button" role="tab" aria-controls="pills-yesterday" aria-selected="true">Dün</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="pills-week-tab" data-bs-toggle="pill" data-bs-target="#pills-week" type="button" role="tab" aria-controls="pills-week" aria-selected="false">Haftalık</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="pills-month-tab" data-bs-toggle="pill" data-bs-target="#pills-month" type="button" role="tab" aria-controls="pills-month" aria-selected="false">Aylık</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            @*<button class="nav-link" id="pills-secilen-tab" data-bs-toggle="pill" data-bs-target="#pills-secilen" type="button" role="tab" aria-controls="pills-secilen" aria-selected="false">Seçilen Tarihler</button>*@
+            <a href="/CncProductivity/CncReportsD" class="nav-link" aria-selected="false">Seçilen Tarihler</a>
+        </li>
+    </ul>
+
+    <div class="col-12 tab-content pt-2" id="myTabContent">
+        <div class="tab-pane fade show active" id="pills-yesterday" role="tabpanel" aria-labelledby="yesterday-tab">
+
+        </div>
+
+        <div class="tab-pane fade" id="pills-week" role="tabpanel" aria-labelledby="=week-tab">
+            <p>Week</p>
+        </div>
+        <div class="tab-pane fade" id="pills-month" role="tabpanel" aria-labelledby="month-tab">
+            <div class="card">
+                <h3 style="font-size:23px;padding-left:13px" class="card-title">MN-01 Raporlar</h3>
+                <div class="col-lg-12">
+                    <div class="row">
+                        <div class="col-xl-3 mb-4">
+                            <div class="card">
+                                <div class="chart-wrapper mb-4">
+                                    <div class="px-4 pt-4 d-flex justify-content-between">
+                                        <div>
+                                            <h4 style="font-size:21px;color: black;font-weight:bold">Elektrik Tüketimi</h4>
+                                            <p style="font-size: 15px; color: dimgray ">Geçen Ay'a Göre</p>
+                                        </div>
+                                        <div>
+                                            <span><i class="fa fa-caret-up text-success"></i></span>
+                                            <h4 class="d-inline-block" style="color: #008FFB">@MN01MonthKW kW</h4>
+                                            @if (MN01MonthKW <= ViewBag.MN01LastMkW)
+                                            {
+                                                <p class=" text-danger">%@MN01MonthKWPer</p>
+                                            }
+                                            @if (MN01MonthKW > ViewBag.LastMkW)
+                                            {
+                                                <p class=" text-success">%@MN01MonthKWPer</p>
+                                            }
+
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div id="MN01Elektrik"></div>
+                                    </div>
+                                </div>
+                                <div class="card-body border-top pt-4">
+                                    <div class="row">
+                                        <div class="col-sm-6">
+                                            <div>
+                                                <h5 style="color:black;font-size:20px;font-weight:bold">Çalışma Süresi</h5>
+                                                <h4 style="color: #008FFB">@MN01MonthTotalA</h4>
+                                            </div>
+                                            <ul style="margin-top:25px">
+                                                <li style="font-size:15px;color:black"><span style="color: #00E396;font-weight:bold;font-size:17px">@ViewBag.currentday </span>Günde <span style="color: #00E396;font-weight:bold;font-size:17px">@MN01MonthTotalA</span> Çalışma Süresi</li>
+                                                @if (MN01MonthTotalS <= ViewBag.MN01LastMCalisma)
+                                                {
+                                                    <li style="font-size:15px;padding-top:10px;color:black">Geçen Ay'a Göre <span style="color: red;font-weight:bold;font-size:17px">%@MN01LastMonthPer </span>Verim</li>
+                                                }
+                                                @if (MN01MonthTotalS > ViewBag.MN01LastMCalisma)
+                                                {
+                                                    <li style="font-size:15px;padding-top:10px;color:black">Geçen Ay'a Göre <span style="color: green;font-weight:bold;font-size:17px">%@MN01LastMonthPer </span>Verim</li>
+                                                }
+
+                                            </ul>
+
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <div style="margin-top:30px" id="MN01Verimlilik"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-9">
+                            <div class="card" style="margin-right:15px">
+                                <h4 class="card-title" style="padding-left:20px;color:black">MN01 Tüketim Grafiği</h4>
+                                <div id="MN01MonthChartWT"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <script>
+                var options1 = {
+                    series: [{
+                        name: "MN-01 Watt Tüketim",
+                        data: last6ArrayWatt,
+                    }],
+                    chart: {
+                        height: 150,
+                        type: 'area',
+                        zoom: {
+                            enabled: false
+                        },
+                        sparkline: {
+                            enabled: true
+                        },
+                    },
+                    dataLabels: {
+                        enabled: false
+                    },
+                    stroke: {
+                        curve: 'straight'
+                    },
+
+                    yaxis: {
+                        min: -5,
+                    },
+                    title: {
+                        text: 'Son 6 Ay',
+                        offsetX: 0,
+                        style: {
+                            fontSize: '16px',
+                            color: '#00E396',
+
+                        }
+                    },
+                    xaxis: {
+                        categories: last6ArrayT,
+                    }
+                };
+
+                var chart1 = new ApexCharts(document.querySelector("#MN01Elektrik"), options1);
+                chart1.render();
+
+            </script>
+
+            <script>
+                var options = {
+                    series: [@MN01MonthVerimlilik],
+                    chart: {
+                        height: 217,
+                        type: 'radialBar',
+                        toolbar: {
+                            show: true
+                        }
+                    },
+                    plotOptions: {
+                        radialBar: {
+                            startAngle: -135,
+                            endAngle: 225,
+                            hollow: {
+                                margin: 0,
+                                size: '70%',
+                                background: '#fff',
+                                image: undefined,
+                                imageOffsetX: 0,
+                                imageOffsetY: 0,
+                                position: 'front',
+                                dropShadow: {
+                                    enabled: true,
+                                    top: 3,
+                                    left: 0,
+                                    blur: 4,
+                                    opacity: 0.24
+                                }
+                            },
+                            track: {
+                                background: '#fff',
+                                strokeWidth: '67%',
+                                margin: 0, // margin is in pixels
+                                dropShadow: {
+                                    enabled: true,
+                                    top: -3,
+                                    left: 0,
+                                    blur: 4,
+                                    opacity: 0.35
+                                }
+                            },
+
+                            dataLabels: {
+                                show: true,
+                                name: {
+                                    offsetY: -10,
+                                    show: true,
+                                    color: 'black',
+                                    fontSize: '17px'
+                                },
+                                value: {
+                                    formatter: function (val) {
+                                        return '%' + parseInt(val);
+                                    },
+                                    color: '#111',
+                                    fontSize: '21px',
+                                    show: true,
+                                }
+                            }
+                        }
+                    },
+                    fill: {
+                        type: 'gradient',
+                        gradient: {
+                            shade: 'dark',
+                            type: 'horizontal',
+                            shadeIntensity: 0.5,
+                            gradientToColors: ['#ABE5A1'],
+                            inverseColors: true,
+                            opacityFrom: 1,
+                            opacityTo: 1,
+                            stops: [0, 100]
+                        }
+                    },
+                    stroke: {
+                        lineCap: 'round'
+                    },
+                    labels: ['Verimlilik'],
+                };
+
+                var chart = new ApexCharts(document.querySelector("#MN01Verimlilik"), options);
+                chart.render();
+            </script>
+
+            <script>
+                var options = {
+                    series: [
+                        {
+                            name: 'Watt',
+                            type: 'column',
+                            data: MN01WattArrayAy
+                        },
+                        {
+                            name: 'Çalışma Saati',
+                            type: 'area',
+                            data: MN01calismaArrayAy,
+                        }
+                    ],
+                    chart: {
+                        height: 472,
+                        type: 'line',
+                        stacked: false,
+                    },
+                    stroke: {
+                        width: [0, 2, 5],
+                        curve: 'smooth'
+                    },
+                    plotOptions: {
+                        bar: {
+                            columnWidth: '50%'
+                        }
+                    },
+
+                    fill: {
+                        opacity: [0.85, 0.25, 1],
+                        gradient: {
+                            inverseColors: false,
+                            shade: 'light',
+                            type: "vertical",
+                            opacityFrom: 0.85,
+                            opacityTo: 0.55,
+                            stops: [0, 100, 100, 100]
+                        }
+                    },
+                    title: {
+
+                    },
+                    xaxis: {
+                        type: 'string',
+                        categories: MN01TarihArrayAy,
+                        labels: {
+                            formatter: function (value) {
+                                if (value !== undefined)
+                                    splittedCategories = value.split(" ")
+                                HhMmSs = splittedCategories[0]
+                                return HhMmSs;
+                            }
+                        },
+                    },
+
+                    markers: {
+                        size: 0
+                    },
+
+                    yaxis: {
+                        title: {
+                            text: 'Saat',
+                        },
+                        labels: {
+                            formatter: function (val, index) {
+                                let total_seconds = parseInt(Math.floor(val / 1000));
+                                let total_minutes = parseInt(Math.floor(total_seconds / 60));
+                                let total_hours = parseInt(Math.floor(total_minutes / 60));
+                                let hours = parseInt(total_hours % 24);
+
+                                if (val >= 86400000) {
+                                    return hours;
+                                }
+                                else {
+                                    return hours;
+                                }
+                            }
+                        }
+
+                    },
+                    tooltip: {
+                        shared: true,
+                        intersect: false,
+                        y: [{
+                            formatter: function (y) {
+                                if (typeof y == "undefined" || typeof y == null) {
+                                    return y = 0 + " Watt";
+                                }
+                                else {
+                                    return y / 2000 + " Watt"
+                                }
+
+
+                            }
+                        }, {
+                            formatter: function (value) {
+                                let total_seconds = parseInt(Math.floor(value / 1000));
+                                let total_minutes = parseInt(Math.floor(total_seconds / 60));
+                                let total_hours = parseInt(Math.floor(total_minutes / 60));
+                                let days = parseInt(Math.floor(total_hours / 24));
+
+                                let seconds = parseInt(total_seconds % 60);
+                                let minutes = parseInt(total_minutes % 60);
+                                let hours = parseInt(total_hours % 24);
+
+                                if (value >= 86400000) {
+                                    return days + " Gün " + hours + " saat " + minutes + " dakika " + seconds + " saniye"
+                                }
+                                else {
+                                    return hours + " saat " + minutes + " dakika " + seconds + " saniye "
+                                }
+                            }
+
+                        },]
+
+                    }
+                };
+
+                var chart = new ApexCharts(document.querySelector("#MN01MonthChartWT"), options);
+                chart.render();
+            </script>
+        </div>
+
+        <div id="pills-secilen" class="tab-pane fade" role="tabpanel" aria-labelledby="secilen-tab">
+
+        </div>
+
+    </div>
+
+
+</body>
+
+<script>
+    $(function () {
+
+        $(".dProgress").each(function () {
+
+            var value = $(this).attr('data-value');
+            var left = $(this).find('.dProgress-left .dProgress-bar');
+            var right = $(this).find('.dProgress-right .dProgress-bar');
+
+            if (value > 0) {
+                if (value <= 50) {
+                    right.css('transform', 'rotate(' + percentageToDegrees(value) + 'deg)')
+                } else {
+                    right.css('transform', 'rotate(180deg)')
+                    left.css('transform', 'rotate(' + percentageToDegrees(value - 50) + 'deg)')
+                }
+            }
+
+        })
+
+        function percentageToDegrees(percentage) {
+
+            return percentage / 100 * 360
+
+        }
+
+    });
+</script>
+
+<script src="~/quixlab-master/quixlab-master/plugins/chartist-plugin-tooltips/js/chartist-plugin-tooltip.min.js"></script>
+<script src="~/quixlab-master/quixlab-master/js/dashboard/dashboard-1.js"></script>
+<script src="~/quixlab-master/quixlab-master/plugins/chartist/js/chartist.min.js"></script>
+
+
+
+
+
+
+

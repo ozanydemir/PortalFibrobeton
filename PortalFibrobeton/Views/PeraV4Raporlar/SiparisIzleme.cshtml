@@ -1,0 +1,606 @@
+﻿@model PortalFibrobeton.Models.Class.PeraRaporlar.PeraV4ReportsViewModel
+
+@{
+    ViewBag.Title = "SiparisIzleme";
+    Layout = "~/Views/Shared/_PeraLayout.cshtml";
+}
+
+<head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link type="text/css" href="https://cdn.datatables.net/buttons/2.3.6/css/buttons.dataTables.min.css" rel="stylesheet" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css" />
+
+    <style>
+        .notStil.input:focus {
+            outline: none;
+        }
+
+        .form-control:focus {
+            border-color: inherit;
+            -webkit-box-shadow: none;
+            box-shadow: none;
+        }
+
+        button.fred {
+            background-color: limegreen;
+            border-color: limegreen;
+        }
+
+        button.pri {
+            background-color: royalblue;
+            border-color: steelblue
+        }
+
+        button.pedefe {
+            background-color: red;
+            border-color: firebrick;
+        }
+
+        button.kopya {
+            background-color: darkorange;
+            border-color: orange;
+        }
+    </style>
+
+</head>
+
+<body>
+    <div class="container-fluid flex-grow-1 container-p-y">
+        <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">PeraFIBRO /</span> Sipariş İzleme Raporu</h4>
+
+
+        @using (Html.BeginForm("SiparisIzleme", "PeraV4Raporlar", FormMethod.Post, new { onsubmit = "return validateForm();" }))
+        {
+            <div class="row mt-3">
+                <div class="col-xxl-6">
+                    <div class="card mt-2">
+                        <div class="card-header d-flex align-items-center justify-content-between">
+                            <h5 class="mb-0">Ara & Filtrele</h5>
+                            <small class="text-muted float-end"></small>
+                        </div>
+                        <div class="card-body">
+                            <div class="row mt-3 input-group">
+                                <label class="col-sm-2 col-form-label">Başlangıç</label>
+                                <input type="date" class="form-control datepicker" name="bas" style="cursor:pointer" />
+                                <label style="margin-left:10px" class="col-sm-2 col-form-label">Sipariş Türü</label>
+                                <select class="form-select" name="siparisTur" style="cursor:pointer">
+                                    <option selected></option>
+                                    <option>NS</option>
+                                    <option>NUS</option>
+                                    <option>US</option>
+
+                                </select>
+                            </div>
+                            <div class="row mt-3 input-group">
+                                <label class="col-sm-2 col-form-label">Bitiş</label>
+                                <input type="date" class="form-control datepicker" name="bit" style="cursor:pointer" />
+                                <label class="col-sm-2 col-form-label">POZ</label>
+                                <input type="text" class="form-control" name="poz" />
+                            </div>
+                            <div class="row mt-3 input-group">
+                                <label class="col-sm-2 col-form-label">Proje</label>
+                                <div class="col-10">
+                                    <select class="form-select selectpicker" name="proje">
+                                        <option selected></option>
+                                        @if (Model.Projeler != null)
+                                        {
+                                            foreach (var item in Model.Projeler)
+                                            {
+                                                <option>@item.PROJE_ADI</option>
+                                            }
+                                        }
+
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row justify-content-center mt-4">
+                                <div class="col-auto form-check">
+                                    <label class="form-check-label" for="dokumCheck">
+                                        Sadece Döküm Eksiği Olanlar
+                                    </label>
+                                    <input class="form-check-input" type="checkbox" name="dokumEksigi" value="true" style="cursor:pointer" id="dokumCheck">
+                                </div>
+                                <div class="col-auto form-check">
+                                    <label class="form-check-label" for="montajCheck">
+                                        Montaj Kalan > 0
+                                    </label>
+                                    <input class="form-check-input" type="checkbox" name="montajKalan" value="true" style="cursor:pointer" id="montajCheck">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="mt-3 text-center">
+                                    <button type="submit" class="btn btn-primary">Ara</button>
+                                </div>
+                            </div>
+
+
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mt-3">
+                <div class="card mt-5">
+                    <h4 class="card-title mt-4">Sipariş İzleme Raporu</h4>
+                    <div class="card-body">
+                        <div class="table-responsive text-nowrap">
+                            <table id="siparisIzleme" class="table table-striped">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th style="color:#fff">Sipariş Tarihi</th>
+                                        <th style="color:#fff">Sipariş Türü</th>
+                                        <th style="color:#fff">Revize Tarihi</th>
+                                        <th style="color:#fff">Döküm Şekli</th>
+                                        <th style="color:#fff">Hat</th>
+                                        <th style="color:#fff">Sipariş Türü</th>
+                                        <th style="color:#fff">Poz No</th>
+                                        <th style="color:#fff">Malzeme Adı</th>
+                                        <th style="color:#fff">Boy</th>
+                                        <th style="color:#fff">En</th>
+                                        <th style="color:#fff">Kalıp Şekli</th>
+                                        <th style="color:#fff">İş Emri No</th>
+                                        <th style="color:#fff">İş Emri Veren</th>
+                                        <th style="color:#fff">Renk</th>
+                                        <th style="color:#fff">Malzeme Yüzeyi</th>
+                                        <th style="color:#fff">Montajsız</th>
+                                        <th style="color:#fff">İş Emri Tarih</th>
+                                        <th style="color:#fff">Satış Birim (m2)</th>
+                                        <th style="color:#fff">Döküm Birim (m2)</th>
+                                        <th style="color:#fff">Malzeme Birim (kg)</th>
+                                        <th style="color:#fff">Birim Hacim (m2)</th>
+                                        <th style="color:#fff">Frame Birim (kg)</th>
+                                        <th style="color:#fff">Stok</th>
+                                        <th style="color:#fff">Toplam</th>
+                                        <th style="color:#fff">Dökülen</th>
+                                        <th style="color:#fff">Kalan</th>
+                                        <th style="color:#fff">Kalan Satış (m2)</th>
+                                        <th style="color:#fff">Dökülen Satış (m2)</th>
+                                        <th style="color:#fff">Top. Sip. Hacim (m2)</th>
+                                        <th style="color:#fff">Kalan Sip. Hacim (m2)</th>
+                                        <th style="color:#fff">Nakledilen (Ad.)</th>
+                                        <th style="color:#fff">Nakledilen (m2)</th>
+                                        <th style="color:#fff">İndirilen (Ad.)</th>
+                                        <th style="color:#fff">İndirilen (m2)</th>
+                                        <th style="color:#fff">Montajlanan (Ad.)</th>
+                                        <th style="color:#fff">Montajlanan (m2)</th>
+                                        <th style="color:#fff">Hurda/Karantina Adet</th>
+                                        <th style="color:#fff">Hurda/Karantina (m2)</th>
+                                        <th style="color:#fff">Kalan Montaj (Ad.)</th>
+                                        <th style="color:#fff">Kalan Montaj (m2)</th>
+                                        <th style="color:#fff">Top. Satış (m2)</th>
+                                        <th style="color:#fff">Yüzey İşlem 1</th>
+                                        <th style="color:#fff">Yüzey İşlem 2</th>
+                                        <th style="color:#fff">Yüzey İşlem 3</th>
+                                        <th style="color:#fff">Yüzey İşlem 4</th>
+                                        <th style="color:#fff">Yüzey İşlem 5</th>
+                                        <th style="color:#fff">Report Code</th>
+                                        <th style="color:#fff">Öngörülen Ürün Ağırlık</th>
+                                        <th style="color:#fff">Blok Adı</th>
+                                        <th style="color:#fff">Cephe Adı</th>
+                                        <th style="color:#fff">Poz Türü</th>
+                                        <th style="color:#fff">Kalıp Tasarım No</th>
+                                        <th style="color:#fff">Frame Durumu</th>
+
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @if (Model != null)
+                                    {
+                                        foreach (var item in Model.SiparisIzleme)
+                                        {
+                                            <tr>
+                                                <td>@(item.SIPARIS_TARIH.HasValue ? item.SIPARIS_TARIH.Value.ToString("dd/MM/yyyy") : "")</td>
+                                                <td>@item.SIPARIS_TURU</td>
+                                                <td>@item.PROJE_ADI</td>
+                                                <td>@item.DOKUM_SEKLI</td>
+                                                <td>@item.HAT</td>
+                                                <td>@item.SIPARIS_TURU</td>
+                                                <td>@item.POZ_NO</td>
+                                                <td>@item.MALZEME_ADI</td>
+                                                <td>@item.BOY</td>
+                                                <td>@item.EN</td>
+                                                <td>@item.KALIP_SEKLI</td>
+                                                <td>@item.IS_EMRI_NO</td>
+                                                <td>@item.IS_EMRINI_VEREN</td>
+                                                <td>@item.RENK</td>
+                                                <td>@item.MALZEME_YUZEYI</td>
+                                                <td>
+                                                    @if (item.MONTAJSIZ == true)
+                                                    {
+                                                        <img src="~/Content/icons/ok_30px.png" />
+                                                    }
+                                                    else
+                                                    {
+                                                        <img src="~/Content/icons/cancel_30px.png" />
+                                                    }
+                                                </td>
+                                                <td>@(item.IS_EMRI_TARIH.HasValue ? item.IS_EMRI_TARIH.Value.ToString("dd/MM/yyyy") : "")</td>
+                                                <td>@item.SATIS_BIRIM_M2</td>
+                                                <td>@item.DOKUM_BIRIM_M2</td>
+                                                <td>@item.MALZEME_BIRIM_KG</td>
+                                                <td>@item.BIRIM_HACIM_M3</td>
+                                                <td>@item.FRAME_BIRIM_KG</td>
+                                                <td>@item.STOK</td>
+                                                <td>@item.TOPLAM</td>
+                                                <td>@item.DOKULEN</td>
+                                                <td>@item.KALAN</td>
+                                                <td>@item.KALAN_SATIS_M2</td>
+                                                <td>@item.DOKULEN_SATIS_M2</td>
+                                                <td>@item.TOPLAM_SIPARIS_HACIM_M2</td>
+                                                <td>@item.KALAN_SIPARIS_HACIM_M2</td>
+                                                <td>@item.NAKLEDILEN_ADET</td>
+                                                <td>@item.NAKLEDILEN_M2</td>
+                                                <td>@item.INDIRILEN_AD</td>
+                                                <td>@item.INDIRILEN_M2</td>
+                                                <td>@item.MONTAJLANAN_AD</td>
+                                                <td>@item.MONTAJLANAN_M2</td>
+                                                <td>@item.HURDA_KARANTINA_AD</td>
+                                                <td>@item.HURDA_KARANTINA_M2</td>
+                                                <td>@item.KALAN_MONTAJ_AD</td>
+                                                <td>@item.KALAN_MONTAJ_M2</td>
+                                                <td>@item.TOPLAM_SATIS_M2</td>
+                                                <td>@item.YUZEY_ISLEM_1</td>
+                                                <td>@item.YUZEY_ISLEM_2</td>
+                                                <td>@item.YUZEY_ISLEM_3</td>
+                                                <td>@item.YUZEY_ISLEM_4</td>
+                                                <td>@item.YUZEY_ISLEM_5</td>
+                                                <td>@item.REPORT_CODE</td>
+                                                <td>@item.ONGORULEN_URUN_AGIRLIK</td>
+                                                <td>@item.BLOK_ADI</td>
+                                                <td>@item.CEPHE_ADI</td>
+                                                <td>@item.POZ_TURU</td>
+                                                <td>@item.KALIP_TASARIM_NO</td>
+                                                <td>@item.FRAME_DURUMU</td>
+                                            </tr>
+                                        }
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row mt-4">
+                <div class="col-md-2 col-lg-12 order-2 mb-4">
+                    <div class="card h-100">
+                        <div class="card-header d-flex align-items-center justify-content-between">
+                            <h5 class="card-title m-0 me-2">Genel Toplamlar</h5>
+                        </div>
+                        <div class="card-body">
+                            <ul class="p-0 m-0 row">
+                                <div class="col-lg-3">
+                                <li class="d-flex mb-1">
+                                    <div class="avatar flex-shrink-0 mt-2" style="cursor:default">
+                                        <div style="width: 25px; height: 25px; background-color: #d0aef0; border-radius: 7px; cursor: default"></div>
+                                    </div>
+                                    <div class="d-flex w-100 flex-wrap align-items-center justify-content-start gap-2">
+                                        <div class="me-2">
+                                            <h6 class="mb-0">Stok</h6>
+                                        </div>
+                                        <div class="user-progress d-flex align-items-center gap-1">
+                                            <h6 class="mb-0">@Model.SiparisIzleme.Sum(a => a.STOK)</h6>
+                                            <span class="text-muted">Ad.</span>
+                                        </div>
+                                        <div class="user-progress d-flex align-items-center gap-1">
+                                            <h6 class="mb-0"> / ?</h6>
+                                            <span class="text-muted">m²</span>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li class="d-flex mb-1">
+                                    <div class="avatar flex-shrink-0 mt-2" style="cursor:default">
+                                        <div style="width: 25px; height: 25px; background-color: #aef0ae; border-radius: 7px; cursor: default"></div>
+                                    </div>
+                                    <div class="d-flex w-100 flex-wrap align-items-center justify-content-start gap-2">
+                                        <div class="me-2">
+
+                                            <h6 class="mb-0">Toplam</h6>
+                                        </div>
+                                        <div class="user-progress d-flex align-items-center gap-1">
+                                            <h6 class="mb-0">@Model.SiparisIzleme.Sum(a => a.TOPLAM)</h6>
+                                            <span class="text-muted">Ad.</span>
+                                        </div>
+                                        <div class="user-progress d-flex align-items-center gap-1">
+                                            <h6 class="mb-0"> / @Math.Round(Model.SiparisIzleme.Sum(a => a.TOPLAM_SATIS_M2) ?? 0.000, 3)</h6>
+                                            <span class="text-muted">m²</span>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li class="d-flex mb-1">
+                                    <div class="avatar flex-shrink-0 mt-2" style="cursor:default">
+                                        <div style="width: 25px; height: 25px; background-color: #aeeff0; border-radius: 7px; cursor: default"></div>
+                                    </div>
+                                    <div class="d-flex w-100 flex-wrap align-items-center justify-content-start gap-2">
+                                        <div class="me-2">
+
+                                            <h6 class="mb-0">Kalan</h6>
+                                        </div>
+                                        <div class="user-progress d-flex align-items-center gap-1">
+                                            <h6 class="mb-0">@Model.SiparisIzleme.Sum(a => a.KALAN)</h6>
+                                            <span class="text-muted">Ad.</span>
+                                        </div>
+                                        <div class="user-progress d-flex align-items-center gap-1">
+                                            <h6 class="mb-0"> / @Math.Round(Model.SiparisIzleme.Sum(a => a.KALAN_SATIS_M2) ?? 0.000, 3)</h6>
+                                            <span class="text-muted">m²</span>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li class="d-flex mb-1">
+                                    <div class="avatar flex-shrink-0 mt-2" style="cursor:default">
+                                        <div style="width: 25px; height: 25px; background-color: #f0aeae; border-radius: 7px; cursor: default"></div>
+                                    </div>
+                                    <div class="d-flex w-100 flex-wrap align-items-center justify-content-start gap-2">
+                                        <div class="me-2">
+
+                                            <h6 class="mb-0">Dökülen</h6>
+                                        </div>
+                                        <div class="user-progress d-flex align-items-center gap-1">
+                                            <h6 class="mb-0">@Model.SiparisIzleme.Sum(a => a.DOKULEN)</h6>
+                                            <span class="text-muted">Ad.</span>
+                                        </div>
+                                        <div class="user-progress d-flex align-items-center gap-1">
+                                            <h6 class="mb-0"> / @Math.Round(Model.SiparisIzleme.Sum(a => a.DOKULEN_SATIS_M2) ?? 0.000, 3)</h6>
+                                            <span class="text-muted">m²</span>
+                                        </div>
+                                    </div>
+                                </li>
+                        </div>
+                        <div class="col-lg-3">
+                            <li class="d-flex mb-1">
+                                <div class="avatar flex-shrink-0 mt-2" style="cursor:default">
+                                    <div style="width: 25px; height: 25px; background-color: #d0aef0; border-radius: 7px; cursor: default"></div>
+                                </div>
+                                <div class="d-flex w-100 flex-wrap align-items-center justify-content-start gap-2">
+                                    <div class="me-2">
+
+                                        <h6 class="mb-0">Nakledilen</h6>
+                                    </div>
+                                    <div class="user-progress d-flex align-items-center gap-1">
+                                        <h6 class="mb-0">@Model.SiparisIzleme.Sum(a => a.NAKLEDILEN_ADET)</h6>
+                                        <span class="text-muted">Ad.</span>
+                                    </div>
+                                    <div class="user-progress d-flex align-items-center gap-1">
+                                        <h6 class="mb-0"> / @Math.Round(Model.SiparisIzleme.Sum(a => a.NAKLEDILEN_M2) ?? 0.000, 3)</h6>
+                                        <span class="text-muted">m²</span>
+                                    </div>
+                                </div>
+                            </li>
+                            <li class="d-flex mb-1">
+                                <div class="avatar flex-shrink-0 mt-2" style="cursor:default">
+                                    <div style="width: 25px; height: 25px; background-color: #aef0ae; border-radius: 7px; cursor: default"></div>
+                                </div>
+                                <div class="d-flex w-100 flex-wrap align-items-center justify-content-start gap-2">
+                                    <div class="me-2">
+
+                                        <h6 class="mb-0">İndirilen</h6>
+                                    </div>
+                                    <div class="user-progress d-flex align-items-center gap-1">
+                                        <h6 class="mb-0">@Model.SiparisIzleme.Sum(a => a.INDIRILEN_AD)</h6>
+                                        <span class="text-muted">Ad.</span>
+                                    </div>
+                                    <div class="user-progress d-flex align-items-center gap-1">
+                                        <h6 class="mb-0"> / @Math.Round(Model.SiparisIzleme.Sum(a => a.INDIRILEN_M2) ?? 0.000, 3)</h6>
+                                        <span class="text-muted">m²</span>
+                                    </div>
+                                </div>
+                            </li>
+                            <li class="d-flex mb-1">
+                                <div class="avatar flex-shrink-0 mt-2" style="cursor:default">
+                                    <div style="width: 25px; height: 25px; background-color: #aeeff0; border-radius: 7px; cursor: default"></div>
+                                </div>
+                                <div class="d-flex w-100 flex-wrap align-items-center justify-content-start gap-2">
+                                    <div class="me-2">
+
+                                        <h6 class="mb-0">Normal Sipariş</h6>
+                                    </div>
+                                    <div class="user-progress d-flex align-items-center gap-1">
+                                        <h6 class="mb-0">@Model.SiparisIzleme.Where(a => a.SIPARIS_TURU == "NS").Select(a => a.TOPLAM).Sum()</h6>
+                                        <span class="text-muted">Ad.</span>
+                                    </div>
+                                    <div class="user-progress d-flex align-items-center gap-1">
+                                        <h6 class="mb-0"> / @Math.Round(Model.SiparisIzleme.Where(a => a.SIPARIS_TURU == "NS").Select(a => a.KALAN_SATIS_M2).Sum() ?? 0.000, 3)</h6>
+                                        <span class="text-muted">m²</span>
+                                    </div>
+                                </div>
+                            </li>
+
+                            <li class="d-flex mb-1">
+                                <div class="avatar flex-shrink-0 mt-2" style="cursor:default">
+                                    <div style="width: 25px; height: 25px; background-color: #f0aeae; border-radius: 7px; cursor: default"></div>
+                                </div>
+                                <div class="d-flex w-100 flex-wrap align-items-center justify-content-start gap-2">
+                                    <div class="me-2">
+
+                                        <h6 class="mb-0">Uyg.Sipariş</h6>
+                                    </div>
+                                    <div class="user-progress d-flex align-items-center gap-1">
+                                        <h6 class="mb-0">@Model.SiparisIzleme.Where(a => a.SIPARIS_TURU == "US").Select(a => a.TOPLAM).Sum()</h6>
+                                        <span class="text-muted">Ad.</span>
+                                    </div>
+                                    <div class="user-progress d-flex align-items-center gap-1">
+                                        <h6 class="mb-0"> / @Math.Round(Model.SiparisIzleme.Where(a => a.SIPARIS_TURU == "US").Select(a => a.KALAN_SATIS_M2).Sum() ?? 0.000, 3)</h6>
+                                        <span class="text-muted">m²</span>
+                                    </div>
+                                </div>
+                            </li>
+                        </div>
+                        <div class="col-lg-3">
+                            <li class="d-flex mb-1">
+                                <div class="avatar flex-shrink-0 mt-2" style="cursor:default">
+                                    <div style="width: 25px; height: 25px; background-color: #d0aef0; border-radius: 7px; cursor: default"></div>
+                                </div>
+                                <div class="d-flex w-100 flex-wrap align-items-center justify-content-start gap-2">
+                                    <div class="me-2">
+
+                                        <h6 class="mb-0">Montajlanan</h6>
+                                    </div>
+                                    <div class="user-progress d-flex align-items-center gap-1">
+                                        <h6 class="mb-0">@Model.SiparisIzleme.Sum(a => a.MONTAJLANAN_AD)</h6>
+                                        <span class="text-muted">Ad.</span>
+                                    </div>
+                                    <div class="user-progress d-flex align-items-center gap-1">
+                                        <h6 class="mb-0"> / @Math.Round(Model.SiparisIzleme.Sum(a => a.MONTAJLANAN_M2) ?? 0.000, 3)</h6>
+                                        <span class="text-muted">m²</span>
+                                    </div>
+                                </div>
+                            </li>
+                            <li class="d-flex mb-1">
+                                <div class="avatar flex-shrink-0 mt-2" style="cursor:default">
+                                    <div style="width: 25px; height: 25px; background-color: #aef0ae; border-radius: 7px; cursor: default"></div>
+                                </div>
+                                <div class="d-flex w-100 flex-wrap align-items-center justify-content-start gap-2">
+                                    <div class="me-2">
+
+                                        <h6 class="mb-0">Hurda/Karantina</h6>
+                                    </div>
+                                    <div class="user-progress d-flex align-items-center gap-1">
+                                        <h6 class="mb-0">@Model.SiparisIzleme.Sum(a => a.HURDA_KARANTINA_AD)</h6>
+                                        <span class="text-muted">Ad.</span>
+                                    </div>
+                                    <div class="user-progress d-flex align-items-center gap-1">
+                                        <h6 class="mb-0"> / @Math.Round(Model.SiparisIzleme.Sum(a => a.HURDA_KARANTINA_M2) ?? 0.000, 3)</h6>
+                                        <span class="text-muted">m²</span>
+                                    </div>
+                                </div>
+                            </li>     
+                            <li class="d-flex mb-1">
+                                <div class="avatar flex-shrink-0 mt-2" style="cursor:default">
+                                    <div style="width: 25px; height: 25px; background-color: #aeeff0; border-radius: 7px; cursor: default"></div>
+                                </div>
+                                <div class="d-flex w-100 flex-wrap align-items-center justify-content-start gap-2">
+                                    <div class="me-2">
+
+                                        <h6 class="mb-0">Kalan Montaj</h6>
+                                    </div>
+                                    <div class="user-progress d-flex align-items-center gap-1">
+                                        <h6 class="mb-0">@Model.SiparisIzleme.Sum(a => a.KALAN_MONTAJ_AD)</h6>
+                                        <span class="text-muted">Ad.</span>
+                                    </div>
+                                    <div class="user-progress d-flex align-items-center gap-1">
+                                        <h6 class="mb-0"> / @Math.Round(Model.SiparisIzleme.Sum(a => a.KALAN_MONTAJ_M2) ?? 0.000, 3)</h6>
+                                        <span class="text-muted">m²</span>
+                                    </div>
+                                </div>
+                            </li>
+                         </div>                        
+                       </ul>
+                     </div>
+                    </div>
+            </div>
+        </div>
+    }
+
+
+        </div>
+
+
+
+    </body>
+
+<script type="text/javascript" src="https://code.jquery.com/jquery-3.5.1.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/buttons/2.3.6/js/dataTables.buttons.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.html5.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.print.min.js"></script>
+
+@*DataTable*@
+<script>
+    $('#siparisIzleme').DataTable({
+        dom: 'Blfrtip',
+        buttons: [
+            {
+                extend: 'excel',
+                text: '<i class="fa fa-file-excel-o"></i>',
+                titleAttr: 'Excel',
+                className: 'fred',
+                exportOptions: {
+                    decimal: ','
+                },
+                excelStyles: [
+                    {
+                        template: 'green_medium',
+                    },
+                    {
+                        cells: 'sh',
+                        style: {
+                            font: {
+                                size: 14,
+                                b: false,
+                            },
+                            fill: {
+                                pattern: {
+                                    color: '1C3144'
+                                }
+                            }
+                        }
+                    }
+                ]
+            },
+
+            {
+                extend: 'copy',
+                text: '<i class="fa fa-clone"></i>',
+                titleAttr: 'Kopyala',
+                className: 'kopya'
+            }
+        ],
+        "lengthMenu": [[10, 25, 50, 100, 200, -1], [10, 25, 50, 100, 200, "Tümü"]],
+        "language": {
+            "lengthMenu": "Sayfada _MENU_ kayıt göster",
+            "zeroRecords": "Kayıt bulunamadı",
+            "info": "_TOTAL_ kayıttan _START_ - _END_ arası gösteriliyor",
+            "infoEmpty": "Kayıt yok",
+            "infoFiltered": "(_MAX_ kayıt içerisinden bulunan)",
+            "search": "Ara:",
+            "paginate": {
+                "first": "İlk",
+                "last": "Son",
+                "next": "Sonraki",
+                "previous": "Önceki"
+            }
+        }
+    });
+</script>
+
+@*Tarih Null Kontrol*@
+<script>
+    function validateForm() {
+        var bas = document.querySelector('input[name="bas"]').value;
+        var bit = document.querySelector('input[name="bit"]').value;
+
+        if (!bas || !bit) {
+            alert("Lütfen başlangıç ve bitiş tarihini seçiniz!");
+            return false;
+        }
+
+
+        document.getElementById("overlay").style.display = "block";
+
+        return true;
+    }
+
+</script>
+
+@*LocalStorage DateTimePicker*@
+<script>
+    $(document).ready(function () {
+        // datetimepicker'ların değerleri değiştiğinde localStorage'a kaydedin
+        $('.datepicker, .selectpicker').on('change', function () {
+            localStorage.setItem($(this).attr('name'), $(this).val());
+        });
+
+        // sayfa yüklendiğinde, datetimepicker'ların değerlerini localStorage'dan yükleyin
+        $('.datepicker, .selectpicker').each(function () {
+            var value = localStorage.getItem($(this).attr('name'));
+            if (value) {
+                $(this).val(value);
+            }
+        });
+    });
+</script>
+

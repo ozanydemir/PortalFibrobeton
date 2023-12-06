@@ -1,0 +1,239 @@
+﻿.wizard {
+    position: relative;
+}
+
+    .wizard > .steps {
+        width: 100%;
+    }
+
+@media (min-width: 1200px) {
+    .wizard > .steps {
+    }
+}
+
+.wizard > .steps li.current a {
+    background-color: #7571f9;
+    color: #fff;
+}
+
+.wizard > .steps li.disabled a, .wizard > .steps li.done a {
+    background-color: #fff;
+    color: #333;
+}
+
+    .wizard > .steps li.disabled a:hover, .wizard > .steps li.done a:hover {
+        margin: 0;
+        background-color: #fff;
+        border-radius: 0;
+        color: #333;
+    }
+
+.wizard > .steps li a {
+    text-align: center;
+    margin: 0;
+    border-radius: 0;
+    background-color: #fff;
+}
+
+    .wizard > .steps li a:hover {
+        margin: 0;
+        background-color: #fff;
+        border-radius: 0;
+        color: #333;
+    }
+
+@media only screen and (max-width: 767px) {
+    .wizard > .steps li a {
+        padding: 1em 4px;
+    }
+}
+
+.wizard > .steps li a .number {
+    display: none;
+}
+
+.wizard .content {
+    /*min-height: 18.75rem;*/
+
+    margin: 0;
+}
+
+@media only screen and (max-width: 991px) {
+    .wizard .content {
+        min-height: 26rem;
+    }
+}
+
+.wizard .content > .body {
+    /*background-color: red;*/
+    
+    width: 100%;
+    height: 100%;
+    padding: 2rem;
+}
+
+@media only screen and (max-width: 575px) {
+    .wizard .content > .body {
+        padding: 0;
+    }
+}
+
+.wizard .content > .body .form-control {
+    background-color: #F7FAFC;
+    border: 1px solid #EEEEEE;
+}
+
+.wizard .content > .body input.error {
+    position: relative;
+}
+
+.wizard .content > .body label.error {
+    position: absolute;
+    top: 100%;
+    margin-left: 0;
+}
+
+.wizard > .actions {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    padding: 2rem;
+}
+
+    .wizard > .actions li:not(.disabled) a {
+        background-color: #7571f9;
+        color: #fff;
+    }
+
+.wizard .actions ul li.disabled a {
+    color: #333333 !important;
+    background: #F7FAFC !important;
+    border: 1px solid #EEEEEE;
+}
+
+.wizard .actions ul li a {
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 600;
+    padding: 0.55em 2em;
+}
+
+.wizard > .actions a, .wizard > .actions a:hover, .wizard > .actions a:active {
+    padding: 0.55em 2em;
+}
+
+@media (max-width: 680px) {
+    .wizard > .steps > ul > li {
+        width: 100%;
+        padding-left: 0;
+    }
+}
+
+@media (max-width: 680px) {
+    .wizard > .steps {
+        padding-left: 0;
+    }
+}
+
+.wizard > .content {
+    background: #585DD8;
+    box-shadow: 0px 2px 5px 0px rgba(0, 0, 0, 0.1);
+}
+
+.wizard, .tabcontrol {
+    overflow: visible;
+}
+
+@media only screen and (max-width: 575px) {
+    .step-form-tab .wizard .steps li {
+        width: 50%;
+    }
+}
+
+.step-form-tab .wizard .steps li:not(.current) a {
+    background-color: #EEEEEE;
+    color: #7571f9;
+}
+
+.step-form-tab .wizard .steps li.current a {
+    background-color: #7571f9;
+}
+
+.step-form-tab .wizard .steps li.done a {
+    background-color: rgba(117, 113, 249, 0.5);
+    color: #7571f9;
+}
+
+.step-form-tab .wizard .steps li:last-child a {
+    margin-right: 0;
+}
+
+.step-form-tab .wizard .steps li:first-child a {
+    margin-left: 0;
+}
+
+@media only screen and (max-width: 575px) {
+    .step-form-tab .wizard .steps li a {
+        margin: 0 0.5em 0.5em;
+    }
+
+        .step-form-tab .wizard .steps li a:hover {
+            padding: 1em 4px;
+        }
+}
+
+.step-form-vertical .wizard.vertical > .steps {
+    width: 27%;
+}
+
+@media only screen and (max-width: 767px) {
+    .step-form-vertical .wizard.vertical > .steps li a {
+        margin-left: 0;
+        margin-right: 0;
+    }
+}
+
+@media only screen and (max-width: 575px) {
+    .step-form-vertical .wizard.vertical > .steps li a {
+        padding: .5rem;
+    }
+}
+
+.step-form-vertical .wizard.vertical > .steps li:not(.current) a {
+    background-color: #EEEEEE;
+    color: #7571f9;
+}
+
+.step-form-vertical .wizard.vertical > .steps li.current a {
+    background-color: #7571f9;
+}
+
+.step-form-vertical .wizard.vertical > .steps li.done a {
+    background-color: rgba(117, 113, 249, 0.5);
+    color: #7571f9;
+}
+
+.step-form-vertical .wizard.vertical > .content {
+    width: 73%;
+    margin: 0;
+}
+
+    .step-form-vertical .wizard.vertical > .content > .body {
+        padding: 0 8rem;
+    }
+
+@media only screen and (max-width: 575px) {
+    .step-form-vertical .wizard.vertical > .content > .body {
+        padding: 1rem;
+    }
+}
+
+.step-form-vertical .wizard.vertical > .actions {
+    padding: 0 8rem;
+}
+
+@media only screen and (max-width: 575px) {
+    .step-form-vertical .wizard.vertical > .actions {
+        padding: 0;
+    }
+}

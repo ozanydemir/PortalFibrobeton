@@ -1,0 +1,939 @@
+﻿@model PortalFibrobeton.Models.Class.ARGE.OlgunlukViewModels.OlgunlukViewModelDashboard
+@{
+    ViewBag.Title = "HomePageOlgunluk";
+    Layout = "~/Views/Shared/_ARGELayout.cshtml";
+}
+
+<head>
+
+    @{
+        var cihazlar = new List<string> { "Olgunluk1_pub", "Olgunluk2_pub", "Olgunluk3_pub", "Olgunluk4_pub", "Olgunluk5_pub",
+                                        "Olgunluk6_pub", "Olgunluk7_pub", "Olgunluk8_pub", "Olgunluk9_pub", "Olgunluk10_pub" };
+
+        var sicaklikData = new Dictionary<string, List<double?>>();
+        var tarihData = new Dictionary<string, List<DateTime?>>();
+        var olgunlukData = new Dictionary<string, double>();
+        var olgunlukToplam = new Dictionary<string, double>();
+        var gevsetmeMin = new Dictionary<string, double?>();
+        var sonSicaklik = new Dictionary<string, double>();
+
+        foreach (var cihaz in cihazlar)
+        {
+            //Sıcaklık
+            var sicaklik = Model.OlgunlukCihazList.Where(a => a.cihaz_no == cihaz).SelectMany(a => a.OlgunlukSensor.OrderByDescending(o => o.sensor_tarih))
+                .Take(10)
+                .Select(a => a.sensor_sicaklik).ToList();
+            sicaklik.Reverse();
+            sicaklikData[cihaz] = sicaklik;
+
+            //Tarih
+            var tarih = Model.OlgunlukCihazList.Where(a => a.cihaz_no == cihaz).SelectMany(a => a.OlgunlukSensor.OrderByDescending(o => o.sensor_tarih))
+                .Take(10)
+                .Select(a => a.sensor_tarih).ToList();
+            tarih.Reverse();
+            tarihData[cihaz] = tarih;
+
+            //Olgunluk
+            var olgunlukLastTest = Model.OlgunlukCihazList.Where(a => a.cihaz_no == cihaz).OrderByDescending(a => a.test_tarihi).Select(b => b.ID).FirstOrDefault();
+            var olgunluk = Model.OlgunlukSensorList.Where(a => a.cihaz_no == cihaz && a.testID == olgunlukLastTest).Select(c => c.olgunluk.HasValue ? c.olgunluk.Value : 0).Sum();
+            var baslangicOlg = Model.OlgunlukCihazList.Where(a => a.cihaz_no == cihaz && a.ID == olgunlukLastTest).Select(c => c.olgunluk_Baslangic).LastOrDefault() ?? 0;
+            var sonSicaklikVerisi = Model.OlgunlukSensorList.Where(a => a.cihaz_no == cihaz && a.testID == olgunlukLastTest).Select(c => c.sensor_sicaklik).LastOrDefault() ?? 0;
+
+            //En Son Sıcaklık
+            sonSicaklik[cihaz] = (double)sonSicaklikVerisi;
+
+            //Toplam Olgunluk Verileri
+            olgunlukToplam[cihaz] = olgunluk;
+            olgunlukToplam[cihaz] = Math.Round(olgunlukToplam[cihaz], 2);
+
+            //Char Olgunluğa Kalan Yüzde
+            var olgunlukKalan = (olgunluk / baslangicOlg) * 100;
+            olgunlukKalan = Math.Round(olgunlukKalan, 2);
+            olgunlukData[cihaz] = olgunlukKalan;
+
+            //Gevşetme
+            var gevsetmeQuery = Model.OlgunlukCihazList.Where(a => a.cihaz_no == cihaz).Select(b => b.baslangic_Sicaklik).LastOrDefault();
+            gevsetmeMin[cihaz] = gevsetmeQuery != null ? (double?)gevsetmeQuery : null;
+
+
+        }
+    }
+
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.0.1/mqttws31.js" type="text/javascript"></script>
+
+    <script src="~/Content/jsFile/Olgunluk/HomePageOlgunluk.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="~/Scripts/jquery.signalR-2.4.3.min.js"></script>
+    <script src="~/signalr/hubs" type="text/javascript"></script>
+
+    <script>
+     // Timeout ve Gevset mesajlarını beklemek için sayfayı yükleme olayını dinle
+
+            // Değişkenleri JSON'dan JavaScript nesnelerine dönüştürün
+            var gevsetmeVal = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(gevsetmeMin));
+            var olgunlukToplam = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(olgunlukToplam));
+            var sicaklikSon = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(sonSicaklik));
+
+
+
+            // Cihazların listesi
+            var cihazlar = ["Olgunluk1_pub", "Olgunluk2_pub", "Olgunluk3_pub", "Olgunluk4_pub", "Olgunluk5_pub",
+                            "Olgunluk6_pub", "Olgunluk7_pub", "Olgunluk8_pub", "Olgunluk9_pub", "Olgunluk10_pub"];
+
+            // Sayfa yüklendiğinde çalışacak fonksiyon ve kodlar
+            window.addEventListener("load", function () {
+
+                // Her cihaz için olgunluk değerini güncelle
+                for (var i = 0; i < cihazlar.length; i++) {
+                    var cihaz = cihazlar[i];
+                    var olgunlukDiv = document.getElementById("olgunlukData_" + cihaz);
+                    if (olgunlukDiv && olgunlukToplam[cihaz]) {
+                        var olgunlukValue = olgunlukToplam[cihaz];
+                        olgunlukDiv.textContent = olgunlukValue;
+                    }
+                }
+
+                // Her cihaz için resmi güncelle
+                for (var i = 0; i < cihazlar.length; i++) {
+                    var cihaz = cihazlar[i];
+                    var imgElem = document.getElementById("imgGevset_" + cihaz);
+                    if (imgElem) {
+                        // Eğer resim yüklendiğinde resmin kaynağı zaten değiştirildiyse, yeniden değiştirmeyin
+                        if (imgElem.src !== "/Content/icons/radio-green.png" && imgElem.src !== "/Content/icons/radio-red.png") {
+                            var gevsetmeValue = gevsetmeVal[cihaz];
+                            if (gevsetmeValue !== null && olgunlukToplam[cihaz] >= gevsetmeValue) {
+                                imgElem.src = "/Content/icons/radio-green.png";
+                            } else {
+                                imgElem.src = "/Content/icons/radio-red.png";
+                            }
+                        }
+                    }
+                }
+
+                //Her Cihaz İçin Son Sıcaklığı Güncelle
+                for (var i = 0; i < cihazlar.length; i++) {
+                    var cihaz = cihazlar[i];
+                    var sicaklikDiv = document.getElementById("sonSicaklik_" + cihaz);
+                    if (sicaklikDiv && sicaklikSon[cihaz]) {
+                        var sicaklikValue = sicaklikSon[cihaz];
+                        sicaklikDiv.textContent = sicaklikValue;
+                    }
+                }
+            });
+    </script>
+
+</head>
+
+
+<div class="container-fluid flex-grow-1 container-p-y">
+    <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">AR-GE /</span> Olgunluk Dashboard</h4>
+
+
+
+    @using (Html.BeginForm("HomePageOlgunluk", "Olgunluk", FormMethod.Post))
+    {
+        @Html.Hidden("cihazNo", "", new { @id = "hiddenCihazNo" })
+        <div class="row">
+            @foreach (var item in Model.OlgunlukCihazList)
+            {
+                if (item.test_durum == true)
+                {
+                    <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12 order-2 order-md-3 order-lg-2 mb-4">
+                        <div class="card">
+                            <div class="row row-bordered g-0">
+                                <div class="col-lg-8">
+                                    <div class="card h-100">
+                                        <div class="card-header">
+                                            <div class="d-flex">
+                                                <div class="avatar flex-shrink-0 me-3">
+                                                    <img src="~/Content/icons/power-on.png" class="rounded" style="cursor:default" />
+                                                </div>
+                                                <h4 class="card-title mt-2">@item.poz</h4>
+                                            </div>
+                                            <small class="text-muted" style="margin-left:57px;font-size:16px">@item.cihaz_no.Remove(item.cihaz_no.Trim().Length - 4)</small>
+                                        </div>
+                                        <div class="card-body px-0">
+                                            <div class="tab-content p-0">
+                                                <div class="tab-pane fade show active" id="navs-tabs-line-card-income" role="tabpanel">
+                                                    <div class="d-flex p-4 pt-3">
+                                                        <div class="avatar flex-shrink-0 me-2">
+                                                            <img src="~/Content/icons/celsius.png" alt="User" class="rounded" style="cursor:default" />
+                                                        </div>
+                                                        <div class="me-5">
+                                                            <small class="text-muted d-block" style="font-size:15px">@item.kalip_Turu</small>
+                                                            <div class="d-flex align-items-center">
+                                                                <h6 class="mb-0 me-2">Min. Sıcaklık</h6>
+                                                                <small class="text-success fw-semibold">
+                                                                    <div id="minTemp_@item.cihaz_no"></div>
+                                                                </small>
+                                                            </div>
+                                                        </div>
+                                                        <div class="avatar flex-shrink-0 me-2">
+                                                            <img src="~/Content/icons/clock-blue.png" alt="User" class="rounded" style="cursor:default" />
+                                                        </div>
+                                                        <div>
+                                                            <small class="text-muted d-block" style="font-size:15px">@item.test_tarihi</small>
+                                                            <div class="d-flex align-items-center">
+                                                                <h6 class="mb-0 me-2">Test Süresi</h6>
+                                                                <small class="text-success fw-semibold">
+                                                                    <div id="timeElapsed_@item.cihaz_no"></div>
+                                                                </small>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div id="@item.cihaz_no"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4 col-md-6 col-sm-12 col-xs-12">
+                                    <div id="olgunlukChart_@item.cihaz_no"></div>
+                                    <div class="text-center fw-semibold pt-3 mt-3 mb-2">Gevşetme Aralığı <span class="text-primary" style="margin-left:7px">@item.olgunluk_Baslangic - @item.olgunluk_Bitis</span></div>
+                                    <div class="d-flex px-xxl-2 px-lg-1 p-3 gap-xxl-2 gap-lg-1 gap-2 justify-content-between">
+                                        <div class="d-flex mt-1">
+                                            <div class="me-1">
+                                                <div class="text-center fw-semibold">Sıcaklık: <span id="sonSicaklik_@item.cihaz_no" style="color:#F03232"></span></div>
+                                            </div>
+                                            
+                                        </div>
+                                        <div class="d-flex mt-1">
+                                            <div class="me-1">
+                                                <div class="text-center fw-semibold">Olgunluk: <span id="olgunlukData_@item.cihaz_no" style="color: #299BE4"></span></div>
+                                            </div>
+                                        </div>                                
+                                    </div>
+                                    
+                                    <div class="d-flex px-xxl-4 px-lg-2 p-3 gap-xxl-3 gap-lg-1 gap-3 justify-content-between">
+                                        <div class="d-flex">
+                                            <div class="me-2">
+                                                <img id="imgTest_@item.cihaz_no" src="~/Content/icons/radio-green.png" class="rounded" />
+                                            </div>
+                                            <div class="d-flex flex-column">
+                                                <h6 class="mb-0">Test Durumu</h6>
+                                            </div>
+                                        </div>
+                                        <div class="d-flex">
+                                            <div class="me-2">
+                                                <img id="imgGevset_@item.cihaz_no" src="~/Content/icons/radio-red.png" class="rounded" />
+                                            </div>
+                                            <div class="d-flex flex-column">
+                                                <h6 class="mb-0" style="font-size:15px">Gevşetme Durumu</h6>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex justify-content-center pt-1 gap-2" style="margin-left:27px">
+                                        <div class="flex-shrink-0">
+                                            <div id="deneme"></div>
+                                        </div>
+                                        <div>
+                                            <p class="mb-n1 mt-3">Gevşetme Zamanına Tahmini</p>
+                                            <div class="text-center" id="countdown_@item.cihaz_no" style="color:red;margin-top:5px"></div>
+                                        </div>
+                                    </div>
+                                    <div class="mt-3 mb-2 text-center">
+
+                                        <button type="submit" class="btn btn-danger text-center" style="margin-left:20px" onclick="showConfirm('@item.cihaz_no')">Testi Bitir</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+    }
+
+</div>
+
+
+<script>
+
+    var sicaklikData = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(sicaklikData));
+    var tarihData = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(tarihData));
+    
+
+    //Chart kodları
+    let shadeColor, cardColor, headingColor, axisColor, borderColor;
+
+    const incomeChartEl = document.querySelector('#sicaklikOl1');
+    const incomeChartConfig = {
+        series: [
+            {
+                data: []
+            }
+        ],
+        chart: {
+            height: 215,
+            parentHeightOffset: 0,
+            parentWidthOffset: 0,
+            toolbar: {
+                show: false
+            },
+            type: 'area'
+        },
+        dataLabels: {
+            enabled: false
+        },
+        stroke: {
+            width: 2,
+            curve: 'smooth'
+        },
+        legend: {
+            show: false
+        },
+        markers: {
+            size: 6,
+            colors: 'transparent',
+            strokeColors: 'transparent',
+            strokeWidth: 4,
+            discrete: [
+                {
+                    fillColor: config.colors.white,
+                    seriesIndex: 0,
+                    dataPointIndex: 7,
+                    strokeColor: config.colors.primary,
+                    strokeWidth: 2,
+                    size: 6,
+                    radius: 8
+                }
+            ],
+            hover: {
+                size: 7
+            }
+        },
+        colors: [config.colors.primary],
+        fill: {
+            type: 'gradient',
+            gradient: {
+                shade: shadeColor,
+                shadeIntensity: 0.6,
+                opacityFrom: 0.5,
+                opacityTo: 0.25,
+                stops: [0, 95, 100]
+            }
+        },
+        grid: {
+            borderColor: borderColor,
+            strokeDashArray: 3,
+            padding: {
+                top: -20,
+                bottom: -8,
+                left: -10,
+                right: 8
+            }
+        },
+        xaxis: {
+            categories: [],
+            axisBorder: {
+                show: false
+            },
+            axisTicks: {
+                show: false
+            },
+            labels: {
+                show: true,
+                style: {
+                    fontSize: '13px',
+                    colors: axisColor
+                }
+            }
+        },
+        yaxis: {
+            labels: {
+                show: false
+            },
+            min: 10,
+            max: 50,
+            tickAmount: 4
+        }
+    };
+
+    var chartData = {
+        'Olgunluk1_pub': {
+            chart: null,
+            data: [],
+            xaxisCategories: []
+        },
+        'Olgunluk2_pub': {
+            chart: null,
+            data: [],
+            xaxisCategories: []
+        },
+        'Olgunluk3_pub': {
+            chart: null,
+            data: [],
+            xaxisCategories: []
+        },
+        'Olgunluk4_pub': {
+            chart: null,
+            data: [],
+            xaxisCategories: []
+        },
+        'Olgunluk5_pub': {
+            chart: null,
+            data: [],
+            xaxisCategories: []
+        },
+        'Olgunluk6_pub': {
+            chart: null,
+            data: [],
+            xaxisCategories: []
+        },
+        'Olgunluk7_pub': {
+            chart: null,
+            data: [],
+            xaxisCategories: []
+        },
+        'Olgunluk8_pub': {
+            chart: null,
+            data: [],
+            xaxisCategories: []
+        },
+        'Olgunluk9_pub': {
+            chart: null,
+            data: [],
+            xaxisCategories: []
+        },
+        'Olgunluk10_pub': {
+            chart: null,
+            data: [],
+            xaxisCategories: []
+        }
+    };
+
+    function formatTarihData(tarihData) {
+        if (tarihData && tarihData.length > 0) {
+            return tarihData.map(function (dateString) {
+                var date = new Date(dateString);
+                var hours = date.getHours().toString().padStart(2, '0');
+                var minutes = date.getMinutes().toString().padStart(2, '0');
+                var formattedDate = hours + ':' + minutes;
+                return formattedDate;
+            });
+        } else {
+            return [];
+        }
+    }
+
+    var mqttHub = $.connection.chatHub;
+
+    mqttHub.client.averageTemp = function (topic, sicaklikData, tarihData) {
+        //console.log("Sicaklik ve tarih verisi alindi.", topic, sicaklikData, tarihData);
+        $('#sicaklikData_' + topic).text(sicaklikData);
+        if (chartData.hasOwnProperty(topic)) {
+            var chartInfo = chartData[topic];
+
+            // Verileri güncelle
+            chartInfo.data.push(sicaklikData);
+            //chartInfo.xaxisCategories.push(formatTarihData(tarihData)); // Tarih verisini formatla
+
+            if (tarihData && tarihData.length === 0) {
+                // Eski veriler, db'den çekilen verilerdir, tarihData zaten doludur
+                chartInfo.xaxisCategories.push(...tarihData);
+            } else {
+                // Yeni veri, şu anki saat ve dakikayı içersin
+                var now = new Date();
+                var hours = now.getHours().toString().padStart(2, '0');
+                var minutes = now.getMinutes().toString().padStart(2, '0');
+                var currentTime = hours + ':' + minutes;
+                chartInfo.xaxisCategories.push(currentTime);
+            }
+
+            // Yalnızca en son 12 veriyi saklayın ve aynı şekilde x ekseni kategorilerini güncelleyin.
+            if (chartInfo.data.length > 12) {
+                chartInfo.data = chartInfo.data.slice(-12);
+                chartInfo.xaxisCategories = chartInfo.xaxisCategories.slice(-12);
+            }
+
+            // Chartı güncelle
+            if (chartInfo.chart == null) {
+                incomeChartConfig.series[0].data = chartInfo.data;
+                incomeChartConfig.xaxis.categories = chartInfo.xaxisCategories;
+                chartInfo.chart = new ApexCharts(document.querySelector('#' + topic), incomeChartConfig);
+                chartInfo.chart.render();
+            } else {
+                chartInfo.chart.updateSeries([{ data: chartInfo.data }]);
+                chartInfo.chart.updateOptions({
+                    xaxis: { categories: chartInfo.xaxisCategories }
+                });
+
+                //chartInfo.chart.resize();
+            }
+        }
+    };
+
+
+
+    $(document).ready(function () {
+        for (var topic in chartData) {
+            var chartInfo = chartData[topic];
+
+            if (
+                sicaklikData.hasOwnProperty(topic) &&
+                tarihData.hasOwnProperty(topic)
+            ) {
+                chartInfo.data = sicaklikData[topic];
+                chartInfo.xaxisCategories = formatTarihData(tarihData[topic]); // Tarih verisini formatla
+
+                incomeChartConfig.series[0].data = chartInfo.data;
+                incomeChartConfig.xaxis.categories = chartInfo.xaxisCategories;
+                chartInfo.chart = new ApexCharts(
+                    document.querySelector('#' + topic),
+                    incomeChartConfig
+                );
+                chartInfo.chart.render();
+            }
+        }
+    });
+
+
+</script>
+
+
+@*Olgunluk-Chart*@
+<script>
+
+    var olgunlukData = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(olgunlukData));
+    window.onload = function () {
+        //Her bir topic için:
+        var topics = ["Olgunluk1_pub", "Olgunluk2_pub", "Olgunluk3_pub", "Olgunluk4_pub", "Olgunluk5_pub", "Olgunluk6_pub", "Olgunluk7_pub", "Olgunluk8_pub", "Olgunluk9_pub", "Olgunluk10_pub"];
+        for (var i = 0; i < topics.length; i++) {
+            createOrUpdateChart(topics[i]);
+        }
+    }
+
+    let countdown;
+    var charts = {};
+
+    // Olgunluk Chart'ı oluşturulup veya güncelleniyor
+    function createOrUpdateOlgunlukChart(topic, totalOlg, tahminiGevsetmeZaman) {
+        var numericTotalOlg;
+
+        if (totalOlg) {
+            numericTotalOlg = parseFloat(totalOlg);
+            if (!numericTotalOlg || isNaN(numericTotalOlg)) {
+                numericTotalOlg = 0;
+            } else {
+                numericTotalOlg = Math.round(numericTotalOlg, 2);
+            }
+        } else {
+            numericTotalOlg = olgunlukData[topic] || 0;
+        }
+
+        startCountdown(tahminiGevsetmeZaman, topic); //Geri sayımı başlat!
+
+        var chartElement = document.querySelector('#olgunlukChart_' + topic);
+        if (chartElement) {
+            if (charts[topic]) {
+                charts[topic].updateSeries([numericTotalOlg], true);
+            } else {
+                var cardColor = config.colors.white;
+                var options = {
+                    series: [numericTotalOlg],
+                    labels: ['Olgunluk'],
+                    chart: {
+                        height: 240,
+                        type: 'radialBar'
+                    },
+                    plotOptions: {
+                        radialBar: {
+                            size: 150,
+                            offsetY: 10,
+                            startAngle: -150,
+                            endAngle: 150,
+                            hollow: {
+                                size: '55%'
+                            },
+                            track: {
+                                background: cardColor,
+                                strokeWidth: '100%'
+                            },
+                            dataLabels: {
+                                name: {
+                                    offsetY: 15,
+                                    color: headingColor,
+                                    fontSize: '15px',
+                                    fontWeight: '600',
+                                    fontFamily: 'Public Sans'
+                                },
+                                value: {
+                                    offsetY: -25,
+                                    color: headingColor,
+                                    fontSize: '22px',
+                                    fontWeight: '500',
+                                    fontFamily: 'Public Sans',
+                                    show: true,
+                                    formatter: function (val) {
+                                        return val.toFixed(2);
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    colors: [config.colors.primary],
+                    fill: {
+                        type: 'gradient',
+                        gradient: {
+                            shade: 'dark',
+                            shadeIntensity: 0.5,
+                            gradientToColors: [config.colors.primary],
+                            inverseColors: true,
+                            opacityFrom: 1,
+                            opacityTo: 0.6,
+                            stops: [30, 70, 100]
+                        }
+                    },
+                    stroke: {
+                        dashArray: 5
+                    },
+                    grid: {
+                        padding: {
+                            top: -35,
+                            bottom: -10
+                        }
+                    },
+                    states: {
+                        hover: {
+                            filter: {
+                                type: 'none'
+                            }
+                        },
+                        active: {
+                            filter: {
+                                type: 'none'
+                            }
+                        }
+                    }
+                };
+
+
+                charts[topic] = new ApexCharts(chartElement, options);
+                charts[topic].render();
+            }
+        }
+    }
+
+    // Sayfa yüklendiğinde Olgunluk Chart'ı oluşturuluyor veya güncelleniyor
+    window.onload = function () {
+        var topics = ["Olgunluk1_pub", "Olgunluk2_pub", "Olgunluk3_pub", "Olgunluk4_pub", "Olgunluk5_pub", "Olgunluk6_pub", "Olgunluk7_pub", "Olgunluk8_pub", "Olgunluk9_pub", "Olgunluk10_pub"];
+        topics.forEach(function (topic) {
+            createOrUpdateOlgunlukChart(topic);
+        });
+    }
+
+    // MqttHub client'ında totalOlg event'ı geldiğinde Olgunluk Chart'ı güncelleniyor
+    var mqttHub = $.connection.chatHub;
+    mqttHub.client.totalOlg = function (topic, totalOlg) {
+        $('#totalOlg_' + topic).text(totalOlg);
+        createOrUpdateOlgunlukChart(topic, totalOlg);
+    }
+
+    //Tahmini Gevşetme Zamanı Kodları
+    function startCountdown(minutes, topic) {
+        if (countdown) {
+            clearInterval(countdown);
+        }
+
+        let kalanZaman = minutes * 60;
+        countdown = setInterval(function () {
+            kalanZaman--;
+
+            let kalanSaat = Math.floor(kalanZaman / 3600); //Saat
+            let kalanDakika = Math.floor(kalanZaman / 60); //Dakika
+            let kalanSaniye = kalanZaman % 60; //Saniye
+
+            //NaN kontrolü
+            if (isNaN(kalanSaat) || isNaN(kalanDakika) || isNaN(kalanSaniye) || (kalanSaat == null) || (kalanDakika == null) || (kalanSaniye == null)) {
+                var element = document.getElementById('countdown_' + topic)
+                if (element) {
+                    element.textContent = "00 : 00 : 00";
+                }
+                
+            } else {
+                let zamanFormatı = `${kalanSaat} : ${kalanDakika < 10 ? '0' + kalanDakika : kalanDakika} : ${Math.round(kalanSaniye) < 10 ? '0' + Math.round(kalanSaniye) : Math.round(kalanSaniye)}`;
+                document.getElementById('countdown_' + topic).textContent = zamanFormatı;
+                
+            }
+
+
+            if (kalanZaman <= 0) {
+                clearInterval(countdown);
+            }
+        }, 1000);
+
+    }
+
+    var mqttHub = $.connection.chatHub;
+    mqttHub.client.totalOlg = function (topic, totalOlg, tahminiGevsetmeZaman) {
+        $('#totalOlg_' + topic).text(totalOlg);
+        createOrUpdateOlgunlukChart(topic, totalOlg, tahminiGevsetmeZaman);
+    }
+</script>
+
+
+
+
+<script>
+    // Günlük Chart
+    // --------------------------------------------------------------------
+    const dashboardGunlukTest = document.querySelector('#dashboardGunlukTest'),
+        dashboardGunlukChartConfig = {
+            chart: {
+                height: 80,
+                // width: 175,
+                type: 'line',
+                toolbar: {
+                    show: false
+                },
+                dropShadow: {
+                    enabled: true,
+                    top: 10,
+                    left: 5,
+                    blur: 3,
+                    color: config.colors.success,
+                    opacity: 0.15
+                },
+                sparkline: {
+                    enabled: true
+                }
+            },
+            grid: {
+                show: false,
+                padding: {
+                    right: 8
+                }
+            },
+            colors: [config.colors.success],
+            dataLabels: {
+                enabled: false
+            },
+            stroke: {
+                width: 5,
+                curve: 'smooth'
+            },
+            series: [
+                {
+                    data: [2, 0, 4, 3, 2, 1]
+                }
+            ],
+            xaxis: {
+                show: false,
+                lines: {
+                    show: false
+                },
+                labels: {
+                    show: false
+                },
+                axisBorder: {
+                    show: false
+                }
+            },
+            yaxis: {
+                show: false
+            }
+        };
+    if (typeof dashboardGunlukTest !== undefined && dashboardGunlukTest !== null) {
+        const profileReportChart = new ApexCharts(dashboardGunlukTest, dashboardGunlukChartConfig);
+        profileReportChart.render();
+    }
+</script>
+
+<script>
+    // Haftalık Chart
+    // --------------------------------------------------------------------
+    const dashboardHaftalikTest = document.querySelector('#dashboardHaftalikTest'),
+        dashboardHaftalikChartConfig = {
+            chart: {
+                height: 80,
+                // width: 175,
+                type: 'line',
+                toolbar: {
+                    show: false
+                },
+                dropShadow: {
+                    enabled: true,
+                    top: 10,
+                    left: 5,
+                    blur: 3,
+                    color: config.colors.primary,
+                    opacity: 0.15
+                },
+                sparkline: {
+                    enabled: true
+                }
+            },
+            grid: {
+                show: false,
+                padding: {
+                    right: 8
+                }
+            },
+            colors: [config.colors.primary],
+            dataLabels: {
+                enabled: false
+            },
+            stroke: {
+                width: 5,
+                curve: 'smooth'
+            },
+            series: [
+                {
+                    data: [110, 270, 145, 245, 205, 285]
+                }
+            ],
+            xaxis: {
+                show: false,
+                lines: {
+                    show: false
+                },
+                labels: {
+                    show: false
+                },
+                axisBorder: {
+                    show: false
+                }
+            },
+            yaxis: {
+                show: false
+            }
+        };
+    if (typeof dashboardHaftalikTest !== undefined && dashboardHaftalikTest !== null) {
+        const profileReportChart = new ApexCharts(dashboardHaftalikTest, dashboardHaftalikChartConfig);
+        profileReportChart.render();
+    }
+</script>
+
+<script>
+    // Aylık Chart
+    // --------------------------------------------------------------------
+    const dashboardAylikTest = document.querySelector('#dashboardAylikTest'),
+        dashboardAylikChartConfig = {
+            chart: {
+                height: 80,
+                // width: 175,
+                type: 'line',
+                toolbar: {
+                    show: false
+                },
+                dropShadow: {
+                    enabled: true,
+                    top: 10,
+                    left: 5,
+                    blur: 3,
+                    color: config.colors.warning,
+                    opacity: 0.15
+                },
+                sparkline: {
+                    enabled: true
+                }
+            },
+            grid: {
+                show: false,
+                padding: {
+                    right: 8
+                }
+            },
+            colors: [config.colors.warning],
+            dataLabels: {
+                enabled: false
+            },
+            stroke: {
+                width: 5,
+                curve: 'smooth'
+            },
+            series: [
+                {
+                    data: [110, 270, 145, 245, 205, 285]
+                }
+            ],
+            xaxis: {
+                show: false,
+                lines: {
+                    show: false
+                },
+                labels: {
+                    show: false
+                },
+                axisBorder: {
+                    show: false
+                }
+            },
+            yaxis: {
+                show: false
+            }
+        };
+    if (typeof dashboardAylikTest !== undefined && dashboardAylikTest !== null) {
+        const profileReportChart = new ApexCharts(dashboardAylikTest, dashboardAylikChartConfig);
+        profileReportChart.render();
+    }
+</script>
+
+<script>
+    // Yıllık Chart
+    // --------------------------------------------------------------------
+    const dashboardYillikTest = document.querySelector('#dashboardYillikTest'),
+        dashboardYillikChartConfig = {
+            chart: {
+                height: 80,
+                // width: 175,
+                type: 'line',
+                toolbar: {
+                    show: false
+                },
+                dropShadow: {
+                    enabled: true,
+                    top: 10,
+                    left: 5,
+                    blur: 3,
+                    color: config.colors.danger,
+                    opacity: 0.15
+                },
+                sparkline: {
+                    enabled: true
+                }
+            },
+            grid: {
+                show: false,
+                padding: {
+                    right: 8
+                }
+            },
+            colors: [config.colors.danger],
+            dataLabels: {
+                enabled: false
+            },
+            stroke: {
+                width: 5,
+                curve: 'smooth'
+            },
+            series: [
+                {
+                    data: [110, 270, 145, 245, 205, 285]
+                }
+            ],
+            xaxis: {
+                show: false,
+                lines: {
+                    show: false
+                },
+                labels: {
+                    show: false
+                },
+                axisBorder: {
+                    show: false
+                }
+            },
+            yaxis: {
+                show: false
+            }
+        };
+    if (typeof dashboardYillikTest !== undefined && dashboardYillikTest !== null) {
+        const profileReportChart = new ApexCharts(dashboardYillikTest, dashboardYillikChartConfig);
+        profileReportChart.render();
+    }
+</script>
+
+<script src="~/websocket/olgunluk/olgunluk-iot-mqtt.js"></script>

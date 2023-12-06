@@ -1,0 +1,2062 @@
+﻿
+@{
+    ViewBag.Title = "Productivity";
+    Layout = "~/Views/Shared/ScanLayout.cshtml";
+}
+
+<head>
+    <title>FibroSCAN - Verimlilik Raporlar</title>
+    <link rel="icon" type="image/png" sizes="19x19" href="~/quixlab-master/quixlab-master/images/favicon.png">
+    <link rel="stylesheet" href="~/quixlab-master/quixlab-master/plugins/chartist/css/chartist.min.css">
+    <link rel="stylesheet" href="~/quixlab-master/quixlab-master/plugins/chartist-plugin-tooltips/css/chartist-plugin-tooltip.css">
+    <link href="~/quixlab-master/quixlab-master/css/style.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/chartist.js/latest/chartist.min.css">
+    <script src="https://cdn.jsdelivr.net/chartist.js/latest/chartist.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/morris.js/0.5.1/morris.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700">
+
+    <link href="~/quixlab-master/quixlab-master/plugins/pg-calendar/css/pignose.calendar.min.css" rel="stylesheet">
+    <!-- Chartist -->
+    <link rel="stylesheet" href="~/quixlab-master/quixlab-master/plugins/chartist/css/chartist.min.css">
+    <link rel="stylesheet" href="~/quixlab-master/quixlab-master/plugins/chartist-plugin-tooltips/css/chartist-plugin-tooltip.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/chartist.js/latest/chartist.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <link href="~/Content/EasyPie.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-circle-progress/1.2.2/circle-progress.min.js"></script>
+
+
+
+    <style>
+        .dProgress {
+            width: 150px;
+            height: 150px;
+            background: none;
+            position: relative;
+        }
+
+            .dProgress::after {
+                content: "";
+                width: 100%;
+                height: 100%;
+                border-radius: 50%;
+                border: 6px solid #eee;
+                position: absolute;
+                top: 0;
+                left: 0;
+            }
+
+            .dProgress > span {
+                width: 50%;
+                height: 100%;
+                overflow: hidden;
+                position: absolute;
+                top: 0;
+                z-index: 1;
+            }
+
+            .dProgress .dProgress-leftH {
+                left: 0;
+            }
+
+            .dProgress .dProgress-bar {
+                width: 100%;
+                height: 100%;
+                background: none;
+                border-width: 6px;
+                border-style: solid;
+                position: absolute;
+                top: 0;
+            }
+
+            .dProgress .dProgress-left .dProgress-bar {
+                left: 100%;
+                border-top-right-radius: 80px;
+                border-bottom-right-radius: 80px;
+                border-left: 0;
+                -webkit-transform-origin: center left;
+                transform-origin: center left;
+            }
+
+            .dProgress .dProgress-right {
+                right: 0;
+            }
+
+                .dProgress .dProgress-right .dProgress-bar {
+                    left: -100%;
+                    border-top-left-radius: 80px;
+                    border-bottom-left-radius: 80px;
+                    border-right: 0;
+                    -webkit-transform-origin: center right;
+                    transform-origin: center right;
+                }
+
+            .dProgress .dProgress-value {
+                position: absolute;
+                top: 0;
+                left: 0;
+            }
+
+
+
+
+        .rounded-lg {
+            border-radius: 1rem;
+        }
+
+        .text-gray {
+            color: #aaa;
+        }
+
+        div.h4 {
+            line-height: 1rem;
+        }
+    </style>
+</head>
+
+@{ 
+// var toplamGradDun = model.Select(a => a.IDT).Count();
+// var toplamTSureDun = dunSayıSQL.Select(a => a.SureT).Sum();
+//var toplamRSureDun = dunSayıSQL.Select(a => a.SureR).Sum();
+}
+
+<body>
+
+    <ul class="nav nav-pills mb-3 justify-content-end">
+        <li class="nav-item">
+            <a href="#yesterday" class="nav-link active" data-toggle="tab" aria-expanded="false">Dün</a>
+        </li>
+        <li class="nav-item">
+            <a href="#week" class="nav-link" data-toggle="tab" aria-expanded="false">Haftalık</a>
+        </li>
+        <li class="nav-item">
+            <a href="#month" class="nav-link" data-toggle="tab" aria-expanded="true">Aylık</a>
+        </li>
+        <li class="nav-item">
+            <a href="/Reports/ProductivityS/" class="nav-link" aria-expanded="true">Seçilen Tarihlere Göre</a>
+        </li>
+    </ul>
+    <div class="tab-content br-n pn">
+        <div class="container-fluid tab-pane active" id="yesterday">
+            <div class="row">
+                <div class="col-lg-3 col-sm-6">
+                    <div class="card gradient-1">
+                        <div class="card-body">
+                            <h3 class="card-title text-white">Toplam Tarama</h3>
+                            <div class="d-inline-block">
+                                <h2 class="text-white">@ViewBag.toplamGradDun / @ViewBag.m2DunSayı</h2>
+                                <p class="text-white mb-0">Adet / m²</p>
+                            </div>
+                            <span class="float-right display-5 opacity-5"><i class="fa fa-cube"></i></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-sm-6">
+                    <div class="card gradient-2">
+                        <div class="card-body">
+                            <h3 class="card-title text-white">Süreler</h3>
+                            <div class="d-inline-block">
+                                <h2 class="text-white"> @ViewBag.sureTDunSayı / @ViewBag.sureRDunSayı </h2>
+                                <p class="text-white mb-0">Tarama (dak) / Rapor (dak)</p>
+                            </div>
+                            <span class="float-right display-5 opacity-5"><i class="fa fa-clock-o"></i></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-sm-6">
+                    <div class="card gradient-3">
+                        <div class="card-body">
+                            <h3 class="card-title text-white">Panel Tarama</h3>
+                            <div class="d-inline-block">
+                                <h2 class="text-white">@ViewBag.betonSayıDun / @ViewBag.betonM2Dun </h2>
+                                <p class="text-white mb-0">Adet / m²</p>
+                            </div>
+                            <span class="float-right display-5 opacity-5">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" class="bi bi-bricks" viewBox="0 0 16 16">
+                                    <path d="M0 .5A.5.5 0 0 1 .5 0h15a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-.5.5H14v2h1.5a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-.5.5H14v2h1.5a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-.5.5H.5a.5.5 0 0 1-.5-.5v-3a.5.5 0 0 1 .5-.5H2v-2H.5a.5.5 0 0 1-.5-.5v-3A.5.5 0 0 1 .5 6H2V4H.5a.5.5 0 0 1-.5-.5v-3zM3 4v2h4.5V4H3zm5.5 0v2H13V4H8.5zM3 10v2h4.5v-2H3zm5.5 0v2H13v-2H8.5zM1 1v2h3.5V1H1zm4.5 0v2h5V1h-5zm6 0v2H15V1h-3.5zM1 7v2h3.5V7H1zm4.5 0v2h5V7h-5zm6 0v2H15V7h-3.5zM1 13v2h3.5v-2H1zm4.5 0v2h5v-2h-5zm6 0v2H15v-2h-3.5z" />
+                                </svg>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            @*Kalıp Tiplerine Göre*@
+
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-5">
+                                    <h4 class="card-title" style="font-size:22px;">Kalıp Tiplerine Göre İnceleme</h4>
+                                    <canvas id="kalıpTipDun" style="margin-top:20px;height:500px;width:500px;"></canvas>
+                                </div>
+
+                                <div class="col-lg-7">
+                                    <div class="card-cap-transparent" style="margin-right:150px;margin-top:100px">
+                                        <h4 class="card-title" style="font-size:22px">Tarama Adet - Hata Oranları</h4>
+                                        <div class="card-body">
+                                            <div class="active-member">
+                                                <div class="table-responsive">
+                                                    <table class="table table-xs mb-0">
+                                                        <thead>
+                                                            <tr style="text-align:center;font-size:21px">
+                                                                <th>Kalıp Tipleri</th>
+                                                                <th>Adet / Hata</th>
+                                                                <th>Hata Oranı</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody style="font-size:19px;">
+                                                            <tr style="text-align:center">
+                                                                <td style="color:rgba(117, 113, 249, 0.9)"><i class="fa fa-square" style="color:rgba(117, 113, 249, 0.9);"></i>   U-L-Z Tip</td>
+                                                                <td style="color:rgba(117, 113, 249, 0.9)">@ViewBag.ulzSayıDun / @ViewBag.ulzHataDun</td>
+                                                                @if (ViewBag.ulzSonucDun < 50)
+                                                                {
+                                                                    <td style="color:forestgreen">%@ViewBag.ulzSonucDun</td>
+                                                                }
+                                                                @if (ViewBag.ulzSonucDun >= 50)
+                                                                {
+                                                                    <td style="color:red">%@ViewBag.ulzSonucDun</td>
+                                                                }
+                                                            </tr>
+                                                            <tr style="text-align:center">
+                                                                <td style="color:rgba(144, 104, 190, 0.9)"><i class="fa fa-square" style="color:rgba(144, 104, 190, 0.9)"></i>    Amorf Tip</td>
+                                                                <td style="color: rgba(144, 104, 190, 0.9)">@ViewBag.amorfSayıDun / @ViewBag.amorfHataDun</td>
+                                                                @if (ViewBag.amorfSonucDun < 50)
+                                                                {
+                                                                    <td style="color:forestgreen">%@ViewBag.amorfSonucDun</td>
+
+                                                                }
+                                                                @if (ViewBag.amorfSonucDun >= 50)
+                                                                {
+                                                                    <td style="color:red">%@ViewBag.amorfSonucDun</td>
+                                                                }
+                                                            </tr>
+                                                            <tr style="text-align:center">
+                                                                <td style="color:#b860f7"><i class="fa fa-square" style="color:#b860f7"></i> Düz Tip</td>
+                                                                <td style="color:#b860f7">@ViewBag.duzSayıDun / @ViewBag.duzHataDun</td>
+                                                                @if (ViewBag.duzSonucDun < 50)
+                                                                {
+                                                                    <td style="color:forestgreen">%@ViewBag.duzSonucDun</td>
+                                                                }
+                                                                @if (ViewBag.duzSonucDun >= 50)
+                                                                {
+                                                                    <td style="color:red">%@ViewBag.duzSonucDun</td>
+                                                                }
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+
+
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="card">
+                        <div class="row">
+                            <div class="card-body">
+                                <h3 class="card-title" style="font-size:22px">Döküm Türüne Göre İnceleme</h3>
+                                <canvas id="dokumChartDun" width="500" height="250"></canvas>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-6 col-sm-6">
+                                <div class="card">
+                                    <div class="stat-widget-one">
+                                        <div class="stat-content">
+                                            <div class="stat-text">UHPC Hata Oranı</div>
+                                            <div class="stat-digit gradient-4-text" style="color: #5780FE;font-size:35px;"><i class="fa fa-percent" style="color: #5780FE;font-size:23px"></i>@ViewBag.UhpcHataSonucDun</div>
+                                        </div>
+                                        <div class="progress mb-3">
+                                            <div class="progress-bar gradient-4" style="width: @ViewBag.UhpcHataSonucDun%;" role="progressbar">
+                                                <span class="sr-only">@ViewBag.UhpcHataSonucDun% Complete</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-6 border-right">
+                                            <div class="pt-3 pb-3 pl-0 pr-0 text-center">
+                                                <h4 class="m-1" style="color: #114EFD">@ViewBag.totalUhpcSayıDun</h4>
+                                                <p class="m-0">Tarama</p>
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="pt-3 pb-3 pl-0 pr-0 text-center">
+                                                <h4 class="m-1" style="color: #114EFD">@ViewBag.UhpcHataSayıDun</h4>
+                                                <p class="m-0">Hata</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-6 col-sm-6">
+                                <div class="card">
+                                    <div class="stat-widget-one">
+                                        <div class="stat-content">
+                                            <div class="stat-text">GRC Hata Oranı</div>
+                                            <div class="stat-digit gradient-1-text" style="color: #7E5DF9;font-size:35px"><i class="fa fa-percent" style="color: #7E5DF9;font-size:23px"></i>@ViewBag.GrcHataSonucDun</div>
+                                        </div>
+                                        <div class="progress mb-3">
+                                            <div class="progress-bar gradient-1" style="width: @ViewBag.GrcHataSonucDun%;" role="progressbar">
+                                                <span class="sr-only">@ViewBag.GrcHataSonucDun% Complete</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-6 border-right">
+                                            <div class="pt-3 pb-3 pl-0 pr-0 text-center">
+                                                <h4 class="m-1" style="color: #8341F6">@ViewBag.totalGrcSayıDun</h4>
+                                                <p class="m-0">Tarama</p>
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="pt-3 pb-3 pl-0 pr-0 text-center">
+                                                <h4 class="m-1" style="color: #8341F6">@ViewBag.GrcHataSayıDun</h4>
+                                                <p class="m-0">Hata</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-9">
+                                    <h3 class="card-title" style="font-size:22px;">Cihazlara Göre İnceleme</h3>
+                                    <span style="font-size:15px;">Tarama Adedi / Tarama Süresi</span>
+                                    <canvas id="cihazDun" style="float:left; padding:15px 10px 10px 0;margin-left:150px;height:400px;width:400px;"></canvas>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-4 col-sm-4">
+                                    <div class="card-cap-transparent">
+                                        <div class="mt-5 justify-content-center">
+                                            <h4 class="text-muted text-center" style="font-size:21px;"> <i class="fa fa-circle-o" style="color:#1192e8;padding-right:10px;font-size:21px;" aria-hidden="true"></i>MetraSCAN</h4>
+                                            <h5 class="text-center" style="color:#1192e8;padding-left:35px;font-size:18px;">@ViewBag.metraSayıDun / @ViewBag.metraSureDun (dak)</h5>
+                                        </div>
+
+                                    </div>
+                                </div>
+                                <div class="col-lg-4 col-sm-4">
+                                    <div class="card-cap-transparent">
+                                        <div class="mt-5 justify-content-center">
+                                            <h4 class="text-muted text-center" style="font-size:21px;"> <i class="fa fa-circle-o" style="color:#08bdba; padding-right:10px;font-size:21px;" aria-hidden="true"></i>Black Elite</h4>
+                                            <h5 class="text-center" style="color:#08bdba;padding-left:35px;font-size:18px;">@ViewBag.eliteSayıDun / @ViewBag.eliteSureDun (dak)</h5>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4 col-sm-4">
+                                    <div class="card-cap-transparent">
+                                        <div class="mt-5 justify-content-center">
+                                            <h4 class="text-muted text-center" style="font-size:21px;"> <i class="fa fa-circle-o" style="color:#6929c4; padding-right:10px;font-size:21px;" aria-hidden="true"></i>AICON</h4>
+                                            <h5 class="text-center" style="color:#6929c4;padding-left:35px;font-size:18px;">@ViewBag.aiconSayıDun / @ViewBag.aiconSureDun (dak)</h5>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+
+            <div class="row d-flex justify-content-center">
+                <div class="col-lg-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-5">
+                                    <h3 class="card-title" style="font-size:21px;">Tarama Konusuna Göre İnceleme Grafik</h3>
+                                    <canvas id="konuChartDun" style="float:left; padding:10px 10px 10px 0;"></canvas>
+                                </div>
+                                <div class="col-5" style="margin-left:100px">
+                                    <h4 class="mt-4">Tarama Konusuna Göre Yüzdelik Dağılım</h4>
+                                    <span style="font-size:14px;">Tarama Adedi</span>
+                                    <div class="mt-4">
+                                        <h3>@ViewBag.dokumSayıDun</h3>
+                                        <h5>Döküm Öncesi <span class="pull-right">%@ViewBag.dokumSonucDun</span></h5>
+                                        <div class="progress mb-3" style="height:9px;">
+                                            <div class="progress-bar gradient-1" style="width: @ViewBag.dokumSonucDun%" role="progressbar"><span class="sr-only">%@ViewBag.dokumSonucDun</span></div>
+                                        </div>
+                                    </div>
+                                    <hr />
+                                    <div class="mt-4">
+                                        <h3>@ViewBag.toplamaSayıDun</h3>
+                                        <h5>Kalıp Toplama <span class="pull-right">%@ViewBag.toplamaSonucDun</span></h5>
+                                        <div class="progress mb-3" style="height:9px;">
+                                            <div class="progress-bar gradient-3" style="width: @ViewBag.toplamaSonucDun%" role="progressbar"><span class="sr-only">%@ViewBag.toplamaSonucDun</span></div>
+                                        </div>
+                                    </div>
+                                    <hr />
+                                    <div class="mt-4">
+                                        <h3>@ViewBag.sonraSayıDun</h3>
+                                        <h5>Döküm Sonrası <span class="pull-right">%@ViewBag.sonraSonucDun</span></h5>
+                                        <div class="progress mb-3" style="height:9px;">
+                                            <div class="progress-bar gradient-4" style="width: @ViewBag.sonraSonucDun%" role="progressbar"><span class="sr-only">%@ViewBag.sonraSonucDun</span></div>
+                                        </div>
+                                    </div>
+                                    <hr />
+                                    <div class="mt-4">
+                                        <h3>@ViewBag.cncSayıDun</h3>
+                                        <h5>Cnc İşleme <span class="pull-right">%@ViewBag.cncSonucDun</span></h5>
+                                        <div class="progress mb-3" style="height:9px;">
+                                            <div class="progress-bar gradient-2" style="width: @ViewBag.cncSonucDun%" role="progressbar"><span class="sr-only">%ViewBag.cncSonucDun</span></div>
+                                        </div>
+                                    </div>
+                                    <hr />
+                                    <div class="mt-4">
+                                        <h3>@ViewBag.denemeSayıDun</h3>
+                                        <h5>Deneme <span class="pull-right">%@ViewBag.denemeSonucDun</span></h5>
+                                        <div class="progress mb-3" style="height:9px;">
+                                            <div class="progress-bar gradient-5" style="width: @ViewBag.denemeSonucDun%" role="progressbar"><span class="sr-only">%@ViewBag.denemeSonucDun</span></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <h4 class="card-title" style="font-size:21px;margin-bottom:10px">Malzeme Türüne Göre İnceleme</h4>
+                            <div class="row">
+                                <div class="col-xl-3 col-lg-6 mb-4">
+                                    <div class="bg-white rounded-lg p-5 shadow">
+                                        <h2 class="h4 font-weight-bold text-center mb-4">Strafor</h2>
+
+                                        <div class="dProgress mx-auto" data-value='@ViewBag.straforSonucDun'>
+                                            <span class="dProgress-left">
+                                                <span class="dProgress-bar border-primary"></span>
+                                            </span>
+                                            <span class="dProgress-right">
+                                                <span class="dProgress-bar border-primary"></span>
+                                            </span>
+                                            <div class="dProgress-value w-100 h-100 rounded-circle d-flex align-items-center justify-content-center">
+                                                <div class="h2 font-weight-bold">@ViewBag.straforSonucDun<sup class="small">%</sup></div>
+                                            </div>
+                                        </div>
+                                        <div class="row text-center mt-4">
+                                            <div class="col-6 border-right">
+                                                <div class="h3 font-weight-bold mb-0">@ViewBag.straforSayıDun</div><i class="fa fa-circle" style="color:#7571F9;margin-right:5px;"></i><span class="text-gray">Tarama</span>
+                                            </div>
+                                            <div class="col-6">
+                                                <div class="h3 font-weight-bold mb-0">@ViewBag.straforHataDun</div><i class="fa fa-circle" style="color:#7571F9;margin-right:5px"></i><span class="text-gray">Hata</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-xl-3 col-lg-6 mb-4">
+                                    <div class="bg-white rounded-lg p-5 shadow">
+                                        <h2 class="h4 font-weight-bold text-center mb-4">Ahşap</h2>
+
+
+                                        <div class="dProgress mx-auto" data-value='@ViewBag.ahsapSonucDun'>
+                                            <span class="dProgress-left">
+                                                <span class="dProgress-bar border-danger"></span>
+                                            </span>
+                                            <span class="dProgress-right">
+                                                <span class="dProgress-bar border-danger"></span>
+                                            </span>
+                                            <div class="dProgress-value w-100 h-100 rounded-circle d-flex align-items-center justify-content-center">
+                                                <div class="h2 font-weight-bold">@ViewBag.ahsapSonucDun<sup class="small">%</sup></div>
+                                            </div>
+                                        </div>
+                                        <div class="row text-center mt-4">
+                                            <div class="col-6 border-right">
+                                                <div class="h3 font-weight-bold mb-0">@ViewBag.ahsapSayıDun</div><i class="fa fa-circle" style="color:#FF5E5E;margin-right:5px"></i><span class="text-gray">Tarama</span>
+                                            </div>
+                                            <div class="col-6">
+                                                <div class="h3 font-weight-bold mb-0">@ViewBag.ahsapHataDun</div><i class="fa fa-circle" style="color:#FF5E5E;margin-right:5px"></i><span class="text-gray">Hata</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-xl-3 col-lg-6 mb-4">
+                                    <div class="bg-white rounded-lg p-5 shadow">
+                                        <h2 class="h4 font-weight-bold text-center mb-4">Polyester</h2>
+
+                                        <div class="dProgress mx-auto" data-value='@ViewBag.polyesterSonucDun'>
+                                            <span class="dProgress-left">
+                                                <span class="dProgress-bar border-success"></span>
+                                            </span>
+                                            <span class="dProgress-right">
+                                                <span class="dProgress-bar border-success"></span>
+                                            </span>
+                                            <div class="dProgress-value w-100 h-100 rounded-circle d-flex align-items-center justify-content-center">
+                                                <div class="h2 font-weight-bold">@ViewBag.polyesterSonucDun<sup class="small">%</sup></div>
+                                            </div>
+                                        </div>
+                                        <div class="row text-center mt-4">
+                                            <div class="col-6 border-right">
+                                                <div class="h3 font-weight-bold mb-0">@ViewBag.polyesterSayıDun</div><i class="fa fa-circle" style="color:#6FD96F;margin-right:5px"></i><span class="text-gray">Tarama</span>
+                                            </div>
+                                            <div class="col-6">
+                                                <div class="h3 font-weight-bold mb-0">@ViewBag.polyesterHataDun</div><i class="fa fa-circle" style="color:#6FD96F;margin-right:5px"></i><span class="text-gray">Hata</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-xl-3 col-lg-6 mb-4">
+                                    <div class="bg-white rounded-lg p-5 shadow">
+                                        <h2 class="h4 font-weight-bold text-center mb-4">Alçı</h2>
+
+                                        <div class="dProgress mx-auto" data-value='@ViewBag.alciSonucDun'>
+                                            <span class="dProgress-left">
+                                                <span class="dProgress-bar border-warning"></span>
+                                            </span>
+                                            <span class="dProgress-right">
+                                                <span class="dProgress-bar border-warning"></span>
+                                            </span>
+                                            <div class="dProgress-value w-100 h-100 rounded-circle d-flex align-items-center justify-content-center">
+                                                <div class="h2 font-weight-bold">@ViewBag.alciSonucDun<sup class="small">%</sup></div>
+                                            </div>
+                                        </div>
+                                        <div class="row text-center mt-4">
+                                            <div class="col-6 border-right">
+                                                <div class="h3 font-weight-bold mb-0">@ViewBag.alciSayıDun</div><i class="fa fa-circle" style="color:#F29D56;margin-right:5px"></i><span class="text-gray">Tarama</span>
+                                            </div>
+                                            <div class="col-6">
+                                                <div class="h3 font-weight-bold mb-0">@ViewBag.alciHataDun</div><i class="fa fa-circle" style="color:#F29D56;margin-right:5px"></i><span class="text-gray">Hata</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            @*Malzemeye Göre Hata Oranları*@
+
+
+
+            <script>
+
+                var uhpcDun = @ViewBag.UhpcSonucDun;
+                var grcDun = @ViewBag.GrcSonucDun;
+
+                var ctx = document.getElementById("dokumChartDun");
+                ctx.height = 150;
+                var myChart = new Chart(ctx, {
+                    type: 'bar',
+                    legend: false,
+                    data: {
+                        labels: ["UHPC", "GRC"],
+                        datasets: [
+                            {
+                                label: 'Tarama Adet Yüzdeliği',
+                                data: [uhpcDun, grcDun],
+                                borderWidth: "0",
+                                backgroundColor: [
+                                    'rgba(87, 128, 254, 1)',
+                                    '#8341F6'
+                            ]}
+                        ]
+                    },
+                    options: {
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
+                        },
+                        indexAxis: 'y',
+                        elements: {
+                            bar: {
+                                borderWidth: 1,
+                            }
+                        },
+                        scales: {
+                            yAxes: [{
+                                ticks: {
+                                    beginAtZero: true
+                                }
+                            }],
+                            xAxes: [{
+                                // Change here
+                                barPercentage: 0.2
+                            }]
+                        }
+                    }
+                });
+            </script>
+
+            <script>
+                $(function () {
+
+                    $(".dProgress").each(function () {
+
+                        var value = $(this).attr('data-value');
+                        var left = $(this).find('.dProgress-left .dProgress-bar');
+                        var right = $(this).find('.dProgress-right .dProgress-bar');
+
+                        if (value > 0) {
+                            if (value <= 50) {
+                                right.css('transform', 'rotate(' + percentageToDegrees(value) + 'deg)')
+                            } else {
+                                right.css('transform', 'rotate(180deg)')
+                                left.css('transform', 'rotate(' + percentageToDegrees(value - 50) + 'deg)')
+                            }
+                        }
+
+                    })
+
+                    function percentageToDegrees(percentage) {
+
+                        return percentage / 100 * 360
+
+                    }
+
+                });
+            </script>
+
+
+
+            <script>
+
+        var dokumSayıDun = @ViewBag.dokumSonucDun;
+        var toplamaSayıDun = @ViewBag.toplamaSonucDun;
+        var denemeSayıDun = @ViewBag.denemeSonucDun;
+        var cncSayıDun = @ViewBag.cncSonucDun;
+        var sonraSayıDun = @ViewBag.sonraSonucDun;
+
+        var ctx = document.getElementById("konuChartDun");
+        var myChart = new Chart(ctx, {
+            type: 'pie',
+            data: {
+                datasets: [{
+                    data: [dokumSayıDun, toplamaSayıDun, sonraSayıDun, denemeSayıDun, cncSayıDun],
+                    backgroundColor: [
+                        "#2B61FE",
+                        "#833EF6",
+                        "#6FD96F",
+                        "#FB5B88",
+                        "#F94D05"
+                    ],
+                    hoverBackgroundColor: [
+                        "#7B76FB",
+                        "#7D6DFB",
+                        "#bed8be",
+                        "#FBA19F",
+                        "#F9CD22"
+                    ]
+
+                }],
+                labels: [
+                    "Döküm Öncesi",
+                    "Kalıp Toplama",
+                    "Döküm Sonrası",
+                    "Deneme",
+                    "CNC İşleme"
+                ]
+            },
+            options: {
+                legend: {
+                    position: 'top'
+                },
+                scale: {
+                    ticks: {
+                        beginAtZero: true
+                    },
+                    responsive: false
+                }
+            }
+        });
+            </script>
+
+            <script>
+
+
+        var ctx = document.getElementById("cihazDun");
+        var myChart = new Chart(ctx, {
+            type: 'pie',
+            data: {
+                datasets: [{
+                    data: [@ViewBag.metraSureSonucDun,@ViewBag.eliteSureSonucDun,@ViewBag.aiconSureSonucDun],
+                    backgroundColor: [
+                        "#1192e8",
+                        "#08bdba",
+                        "#6929c4"
+                    ],
+                    hoverBackgroundColor: [
+                        "#0072c3",
+                        "#007d79",
+                        "#6929c4"
+                    ]
+
+                }],
+                labels: [
+                    "MetraSCAN",
+                    "Black Elite",
+                    "AICON"
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true
+
+            }
+        });
+            </script>
+
+            <script>
+
+        var ulzSonucDun = @ViewBag.ulzOranSonucDun;
+        var amorfSonucDun = @ViewBag.amorfOranSonucDun;
+        var duzSonucDun = @ViewBag.duzOranSonucDun;
+
+        var ctx = document.getElementById("kalıpTipDun");
+        //ctx.height = ;
+        var myChart = new Chart(ctx, {
+            type: 'polarArea',
+            data: {
+                datasets: [{
+                    data: [ulzSonucDun, amorfSonucDun, duzSonucDun],
+                    backgroundColor: [
+                        "rgba(117, 113, 249,0.9)",
+                        "rgba(144,	104,	190,.9)",
+                        "rgba(117, 113, 249, 0.7)"
+                    ]
+
+                }],
+                labels: [
+                    "U-L-Z Tip",
+                    "Amorf",
+                    "Düz",
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true
+            }
+        });
+            </script>
+        </div>
+
+        <div class="container-fluid tab-pane" id="week">
+            <div class="row">
+                <div class="col-lg-3 col-sm-6">
+                    <div class="card gradient-1">
+                        <div class="card-body">
+                            <h3 class="card-title text-white">Toplam Tarama</h3>
+                            <div class="d-inline-block">
+                                <h2 class="text-white">@ViewBag.toplamGradHafta / @ViewBag.m2HaftaSayı</h2>
+                                <p class="text-white mb-0">Adet / m²</p>
+                            </div>
+                            <span class="float-right display-5 opacity-5"><i class="fa fa-cube"></i></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-sm-6">
+                    <div class="card gradient-2">
+                        <div class="card-body">
+                            <h3 class="card-title text-white">Süreler</h3>
+                            <div class="d-inline-block">
+                                <h2 class="text-white"> @ViewBag.sureTHaftaSayı / @ViewBag.sureRHaftaSayı </h2>
+                                <p class="text-white mb-0">Tarama (dak) / Rapor (dak)</p>
+                            </div>
+                            <span class="float-right display-5 opacity-5"><i class="fa fa-clock-o"></i></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-sm-6">
+                    <div class="card gradient-3">
+                        <div class="card-body">
+                            <h3 class="card-title text-white">Panel Tarama</h3>
+                            <div class="d-inline-block">
+                                <h2 class="text-white">@ViewBag.betonSayıHafta / @ViewBag.betonM2Hafta </h2>
+                                <p class="text-white mb-0">Adet / m²</p>
+                            </div>
+                            <span class="float-right display-5 opacity-5">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" class="bi bi-bricks" viewBox="0 0 16 16">
+                                    <path d="M0 .5A.5.5 0 0 1 .5 0h15a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-.5.5H14v2h1.5a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-.5.5H14v2h1.5a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-.5.5H.5a.5.5 0 0 1-.5-.5v-3a.5.5 0 0 1 .5-.5H2v-2H.5a.5.5 0 0 1-.5-.5v-3A.5.5 0 0 1 .5 6H2V4H.5a.5.5 0 0 1-.5-.5v-3zM3 4v2h4.5V4H3zm5.5 0v2H13V4H8.5zM3 10v2h4.5v-2H3zm5.5 0v2H13v-2H8.5zM1 1v2h3.5V1H1zm4.5 0v2h5V1h-5zm6 0v2H15V1h-3.5zM1 7v2h3.5V7H1zm4.5 0v2h5V7h-5zm6 0v2H15V7h-3.5zM1 13v2h3.5v-2H1zm4.5 0v2h5v-2h-5zm6 0v2H15v-2h-3.5z" />
+                                </svg>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-5">
+                                    <h4 class="card-title" style="font-size:22px;">Kalıp Tiplerine Göre İnceleme</h4>
+                                    <canvas id="kalıpTipHafta" style="margin-top:20px;height:500px;width:500px;"></canvas>
+                                </div>
+
+                                <div class="col-lg-7">
+                                    <div class="card-cap-transparent" style="margin-right:150px;margin-top:100px">
+                                        <h4 class="card-title" style="font-size:22px">Tarama Adet - Hata Oranları</h4>
+                                        <div class="card-body">
+                                            <div class="active-member">
+                                                <div class="table-responsive">
+                                                    <table class="table table-xs mb-0">
+                                                        <thead>
+                                                            <tr style="text-align:center;font-size:21px">
+                                                                <th>Kalıp Tipleri</th>
+                                                                <th>Adet / Hata</th>
+                                                                <th>Hata Oranı</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody style="font-size:19px;">
+                                                            <tr style="text-align:center">
+                                                                <td style="color:rgba(117, 113, 249, 0.9)"><i class="fa fa-square" style="color:rgba(117, 113, 249, 0.9);"></i>   U-L-Z Tip</td>
+                                                                <td style="color:rgba(117, 113, 249, 0.9)">@ViewBag.ulzSayıHafta / @ViewBag.ulzHataHafta</td>
+                                                                @if (ViewBag.ulzSonucHafta < 50)
+                                                                {
+                                                                    <td style="color:forestgreen">%@ViewBag.ulzSonucHafta</td>
+                                                                }
+                                                                @if (ViewBag.ulzSonucHafta >= 50)
+                                                                {
+                                                                    <td style="color:red">%@ViewBag.ulzSonucHafta</td>
+                                                                }
+                                                            </tr>
+                                                            <tr style="text-align:center">
+                                                                <td style="color:rgba(144, 104, 190, 0.9)"><i class="fa fa-square" style="color:rgba(144, 104, 190, 0.9)"></i>    Amorf Tip</td>
+                                                                <td style="color: rgba(144, 104, 190, 0.9)">@ViewBag.amorfSayıHafta / @ViewBag.amorfHataHafta</td>
+                                                                @if (ViewBag.amorfSonucHafta < 50)
+                                                                {
+                                                                    <td style="color:forestgreen">%@ViewBag.amorfSonucHafta</td>
+
+                                                                }
+                                                                @if (ViewBag.amorfSonucHafta >= 50)
+                                                                {
+                                                                    <td style="color:red">%@ViewBag.amorfSonucHafta</td>
+                                                                }
+                                                            </tr>
+                                                            <tr style="text-align:center">
+                                                                <td style="color:#b860f7"><i class="fa fa-square" style="color:#b860f7"></i> Düz Tip</td>
+                                                                <td style="color:#b860f7">@ViewBag.duzSayıHafta / @ViewBag.duzHataHafta</td>
+                                                                @if (ViewBag.duzSonucHafta < 50)
+                                                                {
+                                                                    <td style="color:forestgreen">%@ViewBag.duzSonucHafta</td>
+                                                                }
+                                                                @if (ViewBag.duzSonucHafta >= 50)
+                                                                {
+                                                                    <td style="color:red">%@ViewBag.duzSonucHafta</td>
+                                                                }
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="card">
+                        <div class="row">
+                            <div class="card-body">
+                                <h3 class="card-title" style="font-size:22px">Döküm Türüne Göre İnceleme</h3>
+                                <canvas id="dokumChartHafta" width="500" height="250"></canvas>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-6 col-sm-6">
+                                <div class="card">
+                                    <div class="stat-widget-one">
+                                        <div class="stat-content">
+                                            <div class="stat-text">UHPC Hata Oranı</div>
+                                            <div class="stat-digit gradient-4-text" style="color: #5780FE;font-size:35px;"><i class="fa fa-percent" style="color: #5780FE;font-size:23px"></i>@ViewBag.UhpcHataSonucHafta</div>
+                                        </div>
+                                        <div class="progress mb-3">
+                                            <div class="progress-bar gradient-4" style="width: @ViewBag.UhpcHataSonucHafta%;" role="progressbar">
+                                                <span class="sr-only">@ViewBag.UhpcHataSonucHafta% Complete</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-6 border-right">
+                                            <div class="pt-3 pb-3 pl-0 pr-0 text-center">
+                                                <h4 class="m-1" style="color: #114EFD">@ViewBag.totalUhpcSayıHafta</h4>
+                                                <p class="m-0">Tarama</p>
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="pt-3 pb-3 pl-0 pr-0 text-center">
+                                                <h4 class="m-1" style="color: #114EFD">@ViewBag.UhpcHataSayıHafta</h4>
+                                                <p class="m-0">Hata</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-6 col-sm-6">
+                                <div class="card">
+                                    <div class="stat-widget-one">
+                                        <div class="stat-content">
+                                            <div class="stat-text">GRC Hata Oranı</div>
+                                            <div class="stat-digit gradient-1-text" style="color: #7E5DF9;font-size:35px"><i class="fa fa-percent" style="color: #7E5DF9;font-size:23px"></i>@ViewBag.GrcHataSonucHafta</div>
+                                        </div>
+                                        <div class="progress mb-3">
+                                            <div class="progress-bar gradient-1" style="width: @ViewBag.GrcHataSonucHafta%;" role="progressbar">
+                                                <span class="sr-only">@ViewBag.GrcHataSonucHafta% Complete</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-6 border-right">
+                                            <div class="pt-3 pb-3 pl-0 pr-0 text-center">
+                                                <h4 class="m-1" style="color: #8341F6">@ViewBag.totalGrcSayıHafta</h4>
+                                                <p class="m-0">Tarama</p>
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="pt-3 pb-3 pl-0 pr-0 text-center">
+                                                <h4 class="m-1" style="color: #8341F6">@ViewBag.GrcHataSayıHafta</h4>
+                                                <p class="m-0">Hata</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-9">
+                                    <h3 class="card-title" style="font-size:22px;">Cihazlara Göre İnceleme</h3>
+                                    <span style="font-size:15px;">Tarama Adedi / Tarama Süresi</span>
+                                    <canvas id="cihazHafta" style="float:left; padding:15px 10px 10px 0;margin-left:150px;height:400px;width:400px;"></canvas>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-4 col-sm-4">
+                                    <div class="card-cap-transparent">
+                                        <div class="mt-5 justify-content-center">
+                                            <h4 class="text-muted text-center" style="font-size:21px;"> <i class="fa fa-circle-o" style="color:#1192e8;padding-right:10px;font-size:21px;" aria-hidden="true"></i>MetraSCAN</h4>
+                                            <h5 class="text-center" style="color:#1192e8;padding-left:35px;font-size:18px;">@ViewBag.metraSayıHafta / @ViewBag.metraSureHafta (dak)</h5>
+                                        </div>
+
+                                    </div>
+                                </div>
+                                <div class="col-lg-4 col-sm-4">
+                                    <div class="card-cap-transparent">
+                                        <div class="mt-5 justify-content-center">
+                                            <h4 class="text-muted text-center" style="font-size:21px;"> <i class="fa fa-circle-o" style="color:#08bdba; padding-right:10px;font-size:21px;" aria-hidden="true"></i>Black Elite</h4>
+                                            <h5 class="text-center" style="color:#08bdba;padding-left:35px;font-size:18px;">@ViewBag.eliteSayıHafta / @ViewBag.eliteSureHafta (dak)</h5>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4 col-sm-4">
+                                    <div class="card-cap-transparent">
+                                        <div class="mt-5 justify-content-center">
+                                            <h4 class="text-muted text-center" style="font-size:21px;"> <i class="fa fa-circle-o" style="color:#6929c4; padding-right:10px;font-size:21px;" aria-hidden="true"></i>AICON</h4>
+                                            <h5 class="text-center" style="color:#6929c4;padding-left:35px;font-size:18px;">@ViewBag.aiconSayıHafta / @ViewBag.aiconSureHafta (dak)</h5>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row d-flex justify-content-center">
+                <div class="col-lg-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-5">
+                                    <h4 class="card-title" style="font-size:21px;">Tarama Konusuna Göre İnceleme Grafik</h4>
+                                    <canvas id="konuChartHafta" style="float:left; padding:10px 10px 10px 0;"></canvas>
+                                </div>
+                                <div class="col-5" style="margin-left:100px">
+                                    <h4 class="mt-4">Tarama Konusuna Göre Yüzdelik Dağılım</h4>
+                                    <span style="font-size:15px;">Tarama Adedi</span>
+                                    <div class="mt-4">
+                                        <h3>@ViewBag.dokumSayıHafta</h3>
+                                        <h5>Döküm Öncesi <span class="pull-right">%@ViewBag.dokumSonucHafta</span></h5>
+                                        <div class="progress mb-3" style="height:9px;">
+                                            <div class="progress-bar gradient-1" style="width: @ViewBag.dokumSonucHafta%" role="progressbar"><span class="sr-only">%@ViewBag.dokumSonucHafta</span></div>
+                                        </div>
+                                    </div>
+                                    <hr />
+                                    <div class="mt-4">
+                                        <h3>@ViewBag.toplamaSayıHafta</h3>
+                                        <h5>Kalıp Toplama <span class="pull-right">%@ViewBag.toplamaSonucHafta</span></h5>
+                                        <div class="progress mb-3" style="height:9px;">
+                                            <div class="progress-bar gradient-3" style="width: @ViewBag.toplamaSonucHafta%" role="progressbar"><span class="sr-only">%@ViewBag.toplamaSonucHafta</span></div>
+                                        </div>
+                                    </div>
+                                    <hr />
+                                    <div class="mt-4">
+                                        <h3>@ViewBag.sonraSayıHafta</h3>
+                                        <h5>Döküm Sonrası <span class="pull-right">%@ViewBag.sonraSonucHafta</span></h5>
+                                        <div class="progress mb-3" style="height:9px;">
+                                            <div class="progress-bar gradient-4" style="width: @ViewBag.sonraSonucHafta%" role="progressbar"><span class="sr-only">%@ViewBag.sonraSonucHafta</span></div>
+                                        </div>
+                                    </div>
+                                    <hr />
+                                    <div class="mt-4">
+                                        <h3>@ViewBag.cncSayıHafta</h3>
+                                        <h5>Cnc İşleme <span class="pull-right">%@ViewBag.cncSonucHafta</span></h5>
+                                        <div class="progress mb-3" style="height:9px;">
+                                            <div class="progress-bar gradient-2" style="width: @ViewBag.cncSonucHafta%" role="progressbar"><span class="sr-only">%@ViewBag.cncSonucHafta</span></div>
+                                        </div>
+                                    </div>
+                                    <hr />
+                                    <div class="mt-4">
+                                        <h3>@ViewBag.denemeSayıHafta</h3>
+                                        <h5>Deneme <span class="pull-right">%@ViewBag.denemeSonucHafta</span></h5>
+                                        <div class="progress mb-3" style="height:9px;">
+                                            <div class="progress-bar gradient-5" style="width: @ViewBag.denemeSonucHafta%" role="progressbar"><span class="sr-only">%@ViewBag.denemeSonucHafta</span></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <script>
+
+                var uhpcHafta = @ViewBag.UhpcSonucHafta;
+                var grcHafta = @ViewBag.GrcSonucHafta;
+
+                var ctx = document.getElementById("dokumChartHafta");
+                ctx.height = 150;
+                var myChart = new Chart(ctx, {
+                    type: 'bar',
+                    legend: false,
+                    data: {
+                        labels: ["UHPC", "GRC"],
+                        datasets: [
+                            {
+                                label: 'Tarama Adet Yüzdeliği',
+                                data: [uhpcHafta, grcHafta],
+                                borderWidth: "0",
+                                backgroundColor: [
+                                    'rgba(87, 128, 254, 1)',
+                                    '#8341F6'
+                            ]}
+                        ]
+                    },
+                    options: {
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
+                        },
+                        indexAxis: 'y',
+                        elements: {
+                            bar: {
+                                borderWidth: 1,
+                            }
+                        },
+                        scales: {
+                            yAxes: [{
+                                ticks: {
+                                    beginAtZero: true
+                                }
+                            }],
+                            xAxes: [{
+                                // Change here
+                                barPercentage: 0.2
+                            }]
+                        }
+                    }
+                });
+            </script>
+
+            <script>
+
+        var ulzSonucHafta = @ViewBag.ulzOranSonucHafta;
+        var amorfSonucHafta = @ViewBag.amorfOranSonucHafta;
+        var duzSonucHafta = @ViewBag.duzOranSonucHafta;
+
+        var ctx = document.getElementById("kalıpTipHafta");
+        //ctx.height = 150;
+        var myChart = new Chart(ctx, {
+            type: 'polarArea',
+            data: {
+                datasets: [{
+                    data: [ulzSonucHafta, amorfSonucHafta, duzSonucHafta],
+                    backgroundColor: [
+                        "rgba(117, 113, 249,0.9)",
+                        "rgba(144,	104,	190,.9)",
+                        "rgba(117, 113, 249, 0.7)"
+                    ]
+
+                }],
+                labels: [
+                    "U-L-Z Tip",
+                    "Amorf",
+                    "Düz",
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true
+            }
+        });
+            </script>
+
+
+            <script>
+
+
+        var ctx = document.getElementById("cihazHafta");
+        var myChart = new Chart(ctx, {
+            type: 'pie',
+            data: {
+                datasets: [{
+                    data: [@ViewBag.metraSureSonucHafta,@ViewBag.eliteSureSonucHafta,@ViewBag.aiconSureSonucHafta],
+                    backgroundColor: [
+                        "#1192e8",
+                        "#08bdba",
+                        "#6929c4"
+                    ],
+                    hoverBackgroundColor: [
+                        "#0072c3",
+                        "#007d79",
+                        "#6929c4"
+                    ]
+
+                }],
+                labels: [
+                    "MetraSCAN",
+                    "Black Elite",
+                    "AICON"
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true
+
+            }
+        });
+            </script>
+
+            <script>
+
+        var dokumSayıHafta = @ViewBag.dokumSonucHafta;
+        var toplamaSayıHafta = @ViewBag.toplamaSonucHafta;
+        var denemeSayıHafta = @ViewBag.denemeSonucHafta;
+        var cncSayıHafta = @ViewBag.cncSonucHafta;
+        var sonraSayıHafta = @ViewBag.sonraSonucHafta;
+
+        var ctx = document.getElementById("konuChartHafta");
+                var myChart = new Chart(ctx, {
+                    type: 'pie',
+                    data: {
+                        datasets: [{
+                            data: [dokumSayıHafta, toplamaSayıHafta, sonraSayıHafta, denemeSayıHafta, cncSayıHafta],
+                            backgroundColor: [
+                                "#2B61FE",
+                                "#833EF6",
+                                "#6FD96F",
+                                "#FB5B88",
+                                "#F94D05"
+                            ],
+                            hoverBackgroundColor: [
+                                "#7B76FB",
+                                "#7D6DFB",
+                                "#bed8be",
+                                "#FBA19F",
+                                "#F9CD22"
+                            ]
+
+                        }],
+                        labels: [
+                            "Döküm Öncesi",
+                            "Kalıp Toplama",
+                            "Döküm Sonrası",
+                            "Deneme",
+                            "CNC İşleme"
+                        ]
+                    },
+                    options: {
+                        legend: {
+                            position: 'top'
+                        },
+                        scale: {
+                            ticks: {
+                                beginAtZero: true
+                            },
+                            responsive: true
+                        }
+                    }
+                });
+            </script>
+
+
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <h4 class="card-title" style="font-size:21px;margin-bottom:10px;">Malzeme Türüne Göre İnceleme</h4>
+                            <div class="row">
+                                <div class="col-xl-3 col-lg-6 mb-4">
+                                    <div class="bg-white rounded-lg p-5 shadow">
+                                        <h2 class="h4 font-weight-bold text-center mb-4">Strafor</h2>
+
+                                        <div class="dProgress mx-auto" data-value='@ViewBag.straforSonucHafta'>
+                                            <span class="dProgress-left">
+                                                <span class="dProgress-bar border-primary"></span>
+                                            </span>
+                                            <span class="dProgress-right">
+                                                <span class="dProgress-bar border-primary"></span>
+                                            </span>
+                                            <div class="dProgress-value w-100 h-100 rounded-circle d-flex align-items-center justify-content-center">
+                                                <div class="h2 font-weight-bold">@ViewBag.straforSonucHafta<sup class="small">%</sup></div>
+                                            </div>
+                                        </div>
+                                        <div class="row text-center mt-4">
+                                            <div class="col-6 border-right">
+                                                <div class="h3 font-weight-bold mb-0">@ViewBag.straforSayıHafta</div><i class="fa fa-circle" style="color:#7571F9;margin-right:5px;"></i><span class="text-gray">Tarama</span>
+                                            </div>
+                                            <div class="col-6">
+                                                <div class="h3 font-weight-bold mb-0">@ViewBag.straforHataHafta</div><i class="fa fa-circle" style="color:#7571F9;margin-right:5px"></i><span class="text-gray">Hata</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-xl-3 col-lg-6 mb-4">
+                                    <div class="bg-white rounded-lg p-5 shadow">
+                                        <h2 class="h4 font-weight-bold text-center mb-4">Ahşap</h2>
+
+
+                                        <div class="dProgress mx-auto" data-value='@ViewBag.ahsapSonucHafta'>
+                                            <span class="dProgress-left">
+                                                <span class="dProgress-bar border-danger"></span>
+                                            </span>
+                                            <span class="dProgress-right">
+                                                <span class="dProgress-bar border-danger"></span>
+                                            </span>
+                                            <div class="dProgress-value w-100 h-100 rounded-circle d-flex align-items-center justify-content-center">
+                                                <div class="h2 font-weight-bold">@ViewBag.ahsapSonucHafta<sup class="small">%</sup></div>
+                                            </div>
+                                        </div>
+                                        <div class="row text-center mt-4">
+                                            <div class="col-6 border-right">
+                                                <div class="h3 font-weight-bold mb-0">@ViewBag.ahsapSayıHafta</div><i class="fa fa-circle" style="color:#FF5E5E;margin-right:5px"></i><span class="text-gray">Tarama</span>
+                                            </div>
+                                            <div class="col-6">
+                                                <div class="h3 font-weight-bold mb-0">@ViewBag.ahsapHataHafta</div><i class="fa fa-circle" style="color:#FF5E5E;margin-right:5px"></i><span class="text-gray">Hata</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-xl-3 col-lg-6 mb-4">
+                                    <div class="bg-white rounded-lg p-5 shadow">
+                                        <h2 class="h4 font-weight-bold text-center mb-4">Polyester</h2>
+
+                                        <div class="dProgress mx-auto" data-value='@ViewBag.polyesterSonucHafta'>
+                                            <span class="dProgress-left">
+                                                <span class="dProgress-bar border-success"></span>
+                                            </span>
+                                            <span class="dProgress-right">
+                                                <span class="dProgress-bar border-success"></span>
+                                            </span>
+                                            <div class="dProgress-value w-100 h-100 rounded-circle d-flex align-items-center justify-content-center">
+                                                <div class="h2 font-weight-bold">@ViewBag.polyesterSonucHafta<sup class="small">%</sup></div>
+                                            </div>
+                                        </div>
+                                        <div class="row text-center mt-4">
+                                            <div class="col-6 border-right">
+                                                <div class="h3 font-weight-bold mb-0">@ViewBag.polyesterSayıHafta</div><i class="fa fa-circle" style="color:#6FD96F;margin-right:5px"></i><span class="text-gray">Tarama</span>
+                                            </div>
+                                            <div class="col-6">
+                                                <div class="h3 font-weight-bold mb-0">@ViewBag.polyesterHataHafta</div><i class="fa fa-circle" style="color:#6FD96F;margin-right:5px"></i><span class="text-gray">Hata</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-xl-3 col-lg-6 mb-4">
+                                    <div class="bg-white rounded-lg p-5 shadow">
+                                        <h2 class="h4 font-weight-bold text-center mb-4">Alçı</h2>
+
+                                        <div class="dProgress mx-auto" data-value='@ViewBag.alciSonucHafta'>
+                                            <span class="dProgress-left">
+                                                <span class="dProgress-bar border-warning"></span>
+                                            </span>
+                                            <span class="dProgress-right">
+                                                <span class="dProgress-bar border-warning"></span>
+                                            </span>
+                                            <div class="dProgress-value w-100 h-100 rounded-circle d-flex align-items-center justify-content-center">
+                                                <div class="h2 font-weight-bold">@ViewBag.alciSonucHafta<sup class="small">%</sup></div>
+                                            </div>
+                                        </div>
+                                        <div class="row text-center mt-4">
+                                            <div class="col-6 border-right">
+                                                <div class="h3 font-weight-bold mb-0">@ViewBag.alciSayıHafta</div><i class="fa fa-circle" style="color:#F29D56;margin-right:5px"></i><span class="text-gray">Tarama</span>
+                                            </div>
+                                            <div class="col-6">
+                                                <div class="h3 font-weight-bold mb-0">@ViewBag.alciHataHafta</div><i class="fa fa-circle" style="color:#F29D56;margin-right:5px"></i><span class="text-gray">Hata</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            @*Malzemeye Göre Hata Oranları*@
+
+
+
+            <script>
+                $(function () {
+
+                    $(".dProgress").each(function () {
+
+                        var value = $(this).attr('data-value');
+                        var left = $(this).find('.dProgress-left .dProgress-bar');
+                        var right = $(this).find('.dProgress-right .dProgress-bar');
+
+                        if (value > 0) {
+                            if (value <= 50) {
+                                right.css('transform', 'rotate(' + percentageToDegrees(value) + 'deg)')
+                            } else {
+                                right.css('transform', 'rotate(180deg)')
+                                left.css('transform', 'rotate(' + percentageToDegrees(value - 50) + 'deg)')
+                            }
+                        }
+
+                    })
+
+                    function percentageToDegrees(percentage) {
+
+                        return percentage / 100 * 360
+
+                    }
+
+                });
+            </script>
+        </div>
+
+
+
+        <div id="month" class="container-fluid tab-pane">
+            <div class="row">
+                <div class="col-lg-3 col-sm-6">
+                    <div class="card gradient-1">
+                        <div class="card-body">
+                            <h3 class="card-title text-white">Toplam Tarama</h3>
+                            <div class="d-inline-block">
+                                <h2 class="text-white">@ViewBag.toplamGradAy / @ViewBag.m2AySayı</h2>
+                                <p class="text-white mb-0">Adet / m²</p>
+                            </div>
+                            <span class="float-right display-5 opacity-5"><i class="fa fa-cube"></i></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-sm-6">
+                    <div class="card gradient-2">
+                        <div class="card-body">
+                            <h3 class="card-title text-white">Süreler</h3>
+                            <div class="d-inline-block">
+                                <h2 class="text-white"> @ViewBag.sureTAySayı / @ViewBag.sureRAySayı </h2>
+                                <p class="text-white mb-0">Tarama (dak) / Rapor (dak)</p>
+                            </div>
+                            <span class="float-right display-5 opacity-5"><i class="fa fa-clock-o"></i></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-sm-6">
+                    <div class="card gradient-3">
+                        <div class="card-body">
+                            <h3 class="card-title text-white">Panel Tarama</h3>
+                            <div class="d-inline-block">
+                                <h2 class="text-white">@ViewBag.betonSayıAy / @ViewBag.betonM2Ay </h2>
+                                <p class="text-white mb-0">Adet / m²</p>
+                            </div>
+                            <span class="float-right display-5 opacity-5">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" class="bi bi-bricks" viewBox="0 0 16 16">
+                                    <path d="M0 .5A.5.5 0 0 1 .5 0h15a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-.5.5H14v2h1.5a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-.5.5H14v2h1.5a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-.5.5H.5a.5.5 0 0 1-.5-.5v-3a.5.5 0 0 1 .5-.5H2v-2H.5a.5.5 0 0 1-.5-.5v-3A.5.5 0 0 1 .5 6H2V4H.5a.5.5 0 0 1-.5-.5v-3zM3 4v2h4.5V4H3zm5.5 0v2H13V4H8.5zM3 10v2h4.5v-2H3zm5.5 0v2H13v-2H8.5zM1 1v2h3.5V1H1zm4.5 0v2h5V1h-5zm6 0v2H15V1h-3.5zM1 7v2h3.5V7H1zm4.5 0v2h5V7h-5zm6 0v2H15V7h-3.5zM1 13v2h3.5v-2H1zm4.5 0v2h5v-2h-5zm6 0v2H15v-2h-3.5z" />
+                                </svg>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-5">
+                                    <h4 class="card-title" style="font-size:22px;">Kalıp Tiplerine Göre İnceleme</h4>
+                                    <canvas id="kalıpTipAy" style="margin-top:20px;height:500px;width:500px;"></canvas>
+                                </div>
+
+                                <div class="col-lg-7">
+                                    <div class="card-cap-transparent" style="margin-right:150px;margin-top:100px">
+                                        <h4 class="card-title" style="font-size:22px">Tarama Adet - Hata Oranları</h4>
+                                        <div class="card-body">
+                                            <div class="active-member">
+                                                <div class="table-responsive">
+                                                    <table class="table table-xs mb-0">
+                                                        <thead>
+                                                            <tr style="text-align:center;font-size:21px">
+                                                                <th>Kalıp Tipleri</th>
+                                                                <th>Adet / Hata</th>
+                                                                <th>Hata Oranı</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody style="font-size:19px;">
+                                                            <tr style="text-align:center">
+                                                                <td style="color:rgba(117, 113, 249, 0.9)"><i class="fa fa-square" style="color:rgba(117, 113, 249, 0.9);"></i>   U-L-Z Tip</td>
+                                                                <td style="color:rgba(117, 113, 249, 0.9)">@ViewBag.ulzSayıAy / @ViewBag.ulzHataAy</td>
+                                                                @if (ViewBag.ulzSonucAy < 50)
+                                                                {
+                                                                    <td style="color:forestgreen">%@ViewBag.ulzSonucAy</td>
+                                                                }
+                                                                @if (ViewBag.ulzSonucAy >= 50)
+                                                                {
+                                                                    <td style="color:red">%@ViewBag.ulzSonucAy</td>
+                                                                }
+                                                            </tr>
+                                                            <tr style="text-align:center">
+                                                                <td style="color:rgba(144, 104, 190, 0.9)"><i class="fa fa-square" style="color:rgba(144, 104, 190, 0.9)"></i>    Amorf Tip</td>
+                                                                <td style="color: rgba(144, 104, 190, 0.9)">@ViewBag.amorfSayıAy / @ViewBag.amorfHataAy</td>
+                                                                @if (ViewBag.amorfSonucAy < 50)
+                                                                {
+                                                                    <td style="color:forestgreen">%@ViewBag.amorfSonucAy</td>
+
+                                                                }
+                                                                @if (ViewBag.amorfSonucAy >= 50)
+                                                                {
+                                                                    <td style="color:red">%@ViewBag.amorfSonucAy</td>
+                                                                }
+                                                            </tr>
+                                                            <tr style="text-align:center">
+                                                                <td style="color:#b860f7"><i class="fa fa-square" style="color:#b860f7"></i> Düz Tip</td>
+                                                                <td style="color:#b860f7">@ViewBag.duzSayıAy / @ViewBag.duzHataAy</td>
+                                                                @if (ViewBag.duzSonucAy < 50)
+                                                                {
+                                                                    <td style="color:forestgreen">%@ViewBag.duzSonucAy</td>
+                                                                }
+                                                                @if (ViewBag.duzSonucAy >= 50)
+                                                                {
+                                                                    <td style="color:red">%@ViewBag.duzSonucAy</td>
+                                                                }
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+            <script>
+
+        var ulzSonucAy = @ViewBag.ulzOranSonucAy;
+        var amorfSonucAy = @ViewBag.amorfOranSonucAy;
+        var duzSonucAy = @ViewBag.duzOranSonucAy;
+
+        var ctx = document.getElementById("kalıpTipAy");
+        //ctx.height = 150;
+        var myChart = new Chart(ctx, {
+            type: 'polarArea',
+            data: {
+                datasets: [{
+                    data: [ulzSonucAy, amorfSonucAy, duzSonucAy],
+                    backgroundColor: [
+                        "rgba(117, 113, 249,0.9)",
+                        "rgba(144,	104,	190,.9)",
+                        "rgba(117, 113, 249, 0.7)"
+                    ]
+
+                }],
+                labels: [
+                    "U-L-Z Tip",
+                    "Amorf",
+                    "Düz",
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true
+            }
+        });
+            </script>
+
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="card">
+                        <div class="row">
+                            <div class="card-body">
+                                <h3 class="card-title" style="font-size:22px">Döküm Türüne Göre İnceleme</h3>
+                                <canvas id="dokumChartAy" width="500" height="250"></canvas>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-6 col-sm-6">
+                                <div class="card">
+                                    <div class="stat-widget-one">
+                                        <div class="stat-content">
+                                            <div class="stat-text">UHPC Hata Oranı</div>
+                                            <div class="stat-digit gradient-4-text" style="color: #5780FE;font-size:35px;"><i class="fa fa-percent" style="color: #5780FE;font-size:23px"></i>@ViewBag.UhpcHataSonucAy</div>
+                                        </div>
+                                        <div class="progress mb-3">
+                                            <div class="progress-bar gradient-4" style="width: @ViewBag.UhpcHataSonucAy%;" role="progressbar">
+                                                <span class="sr-only">@ViewBag.UhpcHataSonucAy% Complete</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-6 border-right">
+                                            <div class="pt-3 pb-3 pl-0 pr-0 text-center">
+                                                <h4 class="m-1" style="color: #114EFD">@ViewBag.totalUhpcSayıAy</h4>
+                                                <p class="m-0">Tarama</p>
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="pt-3 pb-3 pl-0 pr-0 text-center">
+                                                <h4 class="m-1" style="color: #114EFD">@ViewBag.UhpcHataSayıAy</h4>
+                                                <p class="m-0">Hata</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-6 col-sm-6">
+                                <div class="card">
+                                    <div class="stat-widget-one">
+                                        <div class="stat-content">
+                                            <div class="stat-text">GRC Hata Oranı</div>
+                                            <div class="stat-digit gradient-1-text" style="color: #7E5DF9;font-size:35px"><i class="fa fa-percent" style="color: #7E5DF9;font-size:23px"></i>@ViewBag.GrcHataSonucAy</div>
+                                        </div>
+                                        <div class="progress mb-3">
+                                            <div class="progress-bar gradient-1" style="width: @ViewBag.GrcHataSonucAy%;" role="progressbar">
+                                                <span class="sr-only">@ViewBag.GrcHataSonucAy% Complete</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-6 border-right">
+                                            <div class="pt-3 pb-3 pl-0 pr-0 text-center">
+                                                <h4 class="m-1" style="color: #8341F6">@ViewBag.totalGrcSayıAy</h4>
+                                                <p class="m-0">Tarama</p>
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="pt-3 pb-3 pl-0 pr-0 text-center">
+                                                <h4 class="m-1" style="color: #8341F6">@ViewBag.GrcHataSayıAy</h4>
+                                                <p class="m-0">Hata</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-9">
+                                    <h3 class="card-title" style="font-size:22px;">Cihazlara Göre İnceleme</h3>
+                                    <span style="font-size:15px;">Tarama Adedi / Tarama Süresi</span>
+                                    <canvas id="cihazAy" style="float:left; padding:15px 10px 10px 0;margin-left:150px;height:400px;width:400px;"></canvas>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-4 col-sm-4">
+                                    <div class="card-cap-transparent">
+                                        <div class="mt-5 justify-content-center">
+                                            <h4 class="text-muted text-center" style="font-size:21px;"> <i class="fa fa-circle-o" style="color:#1192e8;padding-right:10px;font-size:21px;" aria-hidden="true"></i>MetraSCAN</h4>
+                                            <h5 class="text-center" style="color:#1192e8;padding-left:35px;font-size:18px;">@ViewBag.metraSayıAy / @ViewBag.metraSureAy (dak)</h5>
+                                        </div>
+
+                                    </div>
+                                </div>
+                                <div class="col-lg-4 col-sm-4">
+                                    <div class="card-cap-transparent">
+                                        <div class="mt-5 justify-content-center">
+                                            <h4 class="text-muted text-center" style="font-size:21px;"> <i class="fa fa-circle-o" style="color:#08bdba; padding-right:10px;font-size:21px;" aria-hidden="true"></i>Black Elite</h4>
+                                            <h5 class="text-center" style="color:#08bdba;padding-left:35px;font-size:18px;">@ViewBag.eliteSayıAy / @ViewBag.eliteSureAy (dak)</h5>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4 col-sm-4">
+                                    <div class="card-cap-transparent">
+                                        <div class="mt-5 justify-content-center">
+                                            <h4 class="text-muted text-center" style="font-size:21px;"> <i class="fa fa-circle-o" style="color:#6929c4; padding-right:10px;font-size:21px;" aria-hidden="true"></i>AICON</h4>
+                                            <h5 class="text-center" style="color:#6929c4;padding-left:35px;font-size:18px;">@ViewBag.aiconSayıAy / @ViewBag.aiconSureAy (dak)</h5>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <script>
+
+                var uhpcAy = @ViewBag.UhpcSonucAy;
+                var grcAy = @ViewBag.GrcSonucAy;
+
+                var ctx = document.getElementById("dokumChartAy");
+                ctx.height = 150;
+                var myChart = new Chart(ctx, {
+                    type: 'bar',
+                    legend: false,
+                    data: {
+                        labels: ["UHPC", "GRC"],
+                        datasets: [
+                            {
+                                label: 'Tarama Adet Yüzdeliği',
+                                data: [uhpcAy, grcAy],
+                                borderWidth: "0",
+                                backgroundColor: [
+                                    'rgba(87, 128, 254, 1)',
+                                    '#8341F6'
+                            ]}
+                        ]
+                    },
+                    options: {
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
+                        },
+                        indexAxis: 'y',
+                        elements: {
+                            bar: {
+                                borderWidth: 1,
+                            }
+                        },
+                        scales: {
+                            yAxes: [{
+                                ticks: {
+                                    beginAtZero: true
+                                }
+                            }],
+                            xAxes: [{
+                                // Change here
+                                barPercentage: 0.2
+                            }]
+                        }
+                    }
+                });
+            </script>
+
+
+            <div class="row d-flex justify-content-center">
+                @*Cihaz Verimlilik*@
+
+                <div class="col-lg-12">
+
+                </div>
+            </div>
+
+
+            <script>
+
+
+        var ctx = document.getElementById("cihazAy");
+        var myChart = new Chart(ctx, {
+            type: 'pie',
+            data: {
+                datasets: [{
+                    data: [@ViewBag.metraSureSonucAy,@ViewBag.eliteSureSonucAy,@ViewBag.aiconSureSonucAy],
+                    backgroundColor: [
+                        "#1192e8",
+                        "#08bdba",
+                        "#6929c4"
+                    ],
+                    hoverBackgroundColor: [
+                        "#0072c3",
+                        "#007d79",
+                        "#6929c4"
+                    ]
+
+                }],
+                labels: [
+                    "MetraSCAN",
+                    "Black Elite",
+                    "AICON"
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true
+
+            }
+        });
+            </script>
+
+
+
+            <div class="row d-flex justify-content-center">
+                <div class="col-lg-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-5">
+                                    <h4 class="card-title" style="font-size:20px;">Tarama Konusuna Göre İnceleme Grafik</h4>
+                                    <canvas id="konuChartAy" style="float:left; padding:10px 10px 10px 0;"></canvas>
+                                </div>
+                                <div class="col-5" style="margin-left:100px">
+                                    <h4 class="mt-4">Tarama Konusuna Göre Yüzdelik Dağılım</h4>
+                                    <span style="font-size:15px;">Tarama Adedi</span>
+                                    <div class="mt-4">
+                                        <h3>@ViewBag.dokumSayıAy</h3>
+                                        <h5>Döküm Öncesi <span class="pull-right">%@ViewBag.dokumSonucAy</span></h5>
+                                        <div class="progress mb-3" style="height:9px;">
+                                            <div class="progress-bar gradient-4" style="width: @ViewBag.dokumSonucAy%" role="progressbar"><span class="sr-only">%@ViewBag.dokumSonucAy</span></div>
+                                        </div>
+                                    </div>
+                                    <hr />
+                                    <div class="mt-4">
+                                        <h3>@ViewBag.toplamaSayıAy</h3>
+                                        <h5>Kalıp Toplama <span class="pull-right">%@ViewBag.toplamaSonucAy</span></h5>
+                                        <div class="progress mb-3" style="height:9px;">
+                                            <div class="progress-bar gradient-1" style="width: @ViewBag.toplamaSonucAy%" role="progressbar"><span class="sr-only">%@ViewBag.toplamaSonucAy</span></div>
+                                        </div>
+                                    </div>
+                                    <hr />
+                                    <div class="mt-4">
+                                        <h3>@ViewBag.sonraSayıAy</h3>
+                                        <h5>Döküm Sonrası <span class="pull-right">%@ViewBag.sonraSonucAy</span></h5>
+                                        <div class="progress mb-3" style="height:9px;">
+                                            <div class="progress-bar bg-success" style="width: @ViewBag.sonraSonucAy%" role="progressbar"><span class="sr-only">%@ViewBag.sonraSonucAy</span></div>
+                                        </div>
+                                    </div>
+                                    <hr />
+                                    <div class="mt-4">
+                                        <h3>@ViewBag.cncSayıAy</h3>
+                                        <h5>Cnc İşleme <span class="pull-right">%@ViewBag.cncSonucAy</span></h5>
+                                        <div class="progress mb-3" style="height:9px;">
+                                            <div class="progress-bar gradient-2" style="width: @ViewBag.cncSonucAy%" role="progressbar"><span class="sr-only">%@ViewBag.cncSonucAy</span></div>
+                                        </div>
+                                    </div>
+                                    <hr />
+                                    <div class="mt-4">
+                                        <h3>@ViewBag.denemeSayıAy</h3>
+                                        <h5>Deneme <span class="pull-right">%@ViewBag.denemeSonucAy</span></h5>
+                                        <div class="progress mb-3" style="height:9px;">
+                                            <div class="progress-bar gradient-5" style="width: @ViewBag.denemeSonucAy%" role="progressbar"><span class="sr-only">%@ViewBag.denemeSonucAy</span></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <script>
+
+        var dokumSayıAy = @ViewBag.dokumSonucAy;
+        var toplamaSayıAy = @ViewBag.toplamaSonucAy;
+        var denemeSayıAy = @ViewBag.denemeSonucAy;
+        var cncSayıAy = @ViewBag.cncSonucAy;
+        var sonraSayıAy = @ViewBag.sonraSonucAy;
+
+        var ctx = document.getElementById("konuChartAy");
+                var myChart = new Chart(ctx, {
+                    type: 'pie',
+                    data: {
+                        datasets: [{
+                            data: [dokumSayıAy, toplamaSayıAy, sonraSayıAy, denemeSayıAy, cncSayıAy],
+                            backgroundColor: [
+                                "#2B61FE",
+                                "#833EF6",
+                                "#6FD96F",
+                                "#FB5B88",
+                                "#F94D05"
+                            ],
+                            hoverBackgroundColor: [
+                                "#7B76FB",
+                                "#7D6DFB",
+                                "#bed8be",
+                                "#FBA19F",
+                                "#F9CD22"
+                            ]
+
+                        }],
+                        labels: [
+                            "Döküm Öncesi",
+                            "Kalıp Toplama",
+                            "Döküm Sonrası",
+                            "Deneme",
+                            "CNC İşleme"
+                        ]
+                    },
+                    options: {
+                        legend: {
+                            position: 'top'
+                        },
+                        scale: {
+                            ticks: {
+                                beginAtZero: true
+                            },
+                            responsive: true
+                        }
+                    }
+                });
+            </script>
+
+
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <h4 class="card-title" style="font-size:21px">Malzeme Türüne Göre İnceleme</h4>
+                            <div class="row">
+                                <div class="col-xl-3 col-lg-6 mb-4">
+                                    <div class="bg-white rounded-lg p-5 shadow">
+                                        <h2 class="h4 font-weight-bold text-center mb-4">Strafor</h2>
+
+                                        <div class="dProgress mx-auto" data-value='@ViewBag.straforSonucAy'>
+                                            <span class="dProgress-left">
+                                                <span class="dProgress-bar border-primary"></span>
+                                            </span>
+                                            <span class="dProgress-right">
+                                                <span class="dProgress-bar border-primary"></span>
+                                            </span>
+                                            <div class="dProgress-value w-100 h-100 rounded-circle d-flex align-items-center justify-content-center">
+                                                <div class="h2 font-weight-bold">@ViewBag.straforSonucAy<sup class="small">%</sup></div>
+                                            </div>
+                                        </div>
+                                        <div class="row text-center mt-4">
+                                            <div class="col-6 border-right">
+                                                <div class="h3 font-weight-bold mb-0">@ViewBag.straforSayıAy</div><i class="fa fa-circle" style="color:#7571F9;margin-right:5px;"></i><span class="text-gray">Tarama</span>
+                                            </div>
+                                            <div class="col-6">
+                                                <div class="h3 font-weight-bold mb-0">@ViewBag.straforHataAy</div><i class="fa fa-circle" style="color:#7571F9;margin-right:5px"></i><span class="text-gray">Hata</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-xl-3 col-lg-6 mb-4">
+                                    <div class="bg-white rounded-lg p-5 shadow">
+                                        <h2 class="h4 font-weight-bold text-center mb-4">Ahşap</h2>
+
+
+                                        <div class="dProgress mx-auto" data-value='@ViewBag.ahsapSonucAy'>
+                                            <span class="dProgress-left">
+                                                <span class="dProgress-bar border-danger"></span>
+                                            </span>
+                                            <span class="dProgress-right">
+                                                <span class="dProgress-bar border-danger"></span>
+                                            </span>
+                                            <div class="dProgress-value w-100 h-100 rounded-circle d-flex align-items-center justify-content-center">
+                                                <div class="h2 font-weight-bold">@ViewBag.ahsapSonucAy<sup class="small">%</sup></div>
+                                            </div>
+                                        </div>
+                                        <div class="row text-center mt-4">
+                                            <div class="col-6 border-right">
+                                                <div class="h3 font-weight-bold mb-0">@ViewBag.ahsapSayıAy</div><i class="fa fa-circle" style="color:#FF5E5E;margin-right:5px"></i><span class="text-gray">Tarama</span>
+                                            </div>
+                                            <div class="col-6">
+                                                <div class="h3 font-weight-bold mb-0">@ViewBag.ahsapHataAy</div><i class="fa fa-circle" style="color:#FF5E5E;margin-right:5px"></i><span class="text-gray">Hata</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-xl-3 col-lg-6 mb-4">
+                                    <div class="bg-white rounded-lg p-5 shadow">
+                                        <h2 class="h4 font-weight-bold text-center mb-4">Polyester</h2>
+
+                                        <div class="dProgress mx-auto" data-value='@ViewBag.polyesterSonucAy'>
+                                            <span class="dProgress-left">
+                                                <span class="dProgress-bar border-success"></span>
+                                            </span>
+                                            <span class="dProgress-right">
+                                                <span class="dProgress-bar border-success"></span>
+                                            </span>
+                                            <div class="dProgress-value w-100 h-100 rounded-circle d-flex align-items-center justify-content-center">
+                                                <div class="h2 font-weight-bold">@ViewBag.polyesterSonucAy<sup class="small">%</sup></div>
+                                            </div>
+                                        </div>
+                                        <div class="row text-center mt-4">
+                                            <div class="col-6 border-right">
+                                                <div class="h3 font-weight-bold mb-0">@ViewBag.polyesterSayıAy</div><i class="fa fa-circle" style="color:#6FD96F;margin-right:5px"></i><span class="text-gray">Tarama</span>
+                                            </div>
+                                            <div class="col-6">
+                                                <div class="h3 font-weight-bold mb-0">@ViewBag.polyesterHataAy</div><i class="fa fa-circle" style="color:#6FD96F;margin-right:5px"></i><span class="text-gray">Hata</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-xl-3 col-lg-6 mb-4">
+                                    <div class="bg-white rounded-lg p-5 shadow">
+                                        <h2 class="h4 font-weight-bold text-center mb-4">Alçı</h2>
+
+                                        <div class="dProgress mx-auto" data-value='@ViewBag.alciSonucAy'>
+                                            <span class="dProgress-left">
+                                                <span class="dProgress-bar border-warning"></span>
+                                            </span>
+                                            <span class="dProgress-right">
+                                                <span class="dProgress-bar border-warning"></span>
+                                            </span>
+                                            <div class="dProgress-value w-100 h-100 rounded-circle d-flex align-items-center justify-content-center">
+                                                <div class="h2 font-weight-bold">@ViewBag.alciSonucAy<sup class="small">%</sup></div>
+                                            </div>
+                                        </div>
+                                        <div class="row text-center mt-4">
+                                            <div class="col-6 border-right">
+                                                <div class="h3 font-weight-bold mb-0">@ViewBag.alciSayıAy</div><i class="fa fa-circle" style="color:#F29D56;margin-right:5px"></i><span class="text-gray">Tarama</span>
+                                            </div>
+                                            <div class="col-6">
+                                                <div class="h3 font-weight-bold mb-0">@ViewBag.alciHataAy</div><i class="fa fa-circle" style="color:#F29D56;margin-right:5px"></i><span class="text-gray">Hata</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            @*Malzemeye Göre Hata Oranları*@
+
+
+
+            <script>
+                $(function () {
+
+                    $(".dProgress").each(function () {
+
+                        var value = $(this).attr('data-value');
+                        var left = $(this).find('.dProgress-left .dProgress-bar');
+                        var right = $(this).find('.dProgress-right .dProgress-bar');
+
+                        if (value > 0) {
+                            if (value <= 50) {
+                                right.css('transform', 'rotate(' + percentageToDegrees(value) + 'deg)')
+                            } else {
+                                right.css('transform', 'rotate(180deg)')
+                                left.css('transform', 'rotate(' + percentageToDegrees(value - 50) + 'deg)')
+                            }
+                        }
+
+                    })
+
+                    function percentageToDegrees(percentage) {
+
+                        return percentage / 100 * 360
+
+                    }
+
+                });
+            </script>
+
+        </div>
+
+
+
+    </div>
+
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/raphael/2.1.0/raphael-min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/morris.js/0.5.1/morris.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/chartist.js/latest/chartist.min.js"></script>
+</body>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.bundle.min.js"></script>
+
+<script src="~/quixlab-master/quixlab-master/plugins/common/common.min.js"></script>
+<script src="~/quixlab-master/quixlab-master/js/custom.min.js"></script>
+<script src="~/quixlab-master/quixlab-master/js/settings.js"></script>
+<script src="~/quixlab-master/quixlab-master/js/gleek.js"></script>
+<script src="~/quixlab-master/quixlab-master/js/styleSwitcher.js"></script>
+<script src="//cdn.jsdelivr.net/chartist.js/latest/chartist.min.js"></script>
+
+<script src="~/quixlab-master/quixlab-master/js/dashboard/dashboard-2.js"></script>
+
+<script src="~/quixlab-master/quixlab-master/plugins/chartist/js/chartist.min.js"></script>
+<script src="~/quixlab-master/quixlab-master/plugins/chartist-plugin-tooltips/js/chartist-plugin-tooltip.min.js"></script>
+<script src="~/quixlab-master/quixlab-master/js/plugins-init/chartist.init.js"></script>
+
+<script src="~/quixlab-master/quixlab-master/plugins/raphael/raphael.min.js"></script>
+<script src="~/quixlab-master/quixlab-master/plugins/morris/morris.min.js"></script>
+<script src="~/quixlab-master/quixlab-master/js/plugins-init/morris-init.js"></script>
+
+<script src="~/quixlab-master/quixlab-master/plugins/chart.js/Chart.bundle.min.js"></script>
+<script src="~/quixlab-master/quixlab-master/plugins/circle-progress/circle-progress.min.js"></script>
+<script src="~/quixlab-master/quixlab-master/plugins/d3v3/index.js"></script>
+<script src="~/quixlab-master/quixlab-master/plugins/topojson/topojson.min.js"></script>
+<script src="~/quixlab-master/quixlab-master/plugins/datamaps/datamaps.world.min.js"></script>
+<script src="~/quixlab-master/quixlab-master/plugins/raphael/raphael.min.js"></script>
+<script src="~/quixlab-master/quixlab-master/plugins/morris/morris.min.js"></script>
+<script src="~/quixlab-master/quixlab-master/plugins/moment/moment.min.js"></script>
+<script src="~/quixlab-master/quixlab-master/plugins/pg-calendar/js/pignose.calendar.min.js"></script>
+
+<script src="~/quixlab-master/quixlab-master/js/plugins-init/chartist.init.js"></script>
+
+<script src="~/quixlab-master/quixlab-master/plugins/chartist/js/chartist.min.js"></script>
+<script src="~/quixlab-master/quixlab-master/plugins/chartist-plugin-tooltips/js/chartist-plugin-tooltip.min.js"></script>
+
+<script src="~/quixlab-master/quixlab-master/js/dashboard/dashboard-1.js"></script>

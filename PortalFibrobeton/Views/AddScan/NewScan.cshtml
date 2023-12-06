@@ -1,0 +1,623 @@
+﻿@*@model IEnumerable<FibroScanWEB.Models.Entity.Tbl_Taramalar>*@
+@model PortalFibrobeton.Models.Entity.Tbl_Taramalar
+@using PortalFibrobeton.Models.Entity
+
+@{
+    ViewBag.Title = "NewScan";
+    Layout = "~/Views/Shared/ScanLayout.cshtml";
+}
+
+
+<head>
+    <title>FibroSCAN - Yeni Kalıp Tarama</title>
+    <link href="~/quixlab-master/quixlab-master/plugins/bootstrap-material-datetimepicker/css/bootstrap-material-datetimepicker.css" rel="stylesheet">
+    <link href="~/quixlab-master/quixlab-master/plugins/clockpicker/dist/jquery-clockpicker.min.css" rel="stylesheet">
+    <link href="~/quixlab-master/quixlab-master/plugins/jquery-asColorPicker-master/css/asColorPicker.css" rel="stylesheet">
+    <link href="~/quixlab-master/quixlab-master/plugins/bootstrap-datepicker/bootstrap-datepicker.min.css" rel="stylesheet">
+    <link href="~/quixlab-master/quixlab-master/plugins/timepicker/bootstrap-timepicker.min.css" rel="stylesheet">
+    <link href="~/quixlab-master/quixlab-master/plugins/bootstrap-daterangepicker/daterangepicker.css" rel="stylesheet">
+
+    <link href="~/quixlab-master/quixlab-master/css/style.css" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-material-datetimepicker/2.7.1/css/bootstrap-material-datetimepicker.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.20.1/moment.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-material-datetimepicker/2.7.1/js/bootstrap-material-datetimepicker.min.js"></script>
+    <script src="https://cdnjs.com/libraries/moment.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.20.1/locale/ja.js"></script>
+    <script src="~/Content/jsFile/OneSignal/OneSignalServiceWorkers.js"></script>
+    <style>
+        label {
+            font-weight: bold;
+            font-size: 17px;
+        }
+    </style>
+</head>
+
+<script type="text/javascript">
+    const { filereader } = require("modernizr")
+
+    function readfile(input) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+
+            reader.onload = function (e) {
+                $('#image_preview').attr('src', e.target.result);
+            }
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+</script>
+
+<script type="text/javascript">
+
+    function readfile2(input2) {
+        if (input2.files && input2.files[0]) {
+            var reader2 = new FileReader();
+
+            reader2.onload = function (e2) {
+                $('#image_preview2').attr('src', e2.target.result);
+            }
+            reader2.readAsDataURL(input2.files[0]);
+        }
+    }
+</script>
+
+<script type="text/javascript">
+
+    function readfile3(input3) {
+        if (input3.files && input3.files[0]) {
+            var reader3 = new FileReader();
+
+            reader3.onload = function (e3) {
+                $('#image_preview3').attr('src', e3.target.result);
+            }
+            reader3.readAsDataURL(input3.files[0]);
+        }
+    }
+</script>
+
+<script type="text/javascript">
+
+    function readfile4(input4) {
+        if (input4.files && input4.files[0]) {
+            var reader4 = new FileReader();
+
+            reader4.onload = function (e4) {
+                $('#image_preview4').attr('src', e4.target.result);
+            }
+            reader4.readAsDataURL(input4.files[0]);
+        }
+    }
+</script>
+
+<script type="text/javascript">
+
+    function readfile5(input5) {
+        if (input5.files && input5.files[0]) {
+            var reader5 = new FileReader();
+
+            reader5.onload = function (e5) {
+                $('#image_preview5').attr('src', e5.target.result);
+            }
+            reader5.readAsDataURL(input5.files[0]);
+        }
+    }
+</script>
+<script type="text/javascript">
+
+    function readfile6(input6) {
+        if (input6.files && input6.files[0]) {
+            var reader6 = new FileReader();
+
+            reader6.onload = function (e6) {
+                $('#image_preview6').attr('src', e6.target.result);
+            }
+            reader6.readAsDataURL(input6.files[0]);
+        }
+    }
+</script>
+<script type="text/javascript">
+
+    function readfile7(input7) {
+        if (input7.files && input7.files[0]) {
+            var reader7 = new FileReader();
+
+            reader7.onload = function (e7) {
+                $('#image_preview7').attr('src', e7.target.result);
+            }
+            reader7.readAsDataURL(input7.files[0]);
+        }
+    }
+</script>
+<script type="text/javascript">
+
+    function readfile8(input8) {
+        if (input8.files && input8.files[0]) {
+            var reader8 = new FileReader();
+
+            reader8.onload = function (e8) {
+                $('#image_preview8').attr('src', e8.target.result);
+            }
+            reader8.readAsDataURL(input8.files[0]);
+        }
+    }
+</script>
+<script type="text/javascript">
+
+    function readfile9(input9) {
+        if (input9.files && input9.files[0]) {
+            var reader9 = new FileReader();
+
+            reader9.onload = function (e9) {
+                $('#image_preview9').attr('src', e9.target.result);
+            }
+            reader9.readAsDataURL(input9.files[0]);
+        }
+    }
+</script>
+<script type="text/javascript">
+
+    function readfile10(input10) {
+        if (input10.files && input10.files[0]) {
+            var reader10 = new FileReader();
+
+            reader10.onload = function (e10) {
+                $('#image_preview10').attr('src', e10.target.result);
+            }
+            reader10.readAsDataURL(input10.files[0]);
+        }
+    }
+</script>
+
+<script>
+    var role = @ViewBag.RoleError;
+
+    if (role != null) {
+        alert("Hata");
+    }
+</script>
+
+<body>
+    <div class="container-fluid">
+        @using (Html.BeginForm("NewScan", "AddScan", FormMethod.Post, new { @enctype = "multipart/form-data" }))
+        {
+            <div class="row justify-content-center">
+                <div class="col-lg-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <h1 class="card-title" style="font-size:35px; text-align:center; padding-bottom:7px; padding-top:7px;">Kalıp Bilgileri</h1>
+                            <br />
+                            <div>
+                                @if (TempData["errorQuery"] != null)
+                                {
+                                    <div class="alert alert-danger">@TempData["errorQuery"].ToString()</div>
+                                }
+                                @if (TempData["errorAdd"] != null)
+                                {
+                                    <div class="alert alert-danger">@TempData["errorAdd"].ToString()</div>
+                                }
+                                @if (TempData["successAdd"] != null)
+                                {
+                                    <div class="alert alert-success">@TempData["successAdd"].ToString()</div>
+                                }
+                                
+                            </div>
+                            <div class="basic-form">
+                                <form method="post">
+                                    <div class="row form-material">
+
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Poz Barkod:</label>
+                                        <div class="input-group mb-3">
+                                            <input type="text" class="form-control" name="poz" value="@ViewBag.pozBarkodNo" style="text-transform:uppercase;" />
+                                            <div class="input-group-append">
+                                                <button type="submit" value="select" name="action" onclick="location.href='@Url.Action("NewScan","AddScan")'" class="btn btn-info">Ara</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Proje:</label>
+                                        <input type="text" class="form-control" value="@ViewBag.proje" readonly="readonly" name="ProjeT" />
+                                    </div>
+                                    <div class="form-row">
+                                        <div class="form-group col-md-4">
+                                            <label>Poz No:</label>
+                                            <input type="text" class="form-control" value="@ViewBag.pozNO" readonly="readonly" name="PozT">
+                                        </div>
+                                        <div class="form-group col-md-4">
+                                            <label>Barkod:</label>
+                                            <input type="text" class="form-control" value="@ViewBag.barkod" readonly="readonly" name="BarkodT">
+                                        </div>
+                                        <div class="form-group col-md-4">
+                                            <label class="m-t-20">Tarih:</label>
+                                            <input type="text" class="form-control" id="dateAdd" name="TarihT" value="@ViewBag.bugun" />
+                                        </div>
+                                    </div>
+
+                                    <div class="form-row">
+                                        <div class="form-group col-md-6">
+                                            <label>Malzeme:</label>
+                                            <input type="text" class="form-control" value="@ViewBag.malzeme" readonly="readonly" name="MalzemeT" />
+                                        </div>
+                                        <div class="form-group col-md-6">
+                                            <label>Tarama Sayısı:</label>
+                                            <input type="text" class="form-control" name="SayıT" value="@ViewBag.sayı" readonly="readonly" />
+                                        </div>
+                                    </div>
+                                    <div class="form-row">
+                                        <div class="form-group col-md-4">
+                                            <label>Alan m²:</label>
+                                            <input type="text" class="form-control" value="@ViewBag.kalıpM2" name="AlanT" />
+                                        </div>
+                                        <div class="form-group col-md-4">
+                                            <label>Tarama Süresi:</label>
+                                            <input type="number" class="form-control" name="SureT" />
+                                        </div>
+                                        <div class="form-group col-md-4">
+                                            <label>Rapor Süresi:</label>
+                                            <input type="number" value="10" class="form-control" name="SureR" />
+                                        </div>
+                                    </div>
+                                    <div class="form-row">
+                                        <div class="form-group col-md-4">
+                                            <label>Döküm:</label>
+                                            <select id="dokum" class="form-control" name="DökümT">
+                                                <option selected="selected">@ViewBag.dokum</option>
+                                                <option>UHPC</option>
+                                                <option>GRC</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group col-md-4">
+                                            <label>Yüzey:</label>
+                                            <select id="yuzey" class="form-control" name="YüzeyT">
+                                                <option selected="selected"></option>
+                                                <option>U-L-Z</option>
+                                                <option>AMORF</option>
+                                                <option>DÜZ</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group col-md-4">
+                                            <label>Kalıp Teslim:</label>
+                                            <select id="teslim" class="form-control" name="TeslimT">
+                                                <option selected="selected">@ViewBag.dokumTeslim</option>
+                                                <option>HOL-9</option>
+                                                <option>HOL-6</option>
+                                                <option>TAŞERON</option>
+                                                <option>CNC</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="form-row">
+                                        <div class="form-group col-md-3">
+                                            <label>Cihaz:</label>
+                                            <select id="cihaz" class="form-control" name="CihazT">
+                                                <option selected="selected"></option>
+                                                <option>AICON</option>
+                                                <option>METRASCAN</option>
+                                                <option>BLACK ELİTE</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group col-md-3">
+                                            <label>Tarama Talebi:</label>
+                                            <select id="talep" class="form-control" name="KonuT">
+                                                <option selected="selected"></option>
+                                                <option>DÖKÜM ÖNCESİ</option>
+                                                <option>KALIP TOPLAMA</option>
+                                                <option>CNC İŞLEME</option>
+                                                <option>DENEME</option>
+                                            </select>
+                                        </div>
+
+                                        <div class="form-group col-md-2" style="margin-left:45px;">
+                                            <label>Durum:</label>
+                                            <div class="form-check-input">
+                                                <input class="form-check-input" type="radio" name="DurumT" value="OK" style="margin-left:20px;" />
+                                                <label class="form-check-label" style="color:forestgreen;font-weight:bold;margin-left:40px;">O.K</label>
+                                                <input class="form-check-input" type="radio" name="DurumT" value="RED" style="margin-left:75px;" />
+                                                <label class="form-check-label" style="color:red;font-weight:bold;margin-left:93px;">RED</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-row">
+                                        <div class="col-lg-12">
+                                            <label>Not:</label>
+                                            <textarea class="form-control h-100px" rows="3" id="comment" name="TNot"></textarea>
+                                        </div>
+                                    </div>
+                                    <div class="form-row">
+                                        <div class="card-body">
+                                            <h4 class="card-title">Tarama Görüntüleri</h4>
+                                            <ul class="nav nav-pills mb-3">
+                                                <li class="nav-item">
+                                                    <a href="#navpills-1" class="nav-link active" data-toggle="tab" aria-expanded="false">Resim-1</a>
+                                                </li>
+                                                <li class="nav-item">
+                                                    <a href="#navpills-2" class="nav-link" data-toggle="tab" aria-expanded="false">Resim-2</a>
+                                                </li>
+                                                <li class="nav-item">
+                                                    <a href="#navpills-3" class="nav-link" data-toggle="tab" aria-expanded="true">Resim-3</a>
+                                                </li>
+                                                <li class="nav-item">
+                                                    <a href="#navpills-4" class="nav-link" data-toggle="tab" aria-expanded="true">Resim-4</a>
+                                                </li>
+                                                <li class="nav-item">
+                                                    <a href="#navpills-5" class="nav-link" data-toggle="tab" aria-expanded="true">Resim-5</a>
+                                                </li>
+                                                <li class="nav-item">
+                                                    <a href="#navpills-6" class="nav-link" data-toggle="tab" aria-expanded="true">Resim-6</a>
+                                                </li>
+                                                <li class="nav-item">
+                                                    <a href="#navpills-7" class="nav-link" data-toggle="tab" aria-expanded="true">Resim-7</a>
+                                                </li>
+                                                <li class="nav-item">
+                                                    <a href="#navpills-8" class="nav-link" data-toggle="tab" aria-expanded="true">Resim-8</a>
+                                                </li>
+                                                <li class="nav-item">
+                                                    <a href="#navpills-9" class="nav-link" data-toggle="tab" aria-expanded="true">Resim-9</a>
+                                                </li>
+                                                <li class="nav-item">
+                                                    <a href="#navpills-10" class="nav-link" data-toggle="tab" aria-expanded="true">Resim-10</a>
+                                                </li>
+                                            </ul>
+                                            <div class="tab-content br-n pn">
+                                                <div id="navpills-1" class="tab-pane active">
+                                                    <div class="row align-items-center">
+                                                        <input type="file" id="image1" name="image1" class="form-control-file" onchange="readfile(this);" />
+                                                        <div class="row">
+                                                            <div class="col-lg6">
+                                                                <div class="card">
+                                                                    <div class="card-body">
+                                                                        <div class="bootstrap-carousel">
+                                                                            <div class="carousel slide" data-ride="carousel">
+                                                                                <div class="carousel-inner">
+                                                                                    <div class="carousel-item active">
+                                                                                        <img class="d-block w-100" id="image_preview" src="#" alt="1.Resim">
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div id="navpills-2" class="tab-pane">
+                                                    <div class="row align-items-center">
+                                                        <input type="file" id="image2" name="image2" class="form-control-file" onchange="readfile2(this);" />
+                                                        <div class="row">
+                                                            <div class="col-lg6">
+                                                                <div class="card">
+                                                                    <div class="card-body">
+                                                                        <div class="bootstrap-carousel">
+                                                                            <div class="carousel slide" data-ride="carousel">
+                                                                                <div class="carousel-inner">
+                                                                                    <div class="carousel-item active">
+                                                                                        <img class="d-block w-100" id="image_preview2" src="#" alt="2.Resim">
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div id="navpills-3" class="tab-pane">
+                                                    <div class="row align-items-center">
+                                                        <input type="file" id="image3" name="image3" class="form-control-file" onchange="readfile3(this);" />
+                                                        <div class="row">
+                                                            <div class="col-lg6">
+                                                                <div class="card">
+                                                                    <div class="card-body">
+                                                                        <div class="bootstrap-carousel">
+                                                                            <div class="carousel slide" data-ride="carousel">
+                                                                                <div class="carousel-inner">
+                                                                                    <div class="carousel-item active">
+                                                                                        <img class="d-block w-100" id="image_preview3" src="#" alt="3.Resim">
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div id="navpills-4" class="tab-pane">
+                                                    <div class="row align-items-center">
+                                                        <input type="file" id="image4" name="image4" class="form-control-file" onchange="readfile4(this);" />
+                                                        <div class="row">
+                                                            <div class="col-lg6">
+                                                                <div class="card">
+                                                                    <div class="card-body">
+                                                                        <div class="bootstrap-carousel">
+                                                                            <div class="carousel slide" data-ride="carousel">
+                                                                                <div class="carousel-inner">
+                                                                                    <div class="carousel-item active">
+                                                                                        <img class="d-block w-100" id="image_preview4" src="#" alt="4.Resim">
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div id="navpills-5" class="tab-pane">
+                                                    <div class="row align-items-center">
+                                                        <input type="file" id="image5" name="image5" class="form-control-file" onchange="readfile5(this);" />
+                                                        <div class="row">
+                                                            <div class="col-lg6">
+                                                                <div class="card">
+                                                                    <div class="card-body">
+                                                                        <div class="bootstrap-carousel">
+                                                                            <div class="carousel slide" data-ride="carousel">
+                                                                                <div class="carousel-inner">
+                                                                                    <div class="carousel-item active">
+                                                                                        <img class="d-block w-100" id="image_preview5" src="#" alt="5.Resim">
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div id="navpills-6" class="tab-pane">
+                                                    <div class="row align-items-center">
+                                                        <input type="file" id="image6" name="image6" class="form-control-file" onchange="readfile6(this);" />
+                                                        <div class="row">
+                                                            <div class="col-lg6">
+                                                                <div class="card">
+                                                                    <div class="card-body">
+                                                                        <div class="bootstrap-carousel">
+                                                                            <div class="carousel slide" data-ride="carousel">
+                                                                                <div class="carousel-inner">
+                                                                                    <div class="carousel-item active">
+                                                                                        <img class="d-block w-100" id="image_preview6" src="#" alt="6.Resim">
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div id="navpills-7" class="tab-pane">
+                                                    <div class="row align-items-center">
+                                                        <input type="file" id="image7" name="image7" class="form-control-file" onchange="readfile7(this);" />
+                                                        <div class="row">
+                                                            <div class="col-lg6">
+                                                                <div class="card">
+                                                                    <div class="card-body">
+                                                                        <div class="bootstrap-carousel">
+                                                                            <div class="carousel slide" data-ride="carousel">
+                                                                                <div class="carousel-inner">
+                                                                                    <div class="carousel-item active">
+                                                                                        <img class="d-block w-100" id="image_preview7" src="#" alt="7.Resim">
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div id="navpills-8" class="tab-pane">
+                                                    <div class="row align-items-center">
+                                                        <input type="file" id="image8" name="image8" class="form-control-file" onchange="readfile8(this);" />
+                                                        <div class="row">
+                                                            <div class="col-lg6">
+                                                                <div class="card">
+                                                                    <div class="card-body">
+                                                                        <div class="bootstrap-carousel">
+                                                                            <div class="carousel slide" data-ride="carousel">
+                                                                                <div class="carousel-inner">
+                                                                                    <div class="carousel-item active">
+                                                                                        <img class="d-block w-100" id="image_preview8" src="#" alt="8.Resim">
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div id="navpills-9" class="tab-pane">
+                                                    <div class="row align-items-center">
+                                                        <input type="file" id="image9" name="image9" class="form-control-file" onchange="readfile9(this);" />
+                                                        <div class="row">
+                                                            <div class="col-lg6">
+                                                                <div class="card">
+                                                                    <div class="card-body">
+                                                                        <div class="bootstrap-carousel">
+                                                                            <div class="carousel slide" data-ride="carousel">
+                                                                                <div class="carousel-inner">
+                                                                                    <div class="carousel-item active">
+                                                                                        <img class="d-block w-100" id="image_preview9" src="#" alt="9.Resim">
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div id="navpills-10" class="tab-pane">
+                                                    <div class="row align-items-center">
+                                                        <input type="file" id="image10" name="image10" class="form-control-file" onchange="readfile10(this);" />
+                                                        <div class="row">
+                                                            <div class="col-lg6">
+                                                                <div class="card">
+                                                                    <div class="card-body">
+                                                                        <div class="bootstrap-carousel">
+                                                                            <div class="carousel slide" data-ride="carousel">
+                                                                                <div class="carousel-inner">
+                                                                                    <div class="carousel-item active">
+                                                                                        <img class="d-block w-100" id="image_preview10" src="#" alt="10.Resim">
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <button type="submit" name="action" value="save" id="save-button" class="btn btn-info" onclick="location.href='@Url.Action("Save","AddScan")'">Kaydet</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    <script>
+        $(function () {
+            $('#dateAdd').bootstrapMaterialDatePicker({
+                format: 'DD/MM/YYYY',
+                clearButton: false,
+                okText: "Tamam",
+                cancelText: "İptal",
+                monthNames: ['Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs', 'Haziran', 'Temmuz', 'Ağustos', 'Eylül', 'Ekim', 'Kasım', 'Aralık'],
+                time: false
+            });
+        });
+    </script>
+</body>
+
+<script src="~/quixlab-master/quixlab-master/plugins/moment/moment.js"></script>
+<script src="~/quixlab-master/quixlab-master/plugins/bootstrap-material-datetimepicker/js/bootstrap-material-datetimepicker.js"></script>
+<script src="~/quixlab-master/quixlab-master/plugins/clockpicker/dist/jquery-clockpicker.min.js"></script>
+<script src="~/quixlab-master/quixlab-master/plugins/jquery-asColorPicker-master/libs/jquery-asColor.js"></script>
+<script src="~/quixlab-master/quixlab-master/plugins/jquery-asColorPicker-master/libs/jquery-asGradient.js"></script>
+<script src="~/quixlab-master/quixlab-master/plugins/jquery-asColorPicker-master/dist/jquery-asColorPicker.min.js"></script>
+<script src="~/quixlab-master/quixlab-master/plugins/bootstrap-datepicker/bootstrap-datepicker.min.js"></script>
+<script src="~/quixlab-master/quixlab-master/plugins/timepicker/bootstrap-timepicker.min.js"></script>
+<script src="~/quixlab-master/quixlab-master/plugins/bootstrap-daterangepicker/daterangepicker.js"></script>
+<script src="~/quixlab-master/quixlab-master/js/plugins-init/form-pickers-init.js"></script>
+

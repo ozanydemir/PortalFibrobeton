@@ -1,0 +1,504 @@
+﻿@model PortalFibrobeton.Models.Class.UretimSevkiyatRapor.UretimSevkiyatRaporViewModel
+
+@{
+    ViewBag.Title = "HaftalikUretimSevkiyatRaporu";
+    Layout = "~/Views/Shared/_PeraLayout.cshtml";
+}
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx-style.min.js"></script>
+
+<style>
+
+    table thead tr:nth-of-type(1) th {
+        font-size: 14px;
+        font-weight: bold;
+    }
+
+    table thead tr:nth-of-type(2) th {
+        font-size: 10px;
+        color: red;
+    }
+
+    .table td, .table th {
+        border-right: 1px solid #dee2e6;
+    }
+</style>
+
+@{
+    var totalSayiCephe = Model.Cepheler.Select(a => a.CEPHE_ADET).Sum();
+
+    //South
+    var totalUpOrderSouth = Model.Siparisler.Where(a => a.CEPHE_ADI == "SOUTH" && a.BLOK_ADI == "COB").Select(a => a.Siparis_Miktar).Sum();
+    var planingOrderSouth = Model.Hedefler.Where(a => a.Cephe == "COB-SOUTH").Select(a => a.PlanlananParcaSiparis).LastOrDefault();
+    var realizedOrderSouth = Model.SiparisHafta.Where(a => a.CEPHE_ADI == "SOUTH" && a.BLOK_ADI == "COB").Select(a => a.Siparis_Miktar).Sum();
+    var holdSouth = 0;
+    var totalUpCastingSouth = Model.DokumTotalTarihsiz.Where(a => a.CEPHE_ADI == "SOUTH" && a.BLOK_ADI == "COB").Select(a => a.DOKUM_BARKOD).Count();
+    var planingCastingSouth = Model.Hedefler.Where(a => a.Cephe == "COB-SOUTH").Select(a => a.PlanlananParcaDokum).LastOrDefault();
+    var realizedCastingSouth = Model.Dokum.Where(a => a.CEPHE_ADI == "SOUTH" && a.BLOK_ADI == "COB").Count();
+    var totalUpShippedSouth = Model.SevkiyatTotalTarihsiz.Where(a => a.CEPHE_ADI == "SOUTH" && a.BLOK_ADI == "COB").Select(a => a.Sevk_Miktar).Sum();
+    var planingShippedSouth = Model.Hedefler.Where(a => a.Cephe == "COB-SOUTH").Select(a => a.PlanlananParcaSevkiyat).LastOrDefault();
+    var realizedShippedSouth = Model.Sevkiyat.Where(a => a.CEPHE_ADI == "SOUTH" && a.BLOK_ADI == "COB").Select(a => a.Sevk_Miktar).Sum();
+    var remainingOrderSouth = (Model.Cepheler.Where(a => a.CEPHE_ADI == "SOUTH" && a.BLOK_ADI == "COB").Select(a => a.CEPHE_ADET).Sum() - Model.Siparisler.Where(b => b.CEPHE_ADI == "SOUTH" && b.BLOK_ADI == "COB").Select(b => b.Siparis_Miktar).Sum());
+    var remainingCastingSouth = (Model.Cepheler.Where(a => a.CEPHE_ADI == "SOUTH" && a.BLOK_ADI == "COB").Select(a => a.CEPHE_ADET).Sum() - Model.DokumTotalTarihsiz.Where(b => b.CEPHE_ADI == "SOUTH" && b.BLOK_ADI == "COB").Select(b => b.DOKUM_BARKOD).Count());
+    var remainingShippedSouth = (Model.Cepheler.Where(a => a.CEPHE_ADI == "SOUTH" && a.BLOK_ADI == "COB").Select(a => a.CEPHE_ADET).Sum() - Model.SevkiyatTotalTarihsiz.Where(b => b.CEPHE_ADI == "SOUTH" && b.BLOK_ADI == "COB").Select(b => b.Sevk_Miktar).Sum());
+
+
+    //East
+    var totalUpOrderEast = Model.Siparisler.Where(a => a.CEPHE_ADI == "EAST" && a.BLOK_ADI == "COB").Select(a => a.Siparis_Miktar).Sum();
+    var planingOrderEast = Model.Hedefler.Where(a => a.Cephe == "COB-EAST").Select(a => a.PlanlananParcaSiparis).LastOrDefault();
+    var realizedOrderEast = Model.SiparisHafta.Where(a => a.CEPHE_ADI == "EAST" && a.BLOK_ADI == "COB").Select(a => a.Siparis_Miktar).Sum();
+    var holdEast = 0;
+    var totalUpCastingEast = Model.DokumTotalTarihsiz.Where(a => a.CEPHE_ADI == "EAST" && a.BLOK_ADI == "COB").Select(a => a.DOKUM_BARKOD).Count();
+    var planingCastingEast = Model.Hedefler.Where(a => a.Cephe == "COB-EAST").Select(a => a.PlanlananParcaDokum).LastOrDefault();
+    var realizedCastingEast = Model.Dokum.Where(a => a.CEPHE_ADI == "EAST" && a.BLOK_ADI == "COB").Count();
+    var totalUpShippedEast = Model.SevkiyatTotalTarihsiz.Where(a => a.CEPHE_ADI == "EAST" && a.BLOK_ADI == "COB").Select(a => a.Sevk_Miktar).Sum();
+    var planingShippedEast = Model.Hedefler.Where(a => a.Cephe == "COB-EAST").Select(a => a.PlanlananParcaSevkiyat).LastOrDefault();
+    var realizedShippedEast = Model.Sevkiyat.Where(a => a.CEPHE_ADI == "EAST" && a.BLOK_ADI == "COB").Select(a => a.Sevk_Miktar).Sum();
+    var remainingOrderEast = (Model.Cepheler.Where(a => a.CEPHE_ADI == "EAST" && a.BLOK_ADI == "COB").Select(a => a.CEPHE_ADET).Sum() - Model.Siparisler.Where(b => b.CEPHE_ADI == "EAST" && b.BLOK_ADI == "COB").Select(b => b.Siparis_Miktar).Sum());
+    var remainingCastingEast = (Model.Cepheler.Where(a => a.CEPHE_ADI == "EAST" && a.BLOK_ADI == "COB").Select(a => a.CEPHE_ADET).Sum() - Model.DokumTotalTarihsiz.Where(b => b.CEPHE_ADI == "EAST" && b.BLOK_ADI == "COB").Select(b => b.DOKUM_BARKOD).Count());
+    var remainingShippedEast = (Model.Cepheler.Where(a => a.CEPHE_ADI == "EAST" && a.BLOK_ADI == "COB").Select(a => a.CEPHE_ADET).Sum() - Model.SevkiyatTotalTarihsiz.Where(b => b.CEPHE_ADI == "EAST" && b.BLOK_ADI == "COB").Select(b => b.Sevk_Miktar).Sum());
+
+
+    //North
+    var totalUpOrderNorth = Model.Siparisler.Where(a => a.CEPHE_ADI == "NORTH" && a.BLOK_ADI == "COB").Select(a => a.Siparis_Miktar).Sum();
+    var planingOrderNorth = Model.Hedefler.Where(a => a.Cephe == "COB-NORTH").Select(a => a.PlanlananParcaSiparis).LastOrDefault();
+    var realizedOrderNorth = Model.SiparisHafta.Where(a => a.CEPHE_ADI == "NORTH" && a.BLOK_ADI == "COB").Select(a => a.Siparis_Miktar).Sum();
+    var holdNorth = 0;
+    var totalUpCastingNorth = Model.DokumTotalTarihsiz.Where(a => a.CEPHE_ADI == "NORTH" && a.BLOK_ADI == "COB").Select(a => a.DOKUM_BARKOD).Count();
+    var planingCastingNorth = Model.Hedefler.Where(a => a.Cephe == "COB-NORTH").Select(a => a.PlanlananParcaDokum).LastOrDefault();
+    var realizedCastingNorth = Model.Dokum.Where(a => a.CEPHE_ADI == "NORTH" && a.BLOK_ADI == "COB").Count();
+    var totalUpShippedNorth = Model.SevkiyatTotalTarihsiz.Where(a => a.CEPHE_ADI == "NORTH" && a.BLOK_ADI == "COB").Select(a => a.Sevk_Miktar).Sum();
+    var planingShippedNorth = Model.Hedefler.Where(a => a.Cephe == "COB-NORTH").Select(a => a.PlanlananParcaSevkiyat).LastOrDefault();
+    var realizedShippedNorth = Model.Sevkiyat.Where(a => a.CEPHE_ADI == "NORTH" && a.BLOK_ADI == "COB").Select(a => a.Sevk_Miktar).Sum();
+    var remainingOrderNorth = (Model.Cepheler.Where(a => a.CEPHE_ADI == "NORTH" && a.BLOK_ADI == "COB").Select(a => a.CEPHE_ADET).Sum() - Model.Siparisler.Where(b => b.CEPHE_ADI == "NORTH" && b.BLOK_ADI == "COB").Select(b => b.Siparis_Miktar).Sum());
+    var remainingCastingNorth = (Model.Cepheler.Where(a => a.CEPHE_ADI == "NORTH" && a.BLOK_ADI == "COB").Select(a => a.CEPHE_ADET).Sum() - Model.DokumTotalTarihsiz.Where(b => b.CEPHE_ADI == "NORTH" && b.BLOK_ADI == "COB").Select(b => b.DOKUM_BARKOD).Count());
+    var remainingShippedNorth = (Model.Cepheler.Where(a => a.CEPHE_ADI == "NORTH" && a.BLOK_ADI == "COB").Select(a => a.CEPHE_ADET).Sum() - Model.SevkiyatTotalTarihsiz.Where(b => b.CEPHE_ADI == "NORTH" && b.BLOK_ADI == "COB").Select(b => b.Sevk_Miktar).Sum());
+
+
+    //West
+    var totalUpOrderWest = Model.Siparisler.Where(a => a.CEPHE_ADI == "WEST" && a.BLOK_ADI == "COB").Select(a => a.Siparis_Miktar).Sum();
+    var planingOrderWest = Model.Hedefler.Where(a => a.Cephe == "COB-WEST").Select(a => a.PlanlananParcaSiparis).LastOrDefault();
+    var realizedOrderWest = Model.SiparisHafta.Where(a => a.CEPHE_ADI == "WEST" && a.BLOK_ADI == "COB").Select(a => a.Siparis_Miktar).Sum();
+    var holdWest = 0;
+    var totalUpCastingWest = Model.DokumTotalTarihsiz.Where(a => a.CEPHE_ADI == "WEST" && a.BLOK_ADI == "COB").Select(a => a.DOKUM_BARKOD).Count();
+    var planingCastingWest = Model.Hedefler.Where(a => a.Cephe == "COB-WEST").Select(a => a.PlanlananParcaDokum).LastOrDefault();
+    var realizedCastingWest = Model.Dokum.Where(a => a.CEPHE_ADI == "WEST" && a.BLOK_ADI == "COB").Count();
+    var totalUpShippedWest = Model.SevkiyatTotalTarihsiz.Where(a => a.CEPHE_ADI == "WEST" && a.BLOK_ADI == "COB").Select(a => a.Sevk_Miktar).Sum();
+    var planingShippedWest = Model.Hedefler.Where(a => a.Cephe == "COB-WEST").Select(a => a.PlanlananParcaSevkiyat).LastOrDefault();
+    var realizedShippedWest = Model.Sevkiyat.Where(a => a.CEPHE_ADI == "WEST" && a.BLOK_ADI == "COB").Select(a => a.Sevk_Miktar).Sum();
+    var remainingOrderWest = (Model.Cepheler.Where(a => a.CEPHE_ADI == "WEST" && a.BLOK_ADI == "COB").Select(a => a.CEPHE_ADET).Sum() - Model.Siparisler.Where(b => b.CEPHE_ADI == "WEST" && b.BLOK_ADI == "COB").Select(b => b.Siparis_Miktar).Sum());
+    var remainingCastingWest = (Model.Cepheler.Where(a => a.CEPHE_ADI == "WEST" && a.BLOK_ADI == "COB").Select(a => a.CEPHE_ADET).Sum() - Model.DokumTotalTarihsiz.Where(b => b.CEPHE_ADI == "WEST" && b.BLOK_ADI == "COB").Select(b => b.DOKUM_BARKOD).Count());
+    var remainingShippedWest = (Model.Cepheler.Where(a => a.CEPHE_ADI == "WEST" && a.BLOK_ADI == "COB").Select(a => a.CEPHE_ADET).Sum() - Model.SevkiyatTotalTarihsiz.Where(b => b.CEPHE_ADI == "WEST" && b.BLOK_ADI == "COB").Select(b => b.Sevk_Miktar).Sum());
+
+    //Roof
+    var totalUpOrderRoof = Model.Siparisler.Where(a => a.CEPHE_ADI == "ROOF" && a.BLOK_ADI == "COB").Select(a => a.Siparis_Miktar).Sum();
+    var planingOrderRoof = Model.Hedefler.Where(a => a.Cephe == "COB-ROOF").Select(a => a.PlanlananParcaSiparis).LastOrDefault();
+    var realizedOrderRoof = Model.SiparisHafta.Where(a => a.CEPHE_ADI == "ROOF" && a.BLOK_ADI == "COB").Select(a => a.Siparis_Miktar).Sum();
+    var holdRoof = 0;
+    var totalUpCastingRoof = Model.DokumTotalTarihsiz.Where(a => a.CEPHE_ADI == "ROOF" && a.BLOK_ADI == "COB").Select(a => a.DOKUM_BARKOD).Count();
+    var planingCastingRoof = Model.Hedefler.Where(a => a.Cephe == "COB-ROOF").Select(a => a.PlanlananParcaDokum).LastOrDefault();
+    var realizedCastingRoof = Model.Dokum.Where(a => a.CEPHE_ADI == "ROOF" && a.BLOK_ADI == "COB").Count();
+    var totalUpShippedRoof = Model.SevkiyatTotalTarihsiz.Where(a => a.CEPHE_ADI == "ROOF" && a.BLOK_ADI == "COB").Select(a => a.Sevk_Miktar).Sum();
+    var planingShippedRoof = Model.Hedefler.Where(a => a.Cephe == "COB-ROOF").Select(a => a.PlanlananParcaSevkiyat).LastOrDefault();
+    var realizedShippedRoof = Model.Sevkiyat.Where(a => a.CEPHE_ADI == "ROOF" && a.BLOK_ADI == "COB").Select(a => a.Sevk_Miktar).Sum();
+    var remainingOrderRoof = (Model.Cepheler.Where(a => a.CEPHE_ADI == "ROOF" && a.BLOK_ADI == "COB").Select(a => a.CEPHE_ADET).Sum() - Model.Siparisler.Where(b => b.CEPHE_ADI == "ROOF" && b.BLOK_ADI == "COB").Select(b => b.Siparis_Miktar).Sum());
+    var remainingCastingRoof = (Model.Cepheler.Where(a => a.CEPHE_ADI == "ROOF" && a.BLOK_ADI == "COB").Select(a => a.CEPHE_ADET).Sum() - Model.DokumTotalTarihsiz.Where(b => b.CEPHE_ADI == "ROOF" && b.BLOK_ADI == "COB").Select(b => b.DOKUM_BARKOD).Count());
+    var remainingShippedRoof = (Model.Cepheler.Where(a => a.CEPHE_ADI == "ROOF" && a.BLOK_ADI == "COB").Select(a => a.CEPHE_ADET).Sum() - Model.SevkiyatTotalTarihsiz.Where(b => b.CEPHE_ADI == "ROOF" && b.BLOK_ADI == "COB").Select(b => b.Sevk_Miktar).Sum());
+
+
+    //Toplamlar
+    var totalUpOrder = (totalUpOrderEast + totalUpOrderNorth + totalUpOrderRoof + totalUpOrderSouth + totalUpOrderWest);
+    var totalPlaningOrder = (planingOrderEast + planingOrderNorth + planingOrderRoof + planingOrderSouth + planingOrderWest);
+    var totalRealizedOrder = (realizedOrderEast + realizedOrderNorth + realizedOrderRoof + realizedOrderSouth + realizedOrderWest);
+    var totalRemaningOrder = (remainingOrderEast + remainingOrderNorth + remainingOrderRoof + remainingOrderSouth + remainingOrderWest);
+    var totalUpCasting = (totalUpCastingEast + totalUpCastingNorth + totalUpCastingRoof + totalUpCastingSouth + totalUpCastingWest);
+    var totalPlanCasting = (planingCastingEast + planingCastingNorth + planingCastingRoof + planingCastingSouth + planingCastingWest);
+    var totalRealizedCasting = (realizedCastingEast + realizedCastingNorth + realizedCastingRoof + realizedCastingSouth + realizedCastingWest);
+    var totalRemainingCasting = (remainingCastingEast + remainingCastingNorth + remainingCastingRoof + remainingCastingSouth + remainingCastingWest);
+    var totalUpShipped = (totalUpShippedEast + totalUpShippedNorth + totalUpShippedRoof + totalUpShippedSouth + totalUpShippedWest);
+    var totalPlanShipped = (planingShippedEast + planingShippedNorth + planingShippedRoof + planingShippedSouth + planingShippedWest);
+    var totalRealizedShipped = (realizedShippedEast + realizedShippedNorth + realizedShippedRoof + realizedShippedSouth + realizedShippedWest);
+    var totalRemainingShipped = (remainingShippedEast + remainingShippedNorth + remainingShippedRoof + remainingShippedSouth + remainingShippedWest);
+
+    double Yuzdelik(double b, double a)
+    {
+        if (b == 0 || a == 0)
+        {
+            double res = 0;
+            return res;
+        }
+        else
+        {
+            double res = (b / a) * 100;
+            res = Math.Round(res, 0);
+            return res;
+        }
+
+    }
+
+}
+
+<div class="container-fluid flex-grow-1 container-p-y">
+    <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">PeraFIBRO / </span>Üretim & Sevkiyat Haftalık Raporu Görüntüle</h4>
+
+    @using (Html.BeginForm("HaftalikUretimSevkiyatRaporu", "UretimSevkiyatRapor", FormMethod.Post))
+    {
+        <div class="row mt-3">
+            <div class="col-xxl-5">
+                <div class="card mt-2">
+                    <div class="card-header d-flex align-items-center justify-content-between">
+                        <h5 class="mb-0">Tarih Seç</h5>
+                        <small class="text-muted float-end"></small>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mt-3 input-group">
+                            <label class="col-sm-2 col-form-label">Başlangıç</label>                                                                                                                                    
+                            <input type="date" class="form-control" name="bas" style="cursor:pointer" />
+                        </div>
+                        <div class="row mt-3 input-group">
+                            <label class="col-sm-2 col-form-label">Bitiş</label>
+                            <input type="date" class="form-control" name="bit" style="cursor:pointer" />
+                        </div>
+                        <div class="mt-3 text-center">
+                            <button type="submit" class="btn btn-primary">Ara</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-12 mt-5">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title">COB / Üretim-Sevkiyat Raporu</h4>
+                    <div class="table-responsive text-nowrap">
+                        <div class="mb-2">
+                            <button type="button" onclick="exportTableToExcel('cob', 'COB-UretimRaporu.xlsx', true)" style="border-color:forestgreen"><img src="~/Content/icons/excel.png"></button>
+                        </div>
+
+                        <table class="table" id="cob">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th scope="col" rowspan="2" style="color:white;padding-bottom:23px" class="text-center">Building Facades</th>
+                                    <th scope="col" rowspan="2" style="color:white;padding-bottom:23px" class="text-center">Total Panel Quantity</th>
+                                    <th scope="col" colspan="4" style="background-color:dodgerblue;color:white" class="text-center">Ordered</th>
+                                    <th scope="col" style="background-color:red;color:white">Hold</th>
+                                    <th scope="col" colspan="4" class="text-center" style="color:white;background-color:darkorange">Casting</th>
+                                    <th scope="col" colspan="4" class="text-center" style="color:white;background-color:rebeccapurple">Shipped</th>
+                                </tr>
+                                <tr>
+                                    <th scope="col" style="color:white;">Total up to this week</th>
+                                    <th scope="col" style="color:white;">This week planing</th>
+                                    <th scope="col" style="color:white;">This week realized</th>
+                                    <th scope="col" style="color:white;">Remaining</th>
+                                    <th scope="col" style="color:white;">Piece</th>
+                                    <th scope="col" style="color:white;">Total up to this week</th>
+                                    <th scope="col" style="color:white;">This week planing</th>
+                                    <th scope="col" style="color:white;">This week realized</th>
+                                    <th scope="col" style="color:white;">Remaining</th>
+                                    <th scope="col" style="color:white;">Total up to this week</th>
+                                    <th scope="col" style="color:white;">This week planing</th>
+                                    <th scope="col" style="color:white;">This week realized</th>
+                                    <th scope="col" style="color:white;">Remaining</th>
+                                </tr>
+                            </thead>
+
+                            <tbody class="text-center">
+                                @foreach (var item in Model.Cepheler.Where(a => a.CEPHE_ADI == "SOUTH" && a.BLOK_ADI == "COB"))
+                                {
+                                    <tr style="background-color:lightgrey">
+                                        <td rowspan="2" style="background-color: palegreen">COB-SOUTH</td>
+                                        <td rowspan="2">@item.CEPHE_ADET @*Total Panel*@</td>
+                                        <td>@totalUpOrderSouth </td>
+                                        <td>@planingOrderSouth </td>
+                                        <td>@realizedOrderSouth </td>
+                                        <td>@remainingOrderSouth</td>
+                                        <td>@holdSouth</td>
+                                        <td>@totalUpCastingSouth </td>
+                                        <td>@planingCastingSouth</td>
+                                        <td>@realizedCastingSouth</td>
+                                        <td>@remainingCastingSouth</td>
+                                        <td>@totalUpShippedSouth</td>
+                                        <td>@planingShippedSouth</td>
+                                        <td>@realizedShippedSouth</td>
+                                        <td>@remainingShippedSouth</td>
+                                    </tr>
+                                    <tr style="background-color:lightgrey">
+                                        <td data-format="percentage">%@(Yuzdelik(Convert.ToDouble(totalUpOrderSouth), Convert.ToDouble(item.CEPHE_ADET)))</td>
+                                        <td data-format="percentage">%@(Yuzdelik(Convert.ToDouble(planingOrderSouth),Convert.ToDouble(item.CEPHE_ADET)))</td>
+                                        <td data-format="percentage">%@(Yuzdelik(Convert.ToDouble(realizedOrderSouth),Convert.ToDouble(item.CEPHE_ADET)))</td>
+                                        <td data-format="percentage">%@(Yuzdelik(Convert.ToDouble(remainingOrderSouth),Convert.ToDouble(item.CEPHE_ADET)))</td>
+                                        <td data-format="percentage">%@(Yuzdelik(Convert.ToDouble(holdSouth),Convert.ToDouble(item.CEPHE_ADET)))</td>
+                                        <td data-format="percentage">%@(Yuzdelik(Convert.ToDouble(totalUpCastingSouth), Convert.ToDouble(item.CEPHE_ADET)))</td>
+                                        <td data-format="percentage">%@(Yuzdelik(Convert.ToDouble(planingCastingSouth),Convert.ToDouble(item.CEPHE_ADET)))</td>
+                                        <td data-format="percentage">%@(Yuzdelik(Convert.ToDouble(realizedCastingSouth),Convert.ToDouble(item.CEPHE_ADET)))</td>
+                                        <td data-format="percentage">%@(Yuzdelik(Convert.ToDouble(remainingCastingSouth),Convert.ToDouble(item.CEPHE_ADET)))</td>
+                                        <td data-format="percentage">%@(Yuzdelik(Convert.ToDouble(totalUpShippedSouth),Convert.ToDouble(item.CEPHE_ADET)))</td>
+                                        <td data-format="percentage">%@(Yuzdelik(Convert.ToDouble(planingShippedSouth),Convert.ToDouble(item.CEPHE_ADET)))</td>
+                                        <td data-format="percentage">%@(Yuzdelik(Convert.ToDouble(realizedCastingSouth),Convert.ToDouble(item.CEPHE_ADET)))</td>
+                                        <td data-format="percentage">%@(Yuzdelik(Convert.ToDouble(remainingShippedSouth),Convert.ToDouble(item.CEPHE_ADET)))</td>
+
+                                    </tr>
+                                }
+
+                                @foreach (var item in Model.Cepheler.Where(a => a.CEPHE_ADI == "EAST" && a.BLOK_ADI == "COB"))
+                                {
+
+
+                                    <tr style="background-color:lightgrey">
+                                        <td rowspan="2" style="background-color: palegreen">COB-EAST</td>
+                                        <td rowspan="2">@item.CEPHE_ADET @*Total Panel*@</td>
+                                        <td>@totalUpOrderEast </td>
+                                        <td>@planingOrderEast </td>
+                                        <td>@realizedOrderEast </td>
+                                        <td>@remainingOrderEast</td>
+                                        <td>@holdEast</td>
+                                        <td>@totalUpCastingEast </td>
+                                        <td>@planingCastingEast</td>
+                                        <td>@realizedCastingEast</td>
+                                        <td>@remainingCastingEast</td>
+                                        <td>@totalUpShippedEast</td>
+                                        <td>@planingShippedEast</td>
+                                        <td>@realizedShippedEast</td>
+                                        <td>@remainingShippedEast</td>
+                                    </tr>
+                                    <tr style="background-color:lightgrey">
+
+                                        <td data-format="percentage">%@(Yuzdelik(Convert.ToDouble(totalUpOrderEast), Convert.ToDouble(item.CEPHE_ADET)))</td>
+                                        <td data-format="percentage">%@(Yuzdelik(Convert.ToDouble(planingOrderEast),Convert.ToDouble(item.CEPHE_ADET)))</td>
+                                        <td data-format="percentage">%@(Yuzdelik(Convert.ToDouble(realizedOrderEast),Convert.ToDouble(item.CEPHE_ADET)))</td>
+                                        <td data-format="percentage">%@(Yuzdelik(Convert.ToDouble(remainingOrderEast),Convert.ToDouble(item.CEPHE_ADET)))</td>
+                                        <td data-format="percentage">%@(Yuzdelik(Convert.ToDouble(holdEast),Convert.ToDouble(item.CEPHE_ADET)))</td>
+                                        <td data-format="percentage">%@(Yuzdelik(Convert.ToDouble(totalUpCastingEast), Convert.ToDouble(item.CEPHE_ADET)))</td>
+                                        <td data-format="percentage">%@(Yuzdelik(Convert.ToDouble(planingCastingEast),Convert.ToDouble(item.CEPHE_ADET)))</td>
+                                        <td data-format="percentage">%@(Yuzdelik(Convert.ToDouble(realizedCastingEast),Convert.ToDouble(item.CEPHE_ADET)))</td>
+                                        <td data-format="percentage">%@(Yuzdelik(Convert.ToDouble(remainingCastingEast),Convert.ToDouble(item.CEPHE_ADET)))</td>
+                                        <td data-format="percentage">%@(Yuzdelik(Convert.ToDouble(totalUpShippedEast),Convert.ToDouble(item.CEPHE_ADET)))</td>
+                                        <td data-format="percentage">%@(Yuzdelik(Convert.ToDouble(planingShippedEast),Convert.ToDouble(item.CEPHE_ADET)))</td>
+                                        <td data-format="percentage">%@(Yuzdelik(Convert.ToDouble(realizedCastingEast),Convert.ToDouble(item.CEPHE_ADET)))</td>
+                                        <td data-format="percentage">%@(Yuzdelik(Convert.ToDouble(remainingShippedEast),Convert.ToDouble(item.CEPHE_ADET)))</td>
+
+                                    </tr>
+                                }
+                                @foreach (var item in Model.Cepheler.Where(a => a.CEPHE_ADI == "NORTH" && a.BLOK_ADI == "COB"))
+                                {
+
+                                    <tr style="background-color:lightgrey">
+                                        <td rowspan="2" style="background-color: palegreen">COB-NORTH</td>
+                                        <td rowspan="2">@item.CEPHE_ADET @*Total Panel*@</td>
+                                        <td>@totalUpOrderNorth </td>
+                                        <td>@planingOrderNorth </td>
+                                        <td>@realizedOrderNorth </td>
+                                        <td>@remainingOrderNorth</td>
+                                        <td>@holdNorth</td>
+                                        <td>@totalUpCastingNorth </td>
+                                        <td>@planingCastingNorth</td>
+                                        <td>@realizedCastingNorth</td>
+                                        <td>@remainingCastingNorth</td>
+                                        <td>@totalUpShippedNorth</td>
+                                        <td>@planingShippedNorth</td>
+                                        <td>@realizedShippedNorth</td>
+                                        <td>@remainingShippedNorth</td>
+                                    </tr>
+                                    <tr style="background-color:lightgrey">
+
+
+                                        <td data-format="percentage">%@(Yuzdelik(Convert.ToDouble(totalUpOrderNorth), Convert.ToDouble(item.CEPHE_ADET)))</td>
+                                        <td data-format="percentage">%@(Yuzdelik(Convert.ToDouble(planingOrderNorth),Convert.ToDouble(item.CEPHE_ADET)))</td>
+                                        <td data-format="percentage">%@(Yuzdelik(Convert.ToDouble(realizedOrderNorth),Convert.ToDouble(item.CEPHE_ADET)))</td>
+                                        <td data-format="percentage">%@(Yuzdelik(Convert.ToDouble(remainingOrderNorth),Convert.ToDouble(item.CEPHE_ADET)))</td>
+                                        <td data-format="percentage">%@(Yuzdelik(Convert.ToDouble(holdNorth),Convert.ToDouble(item.CEPHE_ADET)))</td>
+                                        <td data-format="percentage">%@(Yuzdelik(Convert.ToDouble(totalUpCastingNorth), Convert.ToDouble(item.CEPHE_ADET)))</td>
+                                        <td data-format="percentage">%@(Yuzdelik(Convert.ToDouble(planingCastingNorth),Convert.ToDouble(item.CEPHE_ADET)))</td>
+                                        <td data-format="percentage">%@(Yuzdelik(Convert.ToDouble(realizedCastingNorth),Convert.ToDouble(item.CEPHE_ADET)))</td>
+                                        <td data-format="percentage">%@(Yuzdelik(Convert.ToDouble(remainingCastingNorth),Convert.ToDouble(item.CEPHE_ADET)))</td>
+                                        <td data-format="percentage">%@(Yuzdelik(Convert.ToDouble(totalUpShippedNorth),Convert.ToDouble(item.CEPHE_ADET)))</td>
+                                        <td data-format="percentage">%@(Yuzdelik(Convert.ToDouble(planingShippedNorth),Convert.ToDouble(item.CEPHE_ADET)))</td>
+                                        <td data-format="percentage">%@(Yuzdelik(Convert.ToDouble(realizedCastingNorth),Convert.ToDouble(item.CEPHE_ADET)))</td>
+                                        <td data-format="percentage">%@(Yuzdelik(Convert.ToDouble(remainingShippedNorth),Convert.ToDouble(item.CEPHE_ADET)))</td>
+
+                                    </tr>
+                                }
+
+                                @foreach (var item in Model.Cepheler.Where(a => a.CEPHE_ADI == "WEST" && a.BLOK_ADI == "COB"))
+                                {
+
+                                    <tr style="background-color:lightgrey">
+                                        <td rowspan="2" style="background-color: palegreen">COB-WEST</td>
+                                        <td rowspan="2">@item.CEPHE_ADET @*Total Panel*@</td>
+                                        <td>@totalUpOrderWest </td>
+                                        <td>@planingOrderWest </td>
+                                        <td>@realizedOrderWest </td>
+                                        <td>@remainingOrderWest</td>
+                                        <td>@holdWest</td>
+                                        <td>@totalUpCastingWest </td>
+                                        <td>@planingCastingWest</td>
+                                        <td>@realizedCastingWest</td>
+                                        <td>@remainingCastingWest</td>
+                                        <td>@totalUpShippedWest</td>
+                                        <td>@planingShippedWest</td>
+                                        <td>@realizedShippedWest</td>
+                                        <td>@remainingShippedWest</td>
+                                    </tr>
+                                    <tr style="background-color:lightgrey">
+
+
+                                        <td data-format="percentage">%@(Yuzdelik(Convert.ToDouble(totalUpOrderWest), Convert.ToDouble(item.CEPHE_ADET)))</td>
+                                        <td data-format="percentage">%@(Yuzdelik(Convert.ToDouble(planingOrderWest),Convert.ToDouble(item.CEPHE_ADET)))</td>
+                                        <td data-format="percentage">%@(Yuzdelik(Convert.ToDouble(realizedOrderWest),Convert.ToDouble(item.CEPHE_ADET)))</td>
+                                        <td data-format="percentage">%@(Yuzdelik(Convert.ToDouble(remainingOrderWest),Convert.ToDouble(item.CEPHE_ADET)))</td>
+                                        <td data-format="percentage">%@(Yuzdelik(Convert.ToDouble(holdWest),Convert.ToDouble(item.CEPHE_ADET)))</td>
+                                        <td data-format="percentage">%@(Yuzdelik(Convert.ToDouble(totalUpCastingWest), Convert.ToDouble(item.CEPHE_ADET)))</td>
+                                        <td data-format="percentage">%@(Yuzdelik(Convert.ToDouble(planingCastingWest),Convert.ToDouble(item.CEPHE_ADET)))</td>
+                                        <td data-format="percentage">%@(Yuzdelik(Convert.ToDouble(realizedCastingWest),Convert.ToDouble(item.CEPHE_ADET)))</td>
+                                        <td data-format="percentage">%@(Yuzdelik(Convert.ToDouble(remainingCastingWest),Convert.ToDouble(item.CEPHE_ADET)))</td>
+                                        <td data-format="percentage">%@(Yuzdelik(Convert.ToDouble(totalUpShippedWest),Convert.ToDouble(item.CEPHE_ADET)))</td>
+                                        <td data-format="percentage">%@(Yuzdelik(Convert.ToDouble(planingShippedWest),Convert.ToDouble(item.CEPHE_ADET)))</td>
+                                        <td data-format="percentage">%@(Yuzdelik(Convert.ToDouble(realizedCastingWest),Convert.ToDouble(item.CEPHE_ADET)))</td>
+                                        <td data-format="percentage">%@(Yuzdelik(Convert.ToDouble(remainingShippedWest),Convert.ToDouble(item.CEPHE_ADET)))</td>
+
+                                    </tr>
+                                }
+
+                                @foreach (var item in Model.Cepheler.Where(a => a.CEPHE_ADI == "ROOF" && a.BLOK_ADI == "COB"))
+                                {
+
+                                    <tr style="background-color:lightgrey">
+                                        <td rowspan="2" style="background-color: palegreen">COB-ROOF</td>
+                                        <td rowspan="2">@item.CEPHE_ADET @*Total Panel*@</td>
+                                        <td>@totalUpOrderRoof </td>
+                                        <td>@planingOrderRoof </td>
+                                        <td>@realizedOrderRoof </td>
+                                        <td>@remainingOrderRoof</td>
+                                        <td>@holdRoof</td>
+                                        <td>@totalUpCastingRoof </td>
+                                        <td>@planingCastingRoof</td>
+                                        <td>@realizedCastingRoof</td>
+                                        <td>@remainingCastingRoof</td>
+                                        <td>@totalUpShippedRoof</td>
+                                        <td>@planingShippedRoof</td>
+                                        <td>@realizedShippedRoof</td>
+                                        <td>@remainingShippedRoof</td>
+                                    </tr>
+                                    <tr style="background-color:lightgrey">
+
+                                        <td data-format="percentage">%@(Yuzdelik(Convert.ToDouble(totalUpOrderRoof), Convert.ToDouble(item.CEPHE_ADET)))</td>
+                                        <td data-format="percentage">%@(Yuzdelik(Convert.ToDouble(planingOrderRoof),Convert.ToDouble(item.CEPHE_ADET)))</td>
+                                        <td data-format="percentage">%@(Yuzdelik(Convert.ToDouble(realizedOrderRoof),Convert.ToDouble(item.CEPHE_ADET)))</td>
+                                        <td data-format="percentage">%@(Yuzdelik(Convert.ToDouble(remainingOrderRoof),Convert.ToDouble(item.CEPHE_ADET)))</td>
+                                        <td data-format="percentage">%@(Yuzdelik(Convert.ToDouble(holdRoof),Convert.ToDouble(item.CEPHE_ADET)))</td>
+                                        <td data-format="percentage">%@(Yuzdelik(Convert.ToDouble(totalUpCastingRoof), Convert.ToDouble(item.CEPHE_ADET)))</td>
+                                        <td data-format="percentage">%@(Yuzdelik(Convert.ToDouble(planingCastingRoof),Convert.ToDouble(item.CEPHE_ADET)))</td>
+                                        <td data-format="percentage">%@(Yuzdelik(Convert.ToDouble(realizedCastingRoof),Convert.ToDouble(item.CEPHE_ADET)))</td>
+                                        <td data-format="percentage">%@(Yuzdelik(Convert.ToDouble(remainingCastingRoof),Convert.ToDouble(item.CEPHE_ADET)))</td>
+                                        <td data-format="percentage">%@(Yuzdelik(Convert.ToDouble(totalUpShippedRoof),Convert.ToDouble(item.CEPHE_ADET)))</td>
+                                        <td data-format="percentage">%@(Yuzdelik(Convert.ToDouble(planingShippedRoof),Convert.ToDouble(item.CEPHE_ADET)))</td>
+                                        <td data-format="percentage">%@(Yuzdelik(Convert.ToDouble(realizedCastingRoof),Convert.ToDouble(item.CEPHE_ADET)))</td>
+                                        <td data-format="percentage">%@(Yuzdelik(Convert.ToDouble(remainingShippedRoof),Convert.ToDouble(item.CEPHE_ADET)))</td>
+
+                                    </tr>
+                                }
+
+                            </tbody>
+                            <tfoot class="text-center">
+                                <tr>
+                                    <td rowspan="2">TOTAL PIECES</td>
+                                    <td rowspan="2">@totalSayiCephe</td>
+                                    <td>@totalUpOrder</td>
+                                    <td>@totalPlaningOrder</td>
+                                    <td>@totalRealizedOrder</td>
+                                    <td>@totalRemaningOrder</td>
+                                    <td>0</td>
+                                    <td>@totalUpCasting</td>
+                                    <td>@totalPlanCasting</td>
+                                    <td>@totalRealizedCasting</td>
+                                    <td>@totalRemainingCasting</td>
+                                    <td>@totalUpShipped</td>
+                                    <td>@totalPlanShipped</td>
+                                    <td>@totalRealizedShipped</td>
+                                    <td>@totalRemainingShipped</td>
+
+                                </tr>
+                                <tr>
+                                    <td data-format="percentage">%@(Yuzdelik(Convert.ToDouble(totalUpOrder),Convert.ToDouble(totalSayiCephe)))</td>
+                                    <td data-format="percentage">%@(Yuzdelik(Convert.ToDouble(totalPlaningOrder),Convert.ToDouble(totalSayiCephe)))</td>
+                                    <td data-format="percentage">%@(Yuzdelik(Convert.ToDouble(totalRealizedOrder),Convert.ToDouble(totalSayiCephe)))</td>
+                                    <td data-format="percentage">%@(Yuzdelik(Convert.ToDouble(totalRemaningOrder),Convert.ToDouble(totalSayiCephe)))</td>
+                                    <td data-format="percentage">%0</td>
+                                    <td data-format="percentage">%@(Yuzdelik(Convert.ToDouble(totalUpCasting),Convert.ToDouble(totalSayiCephe)))</td>
+                                    <td data-format="percentage">%@(Yuzdelik(Convert.ToDouble(totalPlanCasting),Convert.ToDouble(totalSayiCephe)))</td>
+                                    <td data-format="percentage">%@(Yuzdelik(Convert.ToDouble(totalRealizedCasting),Convert.ToDouble(totalSayiCephe)))</td>
+                                    <td data-format="percentage">%@(Yuzdelik(Convert.ToDouble(totalRemainingCasting),Convert.ToDouble(totalSayiCephe)))</td>
+                                    <td data-format="percentage">%@(Yuzdelik(Convert.ToDouble(totalUpShipped),Convert.ToDouble(totalSayiCephe)))</td>
+                                    <td data-format="percentage">%@(Yuzdelik(Convert.ToDouble(totalPlanShipped),Convert.ToDouble(totalSayiCephe)))</td>
+                                    <td data-format="percentage">%@(Yuzdelik(Convert.ToDouble(totalRealizedShipped),Convert.ToDouble(totalSayiCephe)))</td>
+                                    <td data-format="percentage">%@(Yuzdelik(Convert.ToDouble(totalRemainingShipped),Convert.ToDouble(totalSayiCephe)))</td>
+
+                                </tr>
+                            </tfoot>
+
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+</div>
+
+
+<script>
+    function exportTableToExcel(tableId, fileName = '', formatPercentages = false) {
+        if (fileName === '') {
+            fileName = 'exported_table_' + new Date().toISOString().replace(/[\-\:\.]/g, '') + '.xlsx';
+        }
+
+        var tableSelect = document.getElementById(tableId);
+        var tableClone;
+
+        if (formatPercentages) {
+            tableClone = tableSelect.cloneNode(true);
+            var percentageCells = tableClone.querySelectorAll('[data-format="percentage"]');
+
+            percentageCells.forEach(function (cell) {
+                var value = parseFloat(cell.textContent.replace('%', '').trim()) / 100;
+                cell.textContent = value.toLocaleString(undefined, { style: 'percent', minimumFractionDigits: 2 });
+            });
+        } else {
+            tableClone = tableSelect;
+        }
+
+        var ws = XLSX.utils.table_to_sheet(tableClone);
+
+        for (var R = 0; R < tableSelect.rows.length; ++R) {
+            for (var C = 0; C < tableSelect.rows[R].cells.length; ++C) {
+                var cellAddress = { c: C, r: R };
+                var cellRef = XLSX.utils.encode_cell(cellAddress);
+
+                if (ws[cellRef] === undefined) continue;
+
+                var bgColor = tableSelect.rows[R].cells[C].style.backgroundColor;
+
+                if (bgColor) {
+                    if (!ws[cellRef].s) {
+                        ws[cellRef].s = {};
+                    }
+                    ws[cellRef].s.fill = {
+                        patternType: "solid",
+                        fgColor: { rgb: bgColor.replace('#', '') }
+                    };
+                }
+            }
+        }
+
+        var wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
+
+        XLSX.writeFile(wb, fileName);
+    }
+</script>
+

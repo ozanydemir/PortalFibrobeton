@@ -1,0 +1,222 @@
+﻿@*@model IEnumerable<PortalFibrobeton.Models.Entity.ARSIV_DOKUMAN>*@
+@model PortalFibrobeton.Models.Class.TeknikResimler
+@using System.Text.Json
+
+
+@{
+    ViewBag.Title = "FrameCizim";
+    Layout = "~/Views/Shared/_PeraLayout.cshtml";
+
+}
+
+
+<head>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.3/css/jquery.dataTables.min.css">
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.13.3/js/jquery.dataTables.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-3-typeahead/4.0.2/bootstrap3-typeahead.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-3-typeahead/4.0.2/bootstrap3-typeahead.min.js"></script>
+</head>
+
+<style>
+    .dataTables_filter {
+        float: right;
+    }
+</style>
+
+<script type="text/javascript">
+    var projeList = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.ProjeList));
+</script>
+
+<div class="container-fluid flex-grow-1 container-p-y">
+    <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">PeraFIBRO /</span> Teknik Resimler </h4>
+
+
+    @using (Html.BeginForm("FrameCizim", "Frame", FormMethod.Post))
+    {
+        <div class="row">
+            <div class="col-xl-6">
+                <h6 class="text-muted"></h6>
+                <div class="nav-align-top mb-4">
+                    <ul class="nav nav-pills mb-3" role="tablist">
+                        <li class="nav-item">
+                            <button type="button"
+                                    class="nav-link active"
+                                    role="tab"
+                                    data-bs-toggle="tab"
+                                    data-bs-target="#navs-pills-top-barkod"
+                                    aria-controls="navs-pills-top-barkod"
+                                    aria-selected="true">
+                                Barkod Numarasına Göre
+                            </button>
+                        </li>
+                        <li class="nav-item">
+                            <button type="button"
+                                    class="nav-link"
+                                    role="tab"
+                                    data-bs-toggle="tab"
+                                    data-bs-target="#navs-pills-top-poz"
+                                    aria-controls="navs-pills-top-poz"
+                                    aria-selected="false">
+                                Proje-Poz Numarasına Göre
+                            </button>
+                        </li>
+                    </ul>
+                    <div class="tab-content">
+                        <div class="tab-pane fade show active" id="navs-pills-top-barkod" role="tabpanel">
+                            <div class="col-md-12">
+                                <h5 class="card-header">Poz Barkod No / İş Emri No / Döküm Barkodu</h5>
+                                <div class="card-body">
+                                    <form id="frmBarkod" method="post" action="@Url.Action("FrameCizim","Frame")">
+                                        <div class="input-group mb-3">
+                                            <input type="text" class="form-control" name="barkod" />
+                                            <button type="submit" name="action" value="barkod" onclick="document.getElementById('frmBarkod').submit()" class="btn btn-primary">Ara</button>
+                                        </div>
+                                    </form>
+                                    <div>
+                                        @if (TempData["errorFrameCizim"] != null)
+                                        {
+                                            <p style="color:red">@TempData["errorFrameCizim"].ToString()</p>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="navs-pills-top-poz" role="tabpanel">
+                            <h5 class="card-header">Projeler</h5>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="input-group">
+                                        <input type="text" id="inputProjeOto" class="form-control" name="projeID" placeholder="Proje Seçin" autocomplete="off" />
+                                        <button type="submit" name="action" value="proje" onclick="location.href = '@Url.Action("GetProje","Frame")'" class="btn btn-primary">Filtrele</button>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-2">
+
+                                    </div>
+                                </div>
+                                <div>
+                                    @if (TempData["errorFrameCizim"] != null)
+                                    {
+                                        <p style="color:red">@TempData["errorFrameCizim"].ToString()</p>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+
+
+        <div class="row">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-header">Arşiv Dökümanları</h5>
+                    <div class="table-responsive text-nowrap">
+                        <table class="table" id="cizimler">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th style="color:#fff">Bölüm</th>
+                                    <th style="color:#fff">Arşiv Adı</th>
+                                    <th style="color:#fff">Oluşturan</th>
+                                    <th style="color:#fff">Oluşturma Tarihi</th>
+                                    <th style="color:#fff">Dosya</th>
+                                </tr>
+                            </thead>
+                            <tbody class="table-border-bottom-0">
+                                @if (Model.ArsivListe != null)
+                                {
+                                    foreach (var i in Model.ArsivListe)
+                                    {
+                                        <tr>
+                                            <td>@i.BOLUM</td>
+                                            <td>@i.ARSIV_ADI</td>
+                                            <td>@i.OLUSTURAN</td>
+                                            <td>@i.OLUSTURULMA_TARIH</td>
+                                            @if (i.DOSYA_YOLU.Substring(i.DOSYA_YOLU.Length - 3) == "pdf")
+                                            {
+                                                <td onclick="location.href = '@(Url.Action("Download", "Frame", new { refID = i.REF_NO }))'"><img style="cursor:pointer" src="~/Content/icons/pdf.png" /></td>
+                                            }
+                                            @if (i.DOSYA_YOLU.Substring(i.DOSYA_YOLU.Length - 3) == "txt")
+                                            {
+                                                <td onclick="location.href = '@(Url.Action("Download", "Frame", new { refID = i.REF_NO }))'"><img style="cursor:pointer" src="~/Content/icons/txt-file.png" /></td>
+                                            }
+                                            @if (i.DOSYA_YOLU.Substring(i.DOSYA_YOLU.Length - 4) == "xlsx")
+                                            {
+                                                <td onclick="location.href = '@(Url.Action("Download", "Frame", new { refID = i.REF_NO }))'"><img style="cursor:pointer" src="~/Content/icons/excel.png" /></td>
+                                            }
+                                            @if (i.DOSYA_YOLU.Substring(i.DOSYA_YOLU.Length - 3) == "png" || i.DOSYA_YOLU.Substring(i.DOSYA_YOLU.Length - 3) == "jpg" || i.DOSYA_YOLU.Substring(i.DOSYA_YOLU.Length - 4) == "jpeg")
+                                            {
+                                                <td onclick="location.href = '@(Url.Action("Download", "Frame", new { refID = i.REF_NO }))'"><img style="cursor:pointer" src="~/Content/icons/jpeg.png" /></td>
+                                            }
+                                            @if (i.DOSYA_YOLU.Substring(i.DOSYA_YOLU.Length - 3) == "dwg" || i.DOSYA_YOLU.Substring(i.DOSYA_YOLU.Length - 3) == "DWG")
+                                            {
+                                                <td onclick="location.href = '@(Url.Action("Download", "Frame", new {refID = i.REF_NO}))'"><img style="cursor:pointer" src="~/Content/icons/dwg-extension.png" /></td>
+                                            }
+                                        </tr>
+
+                                    }
+                                }
+
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    }
+
+</div>
+
+
+
+<script type="text/javascript">
+    var selectedProje;
+
+    $('#inputProjeOto').typeahead({
+        source: function (query, process) {
+            var options = [];
+            if (projeList != null) {
+                $.each(projeList, function (i, proje) {
+                    if (proje.PROJE_ADI.toLowerCase().indexOf(query.toLowerCase()) >= 0) {
+                        options.push(proje.PROJE_ADI);
+                    }
+                });
+            }
+            process(options);
+        },
+        updater: function (item) {
+            selectedProje = projeList.find(function (proje) {
+                return proje.PROJE_ADI == item;
+            });
+            return item;
+        }
+    });
+
+    $('form').submit(function () {
+        $('input[name="projeID"]').val(selectedProje.ID);
+    });
+</script>
+
+<script>
+    // Simple Initialisation
+    $('#cizimler').DataTable({
+        autoFill: true,
+        "language": {
+            "url": "https://cdn.datatables.net/plug-ins/1.10.20/i18n/Turkish.json"
+        },
+        dom: 'Qfrtip'
+    });
+</script>
+
+

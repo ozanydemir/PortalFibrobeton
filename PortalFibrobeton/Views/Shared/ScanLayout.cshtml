@@ -1,0 +1,309 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>3D-Tarama Takip | Fibrobeton</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <link href="~/Gp/Gp/pics/fibroFavicon.png" rel="icon">
+    <link href="~/quixlab-master/quixlab-master/plugins/pg-calendar/css/pignose.calendar.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="~/quixlab-master/quixlab-master/plugins/chartist/css/chartist.min.css">
+    <link rel="stylesheet" href="~/quixlab-master/quixlab-master/plugins/chartist-plugin-tooltips/css/chartist-plugin-tooltip.css">
+    <link href="~/quixlab-master/quixlab-master/css/style.css" rel="stylesheet">
+
+
+    <style>
+        .inactiveLink {
+            pointer-events: none;
+            cursor: default;
+        }
+
+        .headerCN {
+            transition: all 0.5s;
+            z-index: 997;
+            height: 60px;
+            box-shadow: 0px 2px 20px rgba(1, 41, 112, 0.1);
+            background-color: #fff;
+            padding-left: 20px;
+
+        }
+
+        .logo img {
+            max-height: 24px;
+            margin-right: 3px;
+        }
+
+        .logo span {
+            font-size: 24px;
+            font-weight: 700;
+            color: #012970;
+            font-family: "Nunito", sans-serif;
+        }
+
+    </style>
+</head>
+
+<body>
+
+    <div id="preloader">
+        <div class="loader">
+            <svg class="circular" viewBox="25 25 50 50">
+                <circle class="path" cx="50" cy="50" r="20" fill="none" stroke-width="3" stroke-miterlimit="10" />
+            </svg>
+        </div>
+    </div>
+
+    <div id="main-wrapper">
+        <div class="nav-header" id="headerCN" style="background-color:#fff;padding-top:20px;padding-left:20px">
+            <div class="d-flex align-items-center justify-content-between">
+                <a href="/Login/Departmanlar" class="logo d-flex align-items-center">
+                    <img src="~/Gp/Gp/pics/fibroFavicon.png" />
+                    <span class="d-none d-lg-block">PortalFibrobeton</span>
+                </a>
+                @*<i class="bi bi-list toggle-sidebar-btn"></i>*@
+            </div>
+        </div>
+        <div class="header">
+            <div class="header-content clearfix">
+
+                <div class="nav-control">
+                    <div class="hamburger">
+                        <span class="toggle-icon"><i class="icon-menu"></i></span>
+                    </div>
+                </div>
+                <div class="header-left">
+                    <div class="input-group icons">
+                        <div class="drop-down animated flipInX d-md-none">
+                            <form action="#">
+                                <input type="text" class="form-control" placeholder="Search">
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="header-right">
+                    <ul class="clearfix">
+                        <li class="icons dropdown d-none d-md-flex">
+                            <a href="javascript:void(0)" class="log-user" data-toggle="dropdown">
+                                <span>@Session["UserName"]</span>
+                            </a>
+                            <div class="drop-down dropdown-language animated fadeIn  dropdown-menu">
+                                <div class="dropdown-content-body">
+                                    <ul>
+                                        <li>
+                                            <a href="/Login/Departmanlar"><i class="icon-arrow-left"></i><span style="padding-left:10px">Geri Dön</span></a>
+                                        </li>
+                                        <li>
+                                            <a href="#" data-toggle="modal" data-target="#logout"><i class="icon-key"></i> <span style="padding-left:7px">Çıkış</span></a>
+                                        </li>
+
+                                    </ul>
+                                </div>
+                            </div>
+                        </li>
+                        @*<li class="icons dropdown">
+                            <div class="user-img c-pointer position-relative" data-toggle="dropdown">
+                                <img src="~/quixlab-master/quixlab-master/images/user/roger-berry-avatar-placeholder-11562991561rbrfzlng6h.png" />
+                            </div>
+                            <div class="drop-down dropdown-profile animated fadeIn dropdown-menu">
+                                <div class="dropdown-content-body">
+                                    <ul>
+                                        <li>
+                                            <a href="/HomePage/ChangePassword"><i class="icon-lock"></i> <span>Şifre Değiştir</span></a>
+                                        </li>
+                                        <li>
+                                            <a href="#" data-toggle="modal" data-target="#logout"><i class="icon-key"></i> <span>Çıkış</span></a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </li>*@
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="nk-sidebar">
+            <div class="nk-nav-scroll">
+                <ul class="metismenu" id="menu">
+                    <li class="nav-label">Menu</li>
+                    <li>
+                        <a href="/HomePage/Dashboard/" aria-expanded="false">
+                            <i class="icon-bade fa fa-home"></i><span class="nav-text">Ana Sayfa</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a class="has-arrow" href="javascript:void()" aria-expanded="false">
+                            <i class="icon-bade fa fa-plus-circle"></i><span class="nav-text">Tarama Ekle</span>
+                        </a>
+                        <ul aria-expanded="false">
+                            <li>
+                                <a class="has-arrow" href="javascript:void()" aria-expanded="false">
+                                    <i class="icon-bade fa fa-plus"></i><span class="nav-text">Yeni Tarama</span>
+                                </a>
+                                <ul aria-expanded="false">
+                                    <li>
+                                        <a class="has-arrow" href="javascript:void()" aria-expanded="false">
+                                            <i class="icon-bade fa fa-arrow-right"></i><span class="nav-text">Eski Pera</span>
+                                        </a>
+                                        <ul aria-expanded="false">
+                                            <li><a href="/AddScan/NewScan/"><i class="icon-bade fa fa-minus"></i><span class="nav-text">Kalıp Tarama</span></a></li>
+                                            <li><a href="/AddScan/NewScanConc"><i class="icon-bade fa fa-minus"></i><span class="nav-text">Panel Tarama</span></a></li>
+                                        </ul>
+                                    </li>
+                                    <li>
+                                        <a class="has-arrow" href="javascript:void()" aria-expanded="false">
+                                            <i class="icon-bade fa fa-arrow-right"></i><span class="nav-text">Yeni Pera</span>
+                                        </a>
+                                        <ul aria-expanded="false">
+                                            <li><a href="/TaramaEkleNP/AddScanNP/"><i class="icon-bade fa fa-minus"></i><span class="nav-text">Kalıp Tarama</span></a></li>
+                                            <li><a href="/TaramaEkleNP/AddScanConcNP"><i class="icon-bade fa fa-minus"></i><span class="nav-text">Panel Tarama</span></a></li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li>
+                                <a href="/UpdateScan/SelectScan/">
+                                    <i class="icon-bade fa fa-refresh"></i><span class="nav-text">Tarama Güncelle</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    
+                    <li>
+                        <a href="/ViewResults/ResViewDate/" aria-expanded="false">
+                            <i class="icon-bade fa fa-search"></i><span class="nav-text">Sonuç Görüntüle</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a class="has-arrow" href="javascript:void()" aria-expanded="false">
+                            <i class="icon-bade fa fa-pie-chart"></i><span class="nav-text">Raporlar</span>
+                        </a>
+                        <ul aria-expanded="false">
+                            <li>
+                                <a href="/Reports/Kalıphaneler">
+                                    <i class="icon-bade fa fa-industry"></i><span class="nav-text">Kalıphaneler</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="/Reports/Productivity">
+                                    <i class="icon-bade fa fa-line-chart"></i><span class="nav-text">Türlere Göre İnceleme</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="content-body">
+            @RenderBody()
+        </div>
+
+
+        <div class="modal fade" id="logout">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Çıkmak mı istiyorsunuz?</h5>
+                        <button type="button" class="close" data-dismiss="modal">
+                            <span>&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        Eğer 'Çıkış'a basarsanız hesabınız kapatılacak!
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">İptal</button>
+                        <a class="btn btn-primary" href="@Url.Action("Logout","Login")">Çıkış</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="changePass" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Şifre Değiştir</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Çıkış">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    @using (Html.BeginForm("ChangePassword", "HomePage", FormMethod.Post))
+                    {
+                        <div class="modal-body">
+                            <form>
+                                <div class="form-group">
+                                    <label for="pass" class="col-form-label">Eski Şifre:</label>
+                                    <input type="password" name="Password" class="form-control" id="pass" required />
+                                </div>
+                                <div class="form-group">
+                                    <label for="passNew" class="col-form-label">Yeni Şifre:</label>
+                                    <input type="password" name="newPassword" class="form-control" id="passNew" required />
+                                </div>
+                                <div class="form-group">
+                                    <label for="passNewAgain" class="col-form-label">Yeni Şifre Tekrar:</label>
+                                    <input type="password" name="Confirmpwd" class="form-control" id="passNewAgain" required />
+                                </div>
+                                @if (TempData["successPassword"] != null)
+                                {
+                                    @Html.Raw(TempData["successPassword"])
+                                }
+                                @if (TempData["errorPassword"] != null)
+                                {
+                                    @Html.Raw(TempData["errorPassword"])
+                                }
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">İptal</button>
+                            <a class="btn btn-primary" href="@Url.Action("ChangePassword","HomePage")">Değiştir</a>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script src="~/quixlab-master/quixlab-master/plugins/common/common.min.js"></script>
+    <script src="~/quixlab-master/quixlab-master/js/custom.min.js"></script>
+    <script src="~/quixlab-master/quixlab-master/js/settings.js"></script>
+    <script src="~/quixlab-master/quixlab-master/js/gleek.js"></script>
+    <script src="~/quixlab-master/quixlab-master/js/styleSwitcher.js"></script>
+    <script src="~/quixlab-master/quixlab-master/plugins/chart.js/Chart.bundle.min.js"></script>
+    <script src="~/quixlab-master/quixlab-master/plugins/circle-progress/circle-progress.min.js"></script>
+    <script src="~/quixlab-master/quixlab-master/plugins/d3v3/index.js"></script>
+    <script src="~/quixlab-master/quixlab-master/plugins/topojson/topojson.min.js"></script>
+    <script src="~/quixlab-master/quixlab-master/plugins/datamaps/datamaps.world.min.js"></script>
+    <script src="~/quixlab-master/quixlab-master/plugins/raphael/raphael.min.js"></script>
+    <script src="~/quixlab-master/quixlab-master/plugins/morris/morris.min.js"></script>
+    <script src="~/quixlab-master/quixlab-master/plugins/moment/moment.min.js"></script>
+    <script src="~/quixlab-master/quixlab-master/plugins/pg-calendar/js/pignose.calendar.min.js"></script>
+    <script src="~/quixlab-master/quixlab-master/plugins/chartist/js/chartist.min.js"></script>
+    <script src="~/quixlab-master/quixlab-master/plugins/chartist-plugin-tooltips/js/chartist-plugin-tooltip.min.js"></script>
+    <script src="~/quixlab-master/quixlab-master/js/dashboard/dashboard-1.js"></script>
+    <script src="~/quixlab-master/quixlab-master/plugins/common/common.min.js"></script>
+    <script src="~/quixlab-master/quixlab-master/js/custom.min.js"></script>
+    <script src="~/quixlab-master/quixlab-master/js/settings.js"></script>
+    <script src="~/quixlab-master/quixlab-master/js/gleek.js"></script>
+    <script src="~/quixlab-master/quixlab-master/js/styleSwitcher.js"></script>
+    <script src="~/quixlab-master/quixlab-master/plugins/moment/moment.js"></script>
+    <script src="~/quixlab-master/quixlab-master/plugins/bootstrap-material-datetimepicker/js/bootstrap-material-datetimepicker.js"></script>
+    <script src="~/quixlab-master/quixlab-master/plugins/clockpicker/dist/jquery-clockpicker.min.js"></script>
+    <script src="~/quixlab-master/quixlab-master/plugins/jquery-asColorPicker-master/libs/jquery-asColor.js"></script>
+    <script src="~/quixlab-master/quixlab-master/plugins/jquery-asColorPicker-master/libs/jquery-asGradient.js"></script>
+    <script src="~/quixlab-master/quixlab-master/plugins/jquery-asColorPicker-master/dist/jquery-asColorPicker.min.js"></script>
+    <script src="~/quixlab-master/quixlab-master/plugins/bootstrap-datepicker/bootstrap-datepicker.min.js"></script>
+    <script src="~/quixlab-master/quixlab-master/plugins/timepicker/bootstrap-timepicker.min.js"></script>
+    <script src="~/quixlab-master/quixlab-master/plugins/bootstrap-daterangepicker/daterangepicker.js"></script>
+    <script src="~/quixlab-master/quixlab-master/js/plugins-init/form-pickers-init.js"></script>
+
+</body>
+
+</html>

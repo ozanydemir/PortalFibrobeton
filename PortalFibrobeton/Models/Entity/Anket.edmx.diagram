@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="951b300d7ab74e7992d01af375f1c4a9" Name="Diagram1">
+        <EntityTypeShape EntityType="KatsayiHesabiModel.AnketCevaplar" Width="1.5" PointX="3" PointY="4.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="KatsayiHesabiModel.Anketler" Width="1.5" PointX="3.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="KatsayiHesabiModel.AnketProjeler" Width="1.5" PointX="0.75" PointY="4.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="KatsayiHesabiModel.AnketSonuclar" Width="1.5" PointX="6" PointY="4.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="KatsayiHesabiModel.AnketSorular" Width="1.5" PointX="0.75" PointY="8.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="KatsayiHesabiModel.sysdiagrams" Width="1.5" PointX="2.75" PointY="8.375" IsExpanded="true" />
+        <AssociationConnector Association="KatsayiHesabiModel.FK_AnketCevaplar_AnketProjeler" ManuallyRouted="false" />
+        <AssociationConnector Association="KatsayiHesabiModel.FK_AnketSonuclar_Anketler" ManuallyRouted="false" />
+        <AssociationConnector Association="KatsayiHesabiModel.FK_AnketSonuclar_AnketProjeler" ManuallyRouted="false" />
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>

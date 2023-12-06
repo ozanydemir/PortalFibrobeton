@@ -1,0 +1,1047 @@
+﻿@model PortalFibrobeton.Models.Class.PeraRaporlar.PeraV4ReportsViewModel
+
+@{
+    ViewBag.Title = "UrunIzlemeRaporu";
+    Layout = "~/Views/Shared/_PeraLayout.cshtml";
+}
+
+<head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link type="text/css" href="https://cdn.datatables.net/buttons/2.3.6/css/buttons.dataTables.min.css" rel="stylesheet" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css" />
+
+    <style>
+        .notStil.input:focus {
+            outline: none;
+        }
+
+        .form-control:focus {
+            border-color: inherit;
+            -webkit-box-shadow: none;
+            box-shadow: none;
+        }
+
+        button.fred {
+            background-color: limegreen;
+            border-color: limegreen;
+        }
+
+        button.pri {
+            background-color: royalblue;
+            border-color: steelblue
+        }
+
+        button.pedefe {
+            background-color: red;
+            border-color: firebrick;
+        }
+
+        button.kopya {
+            background-color: darkorange;
+            border-color: orange;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container-fluid flex-grow-1 container-p-y">
+        <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">PeraFIBRO /</span> Ürün İzleme Raporu</h4>
+
+        @using (Html.BeginForm("UrunIzlemeRaporu", "PeraV4Raporlar", FormMethod.Post, new { onsubmit = "return validateForm();" }))
+        {
+            <div class="row mt-3">
+                <div class="col-xxl-6">
+                    <div class="card mt-2">
+                        <div class="card-header d-flex align-items-center justify-content-between">
+                            <h5 class="mb-0">Ara & Filtrele</h5>
+                            <small class="text-muted float-end"></small>
+                        </div>
+                        <div class="card-body">
+                            <div class="row mt-3 input-group">
+                                <label class="col-sm-2 col-form-label">Başlangıç</label>
+                                <input type="date" class="form-control datepicker" name="bas" style="cursor:pointer" />
+                                <label class="col-sm-2 col-form-label">Poz No:</label>
+                                <input type="text" class="form-control" name="poz" />
+                            </div>
+                            <div class="row mt-3 input-group">
+                                <label class="col-sm-2 col-form-label">Bitiş</label>
+                                <input type="date" class="form-control datepicker" name="bit" style="cursor:pointer" />
+                                <label class="col-sm-2 col-form-label">Dök. Barkod:</label>
+                                <input type="text" class="form-control" name="barkod" />
+                            </div>
+                            <div class="row mt-3 input-group">
+                                <label class="col-sm-2 col-form-label">Proje</label>
+                                <div class="col-10">
+                                    <select class="form-select selectpicker" name="proje">
+                                        <option selected></option>
+                                        @if (Model.Projeler != null)
+                                        {
+                                            foreach (var item in Model.Projeler)
+                                            {
+                                                <option>@item.PROJE_ADI</option>
+                                            }
+                                        }
+
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="mt-3 text-center">
+                                <button type="submit" class="btn btn-primary">Ara</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mt-3">
+                <div class="card mt-5">
+                    <h4 class="card-title mt-4">Ürün İzleme Raporu</h4>
+                    <div class="card-body">
+                        <div class="table-responsive text-nowrap">
+                            <table id="urunIzleme" class="table table-striped">
+                                <thead class="table-dark">
+                                    <tr style="color:white">
+                                        <th style="color:#fff">Döküm Barkod</th>
+                                        <th style="color:#fff">Poz No</th>
+                                        <th style="color:#fff">Plan Döküm Tarih</th>
+                                        <th style="color:#fff">Ürün Durumu</th>
+                                        <th style="color:#fff">Birim KG</th>
+                                        <th style="color:#fff">Hat</th>
+                                        <th style="color:#fff">Döküm Ekibi</th>
+                                        <th style="color:#fff">V Ürün(m2)</th>
+                                        <th style="color:#fff">Frame Barkod</th>
+                                        <th style="color:#fff">Kür Süre Sonu</th>
+                                        <th style="color:#fff">Blok Adı</th>
+                                        <th style="color:#fff">Cephe Adı</th>
+                                        <th style="color:#fff">Cephe Kat</th>
+                                        <th style="color:#fff">Döküme Başlandı</th>
+                                        <th style="color:#fff">Döküm Bitti</th>
+                                        <th style="color:#fff">Gevşetme Yapıldı</th>
+                                        <th style="color:#fff">Gevşetme Zamanı</th>
+                                        <th style="color:#fff">Gevşetme Yapan</th>
+                                        <th style="color:#fff">Söküldü</th>
+                                        <th style="color:#fff">Çatlak Kontrol</th>
+                                        <th style="color:#fff">1.Yüzey İş. Başladı</th>
+                                        <th style="color:#fff">1.Yüzey İş. Başlama Zamanı</th>
+                                        <th style="color:#fff">1.Yüzey İş. Başladı Yapan</th>
+                                        <th style="color:#fff">1.Yüzey İş. Tamam</th>
+                                        <th style="color:#fff">1.Yüzey İş. Tamam Zamanı</th>
+                                        <th style="color:#fff">1.Yüzey İş. Tamam Yapan</th>
+                                        <th style="color:#fff">2.Yüzey İş. Başladı</th>
+                                        <th style="color:#fff">2.Yüzey İş. Başlama Zamanı</th>
+                                        <th style="color:#fff">2.Yüzey İş. Başladı Yapan</th>
+                                        <th style="color:#fff">2.Yüzey İş. Tamam</th>
+                                        <th style="color:#fff">2.Yüzey İş. Tamam Zamanı</th>
+                                        <th style="color:#fff">2.Yüzey İş. Tamam Yapan</th>
+                                        <th style="color:#fff">3.Yüzey İş. Başladı</th>
+                                        <th style="color:#fff">3.Yüzey İş. Başlama Zamanı</th>
+                                        <th style="color:#fff">3.Yüzey İş. Başladı Yapan</th>
+                                        <th style="color:#fff">3.Yüzey İş. Tamam</th>
+                                        <th style="color:#fff">3.Yüzey İş. Tamam Zamanı</th>
+                                        <th style="color:#fff">3.Yüzey İş. Tamam Yapan</th>
+                                        <th style="color:#fff">K.S.D Yüzey işlemi Yapıldı</th>
+                                        <th style="color:#fff">Tamir/Bakım Bekliyor</th>
+                                        <th style="color:#fff">Tamir/Bakım Bek. Yapan</th>
+                                        <th style="color:#fff">Tamir/Bakım Bek. Zaman</th>
+                                        <th style="color:#fff">Üretim Kontrol Onayı</th>
+                                        <th style="color:#fff">Kalite Son Onay</th>
+                                        <th style="color:#fff">3D Tarama Yapıldı</th>
+                                        <th style="color:#fff">3D Tarama Yapan</th>
+                                        <th style="color:#fff">3D Tarama Zamanı</th>
+                                        <th style="color:#fff">Sevk Sahasına Alındı</th>
+                                        <th style="color:#fff">K.S.D Sevk Sahasına Alındı</th>
+                                        <th style="color:#fff">Y.I.T Sevk Saha Alındı</th>
+                                        <th style="color:#fff">Sandık Barkodu</th>
+                                        <th style="color:#fff">Sevk Edildi</th>
+                                        <th style="color:#fff">Sevk No</th>
+                                        <th style="color:#fff">K.S.D Sevk Onayı</th>
+                                        <th style="color:#fff">Şantiyeye İndirildi</th>
+                                        <th style="color:#fff">Şantiyeye İndiren</th>
+                                        <th style="color:#fff">Şantiye İndirilme Zamanı</th>
+                                        <th style="color:#fff">Montaj Yapıldı</th>
+                                        <th style="color:#fff">Müşteri Sevk Plan No</th>
+                                        <th style="color:#fff">Depo Adı</th>
+                                        <th style="color:#fff">Raf Konumu</th>
+                                        <th style="color:#fff">Ürün Hold</th>
+                                        <th style="color:#fff">Ürün Hold Yapan</th>
+                                        <th style="color:#fff">Ürün Hold Zaman</th>
+                                        <th style="color:#fff">Ürün Karantina</th>
+                                        <th style="color:#fff">Ürün Karantina Yapan</th>
+                                        <th style="color:#fff">Ürün Karantina Zaman</th>
+                                        <th style="color:#fff">Ürün Hurda</th>
+                                        <th style="color:#fff">Ürün Hurda Yapan</th>
+                                        <th style="color:#fff">Ürün Hurda Zaman</th>
+                                        <th style="color:#fff">İmha Bekliyor</th>
+                                        <th style="color:#fff">İmha Bekliyor Yapan</th>
+                                        <th style="color:#fff">İmha Bekliyor Zaman</th>
+                                        <th style="color:#fff">Fab. Kabul Bekliyor</th>
+                                        <th style="color:#fff">Fab. Kabul Bekliyor Yapan</th>
+                                        <th style="color:#fff">Fab. Kabul Bekliyor Zaman</th>
+                                        <th style="color:#fff">Planı Oluşturan</th>
+                                        <th style="color:#fff">Plan Oluşturma Zamanı</th>
+                                        <th style="color:#fff">Ağırlık Sorunlu</th>
+                                        <th style="color:#fff">Poz Türü</th>
+                                        <th style="color:#fff">Sandık Boy</th>
+                                        <th style="color:#fff">Sandık En</th>
+                                        <th style="color:#fff">Renk</th>
+                                        <th style="color:#fff">Malzeme Yüzeyi</th>
+                                        <th style="color:#fff">Yüzey İşlemi Var</th>
+                                        <th style="color:#fff">Malzeme Grup</th>
+                                        <th style="color:#fff">Malzeme Cinsi</th>
+                                        <th style="color:#fff">Malzeme Adı</th>
+                                        <th style="color:#fff">Poz Açıklaması</th>
+                                        <th style="color:#fff">Poz Adı</th>
+                                        <th style="color:#fff">Poz Barkod</th>
+                                        <th style="color:#fff">Birim</th>
+                                        <th style="color:#fff">Siparis M2</th>
+                                        <th style="color:#fff">Birim Hacim M2</th>
+                                        <th style="color:#fff">Döküm M2</th>
+                                        <th style="color:#fff">Mt</th>
+                                        <th style="color:#fff">Öng. Ürün Ağırlık</th>
+                                        <th style="color:#fff">Montajsız</th>
+                                        <th style="color:#fff">Poz İptal</th>
+                                        <th style="color:#fff">Poz Hold</th>
+                                        <th style="color:#fff">Son Rev No</th>
+                                        <th style="color:#fff">Report Code</th>
+                                        <th style="color:#fff">Frame Durumu</th>
+                                        <th style="color:#fff">Galvanize Gitmeli</th>
+                                        <th style="color:#fff">Frame Türü</th>
+                                        <th style="color:#fff">1.Yüzey İşlemi</th>
+                                        <th style="color:#fff">2.Yüzey İşlemi</th>
+                                        <th style="color:#fff">3.Yüzey İşlemi</th>
+                                        <th style="color:#fff">4.Yüzey İşlemi</th>
+                                        <th style="color:#fff">5.Yüzey İşlemi</th>
+                                        <th style="color:#fff">Model Uygunluk Onayı</th>
+                                        <th style="color:#fff">Sipariş Türü</th>
+                                        <th style="color:#fff">Son Sipariş</th>
+                                        <th style="color:#fff">Üretim Plan Ad.</th>
+                                        <th style="color:#fff">Kalan Plan Ad.</th>
+                                        <th style="color:#fff">Üretim Ad.</th>
+                                        <th style="color:#fff">Sevk Ad.</th>
+                                        <th style="color:#fff">Montaj Ad.</th>
+                                        <th style="color:#fff">Revizyon Artı (+)</th>
+                                        <th style="color:#fff">Revizyon Eksi (-)</th>
+                                        <th style="color:#fff">Sipariş Tarih</th>
+                                        <th style="color:#fff">Sipariş No</th>
+                                        <th style="color:#fff">Döküm İş Emri No</th>
+                                        <th style="color:#fff">İş Emri Tarih</th>
+                                        <th style="color:#fff">İş Emri Barkod</th>
+                                        <th style="color:#fff">İş Emri Durum</th>
+                                        <th style="color:#fff">Kalıp Durumu</th>
+                                        <th style="color:#fff">Kalıphaneler</th>
+                                        <th style="color:#fff">Kalıphaneler İmalat Durumu</th>
+                                        <th style="color:#fff">Döküm Holu</th>
+                                        <th style="color:#fff">Döküm Ömrü Ad.</th>
+                                        <th style="color:#fff">Toplam Döküm Ad.</th>
+                                        <th style="color:#fff">Klan Döküm Ömrü Ad.</th>
+                                        <th style="color:#fff">Öng. Kalıp Hazır Ol. Tarih</th>
+                                        <th style="color:#fff">Öng. Döküm Başlama Zamanı</th>
+                                        <th style="color:#fff">Kalıp Depo</th>
+                                        <th style="color:#fff">Kalıp Depo Konumu</th>
+                                        <th style="color:#fff">Sandık Barkodu</th>
+                                        <th style="color:#fff">Sandıklama Tarih</th>
+                                        <th style="color:#fff">Sandık/Palet Adı</th>
+                                        <th style="color:#fff">Sandık Toplam (Kg)</th>
+                                        <th style="color:#fff">En</th>
+                                        <th style="color:#fff">Boy</th>
+                                        <th style="color:#fff">Sandık Yükseklik</th>
+                                        <th style="color:#fff">Sandık(m2)</th>
+                                        <th style="color:#fff">Plan Sevk Tarih</th>
+                                        <th style="color:#fff">Sevk No</th>
+                                        <th style="color:#fff">İrsaliye No</th>
+                                        <th style="color:#fff">Konteyner No</th>
+                                        <th style="color:#fff">Proje Durumu</th>
+                                        <th style="color:#fff">Proje Kodu</th>
+                                        <th style="color:#fff">Proje Adı</th>
+                                        <th style="color:#fff">İlk Sipariş Miktar</th>
+                                        <th style="color:#fff">Şantiye Şefi</th>
+                                        <th style="color:#fff">Proje Yöneticisi</th>
+                                        <th style="color:#fff">Proje Müdürü</th>
+                                        <th style="color:#fff">Frame Birim KG</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @if (Model != null)
+                                    {
+                                        foreach (var item in Model.UrunIzleme)
+                                        {
+                                            <tr>
+                                                <td>@item.DOKUM_BARKOD</td>
+                                                <td>@item.POZ_NO</td>
+                                                <td>@(item.PLAN_DOKUM_TARIH.HasValue ? item.PLAN_DOKUM_TARIH.Value.ToString("dd/MM/yyyy") : "")</td>
+                                                <td>@item.URUN_DURUMU</td>
+                                                <td>@item.BIRIM_KG</td>
+                                                <td>@item.HAT</td>
+                                                <td>@item.DOKUM_EKIP</td>
+                                                <td>
+                                                    @if (item.V_URUN_M2_KULLAN == true)
+                                                    {
+                                                        <img src="~/Content/icons/ok_30px.png" />
+                                                    }
+                                                    else
+                                                    {
+                                                        <img src="~/Content/icons/cancel_30px.png" />
+                                                    }
+                                                </td>
+
+
+
+                                                <td>@item.FRAME_BARKOD</td>
+                                                <td>@(item.KUR_SURE_SONU.HasValue ? item.KUR_SURE_SONU.Value.ToString("dd/MM/yyyy") : "")</td>
+                                                <td>@item.BLOK_ADI</td>
+                                                <td>@item.CEPHE_ADI</td>
+                                                <td>@item.CEPHE_KAT_ADI</td>
+                                                <td>
+                                                    @if (item.DOKUME_BASLANDI == true)
+                                                    {
+                                                        <img src="~/Content/icons/ok_30px.png" />
+                                                    }
+                                                    else
+                                                    {
+                                                        <img src="~/Content/icons/cancel_30px.png" />
+                                                    }
+                                                </td>
+                                                <td>
+                                                    @if (item.DOKULDU == true)
+                                                    {
+                                                        <img src="~/Content/icons/ok_30px.png" />
+                                                    }
+                                                    else
+                                                    {
+                                                        <img src="~/Content/icons/cancel_30px.png" />
+                                                    }
+                                                </td>                                               
+                                                <td>
+                                                    @if (item.GEVSETME_YAPILDI == true)
+                                                    {
+                                                        <img src="~/Content/icons/ok_30px.png" />
+                                                    }
+                                                    else
+                                                    {
+                                                        <img src="~/Content/icons/cancel_30px.png" />
+                                                    }
+                                                </td>
+                                                <td>@(item.GEVSETME_ZAMANI.HasValue ? item.GEVSETME_ZAMANI.Value.ToString("dd/MM/yyyy") : "")</td>
+                                                <td>@item.GEVSETME_YAPAN</td>
+                                                <td>
+                                                    @if (item.SOKULDU == true)
+                                                    {
+                                                        <img src="~/Content/icons/ok_30px.png" />
+                                                    }
+                                                    else
+                                                    {
+                                                        <img src="~/Content/icons/cancel_30px.png" />
+                                                    }
+                                                </td>
+                                                <td>
+                                                    @if (item.CATLAK_KONTROL_ONAY == true)
+                                                    {
+                                                        <img src="~/Content/icons/ok_30px.png" />
+                                                    }
+                                                    else
+                                                    {
+                                                        <img src="~/Content/icons/cancel_30px.png" />
+                                                    }
+                                                </td>
+                                                <td>
+                                                    @if (item.YUZEY_ISLEM_1_BASLA == true)
+                                                    {
+                                                        <img src="~/Content/icons/ok_30px.png" />
+                                                    }
+                                                    else
+                                                    {
+                                                        <img src="~/Content/icons/cancel_30px.png" />
+                                                    }
+                                                </td>
+                                                <td>@(item.YUZEY_ISLEM_1_BASLA_ZAMAN.HasValue ? item.YUZEY_ISLEM_1_BASLA_ZAMAN.Value.ToString("dd/MM/yyyy") : "")</td>
+                                                <td>@item.YUZEY_ISLEM_1_BASLA_YAPAN</td>
+                                                <td>
+                                                    @if (item.YUZEY_ISLEM_1_TAMAM == true)
+                                                    {
+                                                        <img src="~/Content/icons/ok_30px.png" />
+                                                    }
+                                                    else
+                                                    {
+                                                        <img src="~/Content/icons/cancel_30px.png" />
+                                                    }
+                                                </td>
+                                                <td>@(item.YUZEY_ISLEM_1_ZAMAN.HasValue ? item.YUZEY_ISLEM_1_ZAMAN.Value.ToString("dd/MM/yyyy") : "")</td>
+                                                <td>@item.YUZEY_ISLEM_1_YAPAN</td>
+                                                <td>
+                                                    @if (item.YUZEY_ISLEM_2_BASLA == true)
+                                                    {
+                                                        <img src="~/Content/icons/ok_30px.png" />
+                                                    }
+                                                    else
+                                                    {
+                                                        <img src="~/Content/icons/cancel_30px.png" />
+                                                    }
+                                                </td>
+                                                <td>@(item.YUZEY_ISLEM_2_BASLA_ZAMAN.HasValue ? item.YUZEY_ISLEM_2_BASLA_ZAMAN.Value.ToString("dd/MM/yyyy") : "")</td>
+                                                <td>@item.YUZEY_ISLEM_2_BASLA_YAPAN</td>
+                                                <td>
+                                                    @if (item.YUZEY_ISLEM_2_TAMAM == true)
+                                                    {
+                                                        <img src="~/Content/icons/ok_30px.png" />
+                                                    }
+                                                    else
+                                                    {
+                                                        <img src="~/Content/icons/cancel_30px.png" />
+                                                    }
+                                                </td>
+                                                <td>@(item.YUZEY_ISLEM_2_ZAMAN.HasValue ? item.YUZEY_ISLEM_2_ZAMAN.Value.ToString("dd/MM/yyyy") : "")</td>
+                                                <td>@item.YUZEY_ISLEM_2_YAPAN</td>
+                                                <td>
+                                                    @if (item.YUZEY_ISLEM_3_BASLA == true)
+                                                    {
+                                                        <img src="~/Content/icons/ok_30px.png" />
+                                                    }
+                                                    else
+                                                    {
+                                                        <img src="~/Content/icons/cancel_30px.png" />
+                                                    }
+                                                </td>
+                                                <td>@(item.YUZEY_ISLEM_3_BASLA_ZAMAN.HasValue ? item.YUZEY_ISLEM_3_BASLA_ZAMAN.Value.ToString("dd/MM/yyyy") : "")</td>
+                                                <td>@item.YUZEY_ISLEM_3_BASLA_YAPAN</td>
+                                                <td>
+                                                    @if (item.YUZEY_ISLEM_3_TAMAM == true)
+                                                    {
+                                                        <img src="~/Content/icons/ok_30px.png" />
+                                                    }
+                                                    else
+                                                    {
+                                                        <img src="~/Content/icons/cancel_30px.png" />
+                                                    }
+                                                </td>
+                                                <td>@(item.YUZEY_ISLEM_3_ZAMAN.HasValue ? item.YUZEY_ISLEM_3_ZAMAN.Value.ToString("dd/MM/yyyy") : "")</td>
+                                                <td>@item.YUZEY_ISLEM_3_YAPAN</td>
+                                                <td>
+                                                    @if (item.K_S_D_YUZEY_ISLEMI_YAPILDI == true)
+                                                    {
+                                                        <img src="~/Content/icons/ok_30px.png" />
+                                                    }
+                                                    else
+                                                    {
+                                                        <img src="~/Content/icons/cancel_30px.png" />
+                                                    }
+                                                </td>
+                                                <td>
+                                                    @if (item.TAMIR_BAKIM_BEKLIYOR == true)
+                                                    {
+                                                        <img src="~/Content/icons/ok_30px.png" />
+                                                    }
+                                                    else
+                                                    {
+                                                        <img src="~/Content/icons/cancel_30px.png" />
+                                                    }
+                                                </td>
+                                                <td>@item.TAMIR_BAKIM_BEK_YAPAN</td>
+                                                <td>@(item.TAMIR_BAKIM_BEK_ZAMAN.HasValue ? item.TAMIR_BAKIM_BEK_ZAMAN.Value.ToString("dd/MM/yyyy") : "")</td>
+                                                <td>
+                                                    @if (item.URETIM_KONTROL_ONAY == true)
+                                                    {
+                                                        <img src="~/Content/icons/ok_30px.png" />
+                                                    }
+                                                    else
+                                                    {
+                                                        <img src="~/Content/icons/cancel_30px.png" />
+                                                    }
+                                                </td>
+                                                <td>
+                                                    @if (item.KALITE_SON_ONAY == true)
+                                                    {
+                                                        <img src="~/Content/icons/ok_30px.png" />
+                                                    }
+                                                    else
+                                                    {
+                                                        <img src="~/Content/icons/cancel_30px.png" />
+                                                    }
+                                                </td>
+                                                <td>
+                                                    @if (item.C3D_TARAMA_YAPILDI == true)
+                                                    {
+                                                        <img src="~/Content/icons/ok_30px.png" />
+                                                    }
+                                                    else
+                                                    {
+                                                        <img src="~/Content/icons/cancel_30px.png" />
+                                                    }
+                                                </td>
+                                                <td>@item.C3D_TARAMA_YAPAN</td>
+                                                <td>@(item.C3D_TARAMA_ZAMAN.HasValue ? item.C3D_TARAMA_ZAMAN.Value.ToString("dd/MM/yyyy") : "")</td>
+                                                <td>
+                                                    @if (item.SEVK_SAHA_ALINDI == true)
+                                                    {
+                                                        <img src="~/Content/icons/ok_30px.png" />
+                                                    }
+                                                    else
+                                                    {
+                                                        <img src="~/Content/icons/cancel_30px.png" />
+                                                    }
+                                                </td>
+                                                <td>
+                                                    @if (item.K_S_D_SEVK_SAHA_ALINDI == true)
+                                                    {
+                                                        <img src="~/Content/icons/ok_30px.png" />
+                                                    }
+                                                    else
+                                                    {
+                                                        <img src="~/Content/icons/cancel_30px.png" />
+                                                    }
+                                                </td>
+                                                <td>
+                                                    @if (item.Y_I_T_SEVK_SAHA_ALINDI == true)
+                                                    {
+                                                        <img src="~/Content/icons/ok_30px.png" />
+                                                    }
+                                                    else
+                                                    {
+                                                        <img src="~/Content/icons/cancel_30px.png" />
+                                                    }
+                                                </td>
+                                                <td>@item.SANDIK_BARKODU</td>
+                                                <td>
+                                                    @if (item.SEVK_EDILDI == true)
+                                                    {
+                                                        <img src="~/Content/icons/ok_30px.png" />
+                                                    }
+                                                    else
+                                                    {
+                                                        <img src="~/Content/icons/cancel_30px.png" />
+                                                    }
+                                                </td>
+                                                <td>@item.SEVK_NO</td>
+                                                <td>
+                                                    @if (item.K_S_D_SEVK_ONAY == true)
+                                                    {
+                                                        <img src="~/Content/icons/ok_30px.png" />
+                                                    }
+                                                    else
+                                                    {
+                                                        <img src="~/Content/icons/cancel_30px.png" />
+                                                    }
+                                                </td>
+                                                <td>
+                                                    @if (item.SANTIYE_SEVK_KABUL == true)
+                                                    {
+                                                        <img src="~/Content/icons/ok_30px.png" />
+                                                    }
+                                                    else
+                                                    {
+                                                        <img src="~/Content/icons/cancel_30px.png" />
+                                                    }
+                                                </td>
+                                                @*Şantiyeye İndirildi Bakılacak*@
+                                                <td>@item.SANTIYE_SEVK_KABUL_EDEN</td>
+                                                <td>@(item.SANTIYE_SEVK_KABUL_TARIH.HasValue ? item.SANTIYE_SEVK_KABUL_TARIH.Value.ToString("dd/MM/yyyy") : "")</td>
+                                                <td>
+                                                    @if (item.MONTAJ_YAPILDI == true)
+                                                    {
+                                                        <img src="~/Content/icons/ok_30px.png" />
+                                                    }
+                                                    else
+                                                    {
+                                                        <img src="~/Content/icons/cancel_30px.png" />
+                                                    }
+                                                </td>
+                                                <td>@item.MUSTERI_SEVK_PLAN_NO</td>
+                                                <td>@item.DEPO_ADI</td>
+                                                <td>@item.RAF_KONUM</td>
+                                                <td>
+                                                    @if (item.URUN_HOLD == true)
+                                                    {
+                                                        <img src="~/Content/icons/ok_30px.png" />
+                                                    }
+                                                    else
+                                                    {
+                                                        <img src="~/Content/icons/cancel_30px.png" />
+                                                    }
+                                                </td>
+                                                <td>@item.URUN_HOLD_YAPAN</td>
+                                                <td>@(item.URUN_HOLD_ZAMAN.HasValue ? item.URUN_HOLD_ZAMAN.Value.ToString("dd/MM/yyyy") : "")</td>
+                                                <td>
+                                                    @if (item.URUN_KARANTINA == true)
+                                                    {
+                                                        <img src="~/Content/icons/ok_30px.png" />
+                                                    }
+                                                    else
+                                                    {
+                                                        <img src="~/Content/icons/cancel_30px.png" />
+                                                    }
+                                                </td>
+                                                <td>@item.URUN_KARANTINA_YAPAN</td>
+                                                <td>@(item.URUN_KARANTINA_ZAMAN.HasValue ? item.URUN_KARANTINA_ZAMAN.Value.ToString("dd/MM/yyyy") : "")</td>
+                                                <td>
+                                                    @if (item.URUN_HURDA == true)
+                                                    {
+                                                        <img src="~/Content/icons/ok_30px.png" />
+                                                    }
+                                                    else
+                                                    {
+                                                        <img src="~/Content/icons/cancel_30px.png" />
+                                                    }
+                                                </td>
+                                                <td>@item.URUN_HURDA_YAPAN</td>
+                                                <td>@(item.URUN_HURDA_ZAMAN.HasValue ? item.URUN_HURDA_ZAMAN.Value.ToString("dd/MM/yyyy") : "")</td>
+                                                <td>
+                                                    @if (item.IMHA_BEKLIYOR == true)
+                                                    {
+                                                        <img src="~/Content/icons/ok_30px.png" />
+                                                    }
+                                                    else
+                                                    {
+                                                        <img src="~/Content/icons/cancel_30px.png" />
+                                                    }
+                                                </td>
+                                                <td>@item.IMHA_BEKLIYOR_YAPAN</td>
+                                                <td>@(item.IMHA_BEKLIYOR_ZAMAN.HasValue ? item.IMHA_BEKLIYOR_ZAMAN.Value.ToString("dd/MM/yyyy") : "")</td>
+                                                <td>
+                                                    @if (item.FABRIKAYA_KABUL_BEKLIYOR == true)
+                                                    {
+                                                        <img src="~/Content/icons/ok_30px.png" />
+                                                    }
+                                                    else
+                                                    {
+                                                        <img src="~/Content/icons/cancel_30px.png" />
+                                                    }
+                                                </td>
+                                                <td>@item.FAB_KAB_BEK_YAPAN</td>
+                                                <td>@(item.FAB_KAB_BEK_ZAMAN.HasValue ? item.FAB_KAB_BEK_ZAMAN.Value.ToString("dd/MM/yyyy") : "")</td>
+                                                <td>@item.OLUSTURAN</td>
+                                                <td>@item.PLAN_OLUSTUR_TARIH</td>
+                                                <td>
+                                                    @if (item.AGIRLIK_SORUNLU == true)
+                                                    {
+                                                        <img src="~/Content/icons/ok_30px.png" />
+                                                    }
+                                                    else
+                                                    {
+                                                        <img src="~/Content/icons/cancel_30px.png" />
+                                                    }
+                                                </td>
+                                                <td>@item.POZ_TURU</td>
+                                                <td>@item.BOY</td>
+                                                <td>@item.EN</td>
+                                                <td>@item.RENK</td>
+                                                <td>@item.MALZEME_YUZEYI</td>
+                                                <td></td>
+                                                @*Yüzey İşlemi Var Bakılacak*@
+                                                <td>@item.MALZEME_GRUP</td>
+                                                <td>@item.MALZEME_CINSI</td>
+                                                <td>@item.MALZEME_ADI</td>
+                                                <td>@item.POZ_ACIKLAMASI</td>
+                                                <td>@item.POZ_ADI</td>
+                                                <td>@item.POZ_BARKOD</td>
+                                                <td>@item.BIRIM</td>
+                                                <td>@item.SIPARIS_M2</td>
+                                                <td>@item.BIRIM_HACIM</td>
+                                                <td>@item.DOKUM_M2</td>
+                                                <td>@item.MT</td>
+                                                <td>@item.ONGORULEN_URUN_AGIRLIK</td>
+                                                <td>
+                                                    @if (item.MONTAJSIZ == true)
+                                                    {
+                                                        <img src="~/Content/icons/ok_30px.png" />
+                                                    }
+                                                    else
+                                                    {
+                                                        <img src="~/Content/icons/cancel_30px.png" />
+                                                    }
+                                                </td>
+                                                <td>
+                                                    @if (item.POZ_IPTAL == true)
+                                                    {
+                                                        <img src="~/Content/icons/ok_30px.png" />
+                                                    }
+                                                    else
+                                                    {
+                                                        <img src="~/Content/icons/cancel_30px.png" />
+                                                    }
+                                                </td>
+                                                <td>
+                                                    @if (item.POZ_HOLD == true)
+                                                    {
+                                                        <img src="~/Content/icons/ok_30px.png" />
+                                                    }
+                                                    else
+                                                    {
+                                                        <img src="~/Content/icons/cancel_30px.png" />
+                                                    }
+                                                </td>
+                                                <td>@item.SON_REV_NO</td>
+                                                <td>@item.REPORT_CODE</td>
+                                                <td>@item.FRAME_DURUMU</td>
+                                                <td>
+                                                    @if (item.GALVENIZE_GITMELI == true)
+                                                    {
+                                                        <img src="~/Content/icons/ok_30px.png" />
+                                                    }
+                                                    else
+                                                    {
+                                                        <img src="~/Content/icons/cancel_30px.png" />
+                                                    }
+                                                </td>
+                                                <td>@item.FRAME_TURU</td>
+                                                <td>@item.YUZEY_ISLEM_1</td>
+                                                <td>@item.YUZEY_ISLEM_2</td>
+                                                <td>@item.YUZEY_ISLEM_3</td>
+                                                <td>@item.YUZEY_ISLEM_4</td>
+                                                <td>@item.YUZEY_ISLEM_5</td>
+                                                <td>
+                                                    @if (item.MODEL_UYGUNLUK == true)
+                                                    {
+                                                        <img src="~/Content/icons/ok_30px.png" />
+                                                    }
+                                                    else
+                                                    {
+                                                        <img src="~/Content/icons/cancel_30px.png" />
+                                                    }
+                                                </td>
+                                                <td>@item.SIPARIS_TURU</td>
+                                                @*Bakılacak buna*@
+                                                <td>@item.SON_SIPARIS_MIKTAR</td>
+                                                <td>@item.POZ_PLAN_MIKTAR</td>
+                                                <td>@item.KALAN_DOKUM_PLAN_AD</td>
+                                                <td>@item.URETIM_MIKTAR</td>
+                                                <td>@item.SEVK_MIKTAR</td>
+                                                <td>@item.MONTAJ_MIKTAR</td>
+                                                <td>@item.REV_ARTI</td>
+                                                <td>@item.REV_EKSI</td>
+                                                <td>@(item.SIPARIS_TARIH.HasValue ? item.SIPARIS_TARIH.Value.ToString("dd/MM/yyyy") : "")</td>
+                                                <td>@item.SIPARIS_NO</td>
+                                                <td>@item.DOKUM_IS_EMRI_NO</td>
+                                                <td>@(item.IS_EMRI_TARIH.HasValue ? item.IS_EMRI_TARIH.Value.ToString("dd/MM/yyyy") : "")</td>
+                                                <td>@item.IS_EMRI_BARKOD</td>
+                                                <td>@item.IS_EMRI_DURUMU</td>
+                                                <td>@item.KALIP_DURUMU</td>
+                                                <td>@item.KALIPHANELER</td>
+                                                <td>@item.KALIPHANE_IMALAT_DURUM</td>
+                                                <td>@item.DOKUM_HOLU</td>
+                                                <td>@item.DOKUM_ORMU_ADET</td>
+                                                <td>@item.TOPLAM_DOKUM_ADET</td>
+                                                <td>@item.KALAN_DOKUM_ADET</td>
+                                                <td>@(item.KALIP_HAZIR_OL_TARIH.HasValue ? item.KALIP_HAZIR_OL_TARIH.Value.ToString("dd/MM/yyyy") : "")</td>
+                                                <td>@(item.ONG_DOKUM_BASLAMA_TARIH.HasValue ? item.ONG_DOKUM_BASLAMA_TARIH.Value.ToString("dd/MM/yyyy") : "")</td>
+                                                <td>@item.DEPO_ADI</td>
+                                                <td>@item.DEPO_KONUM</td>
+                                                <td>@item.SANDIK_BARKODU</td>
+                                                <td>@item.SANDIKLAMA_TARIH</td>
+                                                <td>@item.SANDIK_PALET</td>
+                                                <td>@item.SANDIK_TOPLAM_KG</td>
+                                                <td>@item.EN</td>
+                                                <td>@item.BOY</td>
+                                                <td>@item.YUKSEKLIK</td>
+                                                <td>@item.SANDIK_TOPLAM_M2</td>
+                                                <td>@(item.PLAN_SEVK_TARIH.HasValue ? item.PLAN_SEVK_TARIH.Value.ToString("dd/MM/yyyy") : "")</td>
+                                                <td>@item.SEVK_NO</td>
+                                                <td>@item.IRSALIYE_NO</td>
+                                                <td>@item.KONTEYNER_NO</td>
+                                                <td>@item.PROJE_DURUMU</td>
+                                                <td>@item.PROJE_KODU</td>
+                                                <td>@item.PROJE_ADI</td>
+                                                <td>@item.SIPARIS_MIKTAR</td>
+                                                @*İlk Sipariş Miktarı Bakılacak*@
+                                                <td>@item.SANTIYE_SEFI</td>
+                                                <td>@item.PROJE_YONETICISI</td>
+                                                <td>@item.PROJE_MUDURU</td>
+                                                <td>@item.FRAME_KG</td>
+                                                @*Bunda da değer farklı görünüyor kontrol et*@
+                                            </tr>
+                                        }
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row mt-4">
+                <div class="col-md-2 col-lg-12 order-2 mb-4">
+                    <div class="card h-100">
+                        <div class="card-header d-flex align-items-center justify-content-between">
+                            <h5 class="card-title m-0 me-2">Genel Toplamlar</h5>
+                        </div>
+                        <div class="card-body">
+                            <ul class="p-0 m-0 row">
+                                <div class="col-lg-3">
+                                <li class="d-flex mb-1">
+                                    <div class="avatar flex-shrink-0 mt-2" style="cursor:default">
+                                        <div style="width: 25px; height: 25px; background-color: #d0aef0; border-radius: 7px; cursor: default"></div>
+                                    </div>
+                                    <div class="d-flex w-100 flex-wrap align-items-center justify-content-start gap-2">
+                                        <div class="me-2">
+                                            <h6 class="mb-0">Döküm</h6>
+                                        </div>
+                                        <div class="user-progress d-flex align-items-center gap-1">
+                                            <h6 class="mb-0">@Model.UrunIzleme.Select(a => a.DOKUM_BARKOD).Count()</h6>
+                                            <span class="text-muted">Ad.</span>
+                                        </div>
+                                        <div class="user-progress d-flex align-items-center gap-1">
+                                            <h6 class="mb-0"> / @Math.Round(Model.UrunIzleme.Sum(a => a.DOKUM_M2) ?? 0.000, 3)</h6>
+                                            <span class="text-muted">m²</span>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li class="d-flex mb-1">
+                                    <div class="avatar flex-shrink-0 mt-2" style="cursor:default">
+                                        <div style="width: 25px; height: 25px; background-color: #aef0ae; border-radius: 7px; cursor: default"></div>
+                                    </div>
+                                    <div class="d-flex w-100 flex-wrap align-items-center justify-content-start gap-2">
+                                        <div class="me-2">
+
+                                            <h6 class="mb-0">Birim</h6>
+                                        </div>
+                                        <div class="user-progress d-flex align-items-center gap-1">
+                                            <h6 class="mb-0">@Model.UrunIzleme.Sum(a => a.BIRIM_KG)</h6>
+                                            <span class="text-muted">Kg.</span>
+                                        </div>
+                                        <div class="user-progress d-flex align-items-center gap-1">
+                                            <h6 class="mb-0"> / @Math.Round(Model.UrunIzleme.Sum(a => a.BIRIM_HACIM) ?? 0.000, 3)</h6>
+                                            <span class="text-muted">Hacim m³</span>
+                                        </div>
+                                    </div>
+                                </li>
+
+                        </div>
+                        <div class="col-lg-3">
+                            <li class="d-flex mb-1">
+                                <div class="avatar flex-shrink-0 mt-2" style="cursor:default">
+                                    <div style="width: 25px; height: 25px; background-color: #aeeff0; border-radius: 7px; cursor: default"></div>
+                                </div>
+                                <div class="d-flex w-100 flex-wrap align-items-center justify-content-start gap-2">
+                                    <div class="me-2">
+
+                                        <h6 class="mb-0">Son Sipariş</h6>
+                                    </div>
+                                    <div class="user-progress d-flex align-items-center gap-1">
+                                        <h6 class="mb-0">@Model.UrunIzleme.Select(a => a.SON_SIPARIS_MIKTAR).Sum()</h6>
+                                        <span class="text-muted">Ad.</span>
+                                    </div>
+                                    <div class="user-progress d-flex align-items-center gap-1">
+                                        <h6 class="mb-0"> / @Math.Round(Model.UrunIzleme.Sum(a => a.SIPARIS_M2) ?? 0.000, 3)</h6>
+                                        <span class="text-muted">m²</span>
+                                    </div>
+                                </div>
+                            </li>
+                            <li class="d-flex mb-1">
+                                <div class="avatar flex-shrink-0 mt-2" style="cursor:default">
+                                    <div style="width: 25px; height: 25px; background-color: #f0aeae; border-radius: 7px; cursor: default"></div>
+                                </div>
+                                <div class="d-flex w-100 flex-wrap align-items-center justify-content-start gap-2">
+                                    <div class="me-2">
+
+                                        <h6 class="mb-0">Üretim</h6>
+                                    </div>
+                                    <div class="user-progress d-flex align-items-center gap-1">
+                                        <h6 class="mb-0">@Model.UrunIzleme.Select(a => a.PLAN_DOKUM_AD).Sum()</h6>
+                                        <span class="text-muted">Plan. Adet</span>
+                                    </div>
+                                    <div class="user-progress d-flex align-items-center gap-1">
+                                        <h6 class="mb-0"> / @Math.Round(Model.UrunIzleme.Sum(a => a.URETIM_MIKTAR) ?? 0.000, 3)</h6>
+                                        <span class="text-muted">Gerç. Adet</span>
+                                    </div>
+                                </div>
+                            </li>
+                        </div>
+                        <div class="col-lg-3">
+                            <li class="d-flex mb-1">
+                                <div class="avatar flex-shrink-0 mt-2" style="cursor:default">
+                                    <div style="width: 25px; height: 25px; background-color: #d0aef0; border-radius: 7px; cursor: default"></div>
+                                </div>
+                                <div class="d-flex w-100 flex-wrap align-items-center justify-content-start gap-2">
+                                    <div class="me-2">
+
+                                        <h6 class="mb-0">Sevk</h6>
+                                    </div>
+                                    <div class="user-progress d-flex align-items-center gap-1">
+                                        <h6 class="mb-0">@Model.UrunIzleme.Sum(a => a.SEVK_MIKTAR)</h6>
+                                        <span class="text-muted">Ad.</span>
+                                    </div>
+                                </div>
+                            </li>
+                            <li class="d-flex mb-1">
+                                <div class="avatar flex-shrink-0 mt-2" style="cursor:default">
+                                    <div style="width: 25px; height: 25px; background-color: #aef0ae; border-radius: 7px; cursor: default"></div>
+                                </div>
+                                <div class="d-flex w-100 flex-wrap align-items-center justify-content-start gap-2">
+                                    <div class="me-2">
+
+                                        <h6 class="mb-0">Montaj</h6>
+                                    </div>
+                                    <div class="user-progress d-flex align-items-center gap-1">
+                                        <h6 class="mb-0">@Model.UrunIzleme.Sum(a => a.MONTAJ_MIKTAR)</h6>
+                                        <span class="text-muted">Ad.</span>
+                                    </div>
+
+                                </div>
+                            </li>
+
+                        </div>
+                        <div class="col-lg-3">
+                            <li class="d-flex mb-1">
+                                <div class="avatar flex-shrink-0 mt-2" style="cursor:default">
+                                    <div style="width: 25px; height: 25px; background-color: #aeeff0; border-radius: 7px; cursor: default"></div>
+                                </div>
+                                <div class="d-flex w-100 flex-wrap align-items-center justify-content-start gap-2">
+                                    <div class="me-2">
+
+                                        <h6 class="mb-0">Revizyon</h6>
+                                    </div>
+                                    <div class="user-progress d-flex align-items-center gap-1">
+                                        <h6 class="mb-0">@Model.UrunIzleme.Sum(a => a.REV_ARTI)</h6>
+                                        <span class="text-muted">(+)</span>
+                                    </div>
+                                    <div class="user-progress d-flex align-items-center gap-1">
+                                        <h6 class="mb-0"> / @Model.UrunIzleme.Sum(a => a.REV_EKSI)</h6>
+                                        <span class="text-muted">(-)</span>
+                                    </div>
+                                </div>
+                            </li>
+
+                            <li class="d-flex mb-1">
+                                <div class="avatar flex-shrink-0 mt-2" style="cursor:default">
+                                    <div style="width: 25px; height: 25px; background-color: #f0aeae; border-radius: 7px; cursor: default"></div>
+                                </div>
+                                <div class="d-flex w-100 flex-wrap align-items-center justify-content-start gap-2">
+                                    <div class="me-2">
+
+                                        <h6 class="mb-0">İlk Sipariş Miktarı</h6>
+                                    </div>
+                                    <div class="user-progress d-flex align-items-center gap-1">
+                                        <h6 class="mb-0">@Model.UrunIzleme.Select(a => a.SIPARIS_MIKTAR).Sum()</h6>
+                                        <span class="text-muted">Ad.</span>
+                                    </div>
+
+                                </div>
+                            </li>
+                        </div>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+
+        </div>
+    </body>
+
+
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.5.1.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/buttons/2.3.6/js/dataTables.buttons.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.html5.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.print.min.js"></script>
+
+
+
+    <script>
+        $('#urunIzleme').DataTable({
+            dom: 'Blfrtip',
+            buttons: [
+                {
+                    extend: 'excel',
+                    text: '<i class="fa fa-file-excel-o"></i>',
+                    titleAttr: 'Excel',
+                    className: 'fred',
+                    exportOptions: {
+                        format: {
+                            body: function (data, row, column, node) {
+                                // img tag'i içindeki resme göre true veya false dönüşümü yapın
+                                // Örneğin, bir img tag'ine bakın ve ona göre 'Evet' veya 'Hayır' döndürün
+                                if (data.indexOf('ok_30px.png') !== -1) return 'True';
+                                else if (data.indexOf('cancel_30px.png') !== -1) return 'False';
+                                else return data; // Eğer img değilse orijinal veriyi dön
+                            }
+                        },
+                        decimal: ','
+                    },
+                    excelStyles: [
+                        {
+                            template: 'green_medium',
+                        },
+                        {
+                            cells: 'sh',
+                            style: {
+                                font: {
+                                    size: 14,
+                                    b: false,
+                                },
+                                fill: {
+                                    pattern: {
+                                        color: '1C3144'
+                                    }
+                                }
+                            }
+                        }
+                    ]
+                },
+
+                {
+                    extend: 'copy',
+                    text: '<i class="fa fa-clone"></i>',
+                    titleAttr: 'Kopyala',
+                    className: 'kopya'
+                }
+            ],
+            "lengthMenu": [[10, 25, 50, 100, 200, -1], [10, 25, 50, 100, 200, "Tümü"]],
+            "language": {
+                "lengthMenu": "Sayfada _MENU_ kayıt göster",
+                "zeroRecords": "Kayıt bulunamadı",
+                "info": "_TOTAL_ kayıttan _START_ - _END_ arası gösteriliyor",
+                "infoEmpty": "Kayıt yok",
+                "infoFiltered": "(_MAX_ kayıt içerisinden bulunan)",
+                "search": "Ara:",
+                "paginate": {
+                    "first": "İlk",
+                    "last": "Son",
+                    "next": "Sonraki",
+                    "previous": "Önceki"
+                }
+            },
+            "deferRender": true
+        });
+    </script>
+
+    @*Tarih Null Kontrol*@
+    <script>
+        function validateForm() {
+            var bas = document.querySelector('input[name="bas"]').value;
+            var bit = document.querySelector('input[name="bit"]').value;
+
+            if (!bas || !bit) {
+                alert("Lütfen başlangıç ve bitiş tarihini seçiniz!");
+                return false;
+            }
+
+
+            document.getElementById("overlay").style.display = "block";
+
+            return true;
+        }
+
+    </script>
+
+
+<script>
+
+    $(document).ready(function () {
+        // datetimepicker'ların değerleri değiştiğinde localStorage'a kaydedin
+        $('.datepicker, .selectpicker').on('change', function () {
+            localStorage.setItem($(this).attr('name'), $(this).val());
+        });
+
+        // sayfa yüklendiğinde, datetimepicker'ların değerlerini localStorage'dan yükleyin
+        $('.datepicker, .selectpicker').each(function () {
+            var value = localStorage.getItem($(this).attr('name'));
+            if (value) {
+                $(this).val(value);
+            }
+        });
+    });
+
+</script>    

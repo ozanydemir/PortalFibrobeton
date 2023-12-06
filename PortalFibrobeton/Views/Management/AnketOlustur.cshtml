@@ -1,0 +1,123 @@
+﻿@model IEnumerable<PortalFibrobeton.Models.Entity.Anketler>
+
+@{
+    ViewBag.Title = "AnketOlustur";
+    Layout = "~/Views/Shared/_PeraLayout.cshtml";
+}
+
+<head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+</head>
+
+<div class="container-fluid flex-grow-1 container-p-y">
+    <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">PeraFIBRO /</span> Anket Oluştur </h4>
+
+    @using (Html.BeginForm("AnketOlustur", "Management", FormMethod.Post))
+    {
+        <div class="row mt-4">
+            <div class="col-xxl">
+                <div class="card mb-4">
+                    <div class="card-header d-flex align-items-center justify-content-between">
+                        <h5 class="mb-0">Anket Oluştur</h5>
+                        <small class="text-muted float-end"></small>
+                    </div>
+                    <div class="card-body">
+                        <form>
+                            <div class="row mb-3">
+                                <label class="col-sm-2 col-form-label" for="anket-name">Anket Adı</label>
+                                <div class="col-sm-10">
+                                    <input type="text" name="anketname" class="form-control" id="anket-name" required />
+                                </div>
+                            </div>
+                            @*<div class="row mb-3">
+                                    <label class="col-sm-2 col-form-label" for="proje-name">Proje Adı</label>
+                                    <div class="col-sm-10">
+                                        <input type="text" name="projename" class="form-control" id="proje-name" />
+                                    </div>
+                                </div>*@
+                            <div class="row mb-3">
+                                <label class="col-sm-2 col-form-label" for="user-name">Anketi Oluşturan</label>
+                                <div class="col-sm-10">
+                                    <input type="text"
+                                           class="form-control"
+                                           id="user-name"
+                                           value="@Session["UserName"]" readonly
+                                           style="cursor:default" />
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <label class="col-sm-2 col-form-label" for="save-date">Oluşturma Tarihi</label>
+                                <div class="col-sm-10">
+                                    <input type="text"
+                                           class="form-control"
+                                           id="save-date"
+                                           value="@ViewBag.today" readonly
+                                           style="cursor:default" />
+                                </div>
+                            </div>
+                            @*<div class="col-md">
+                                    <label class="col-sm-2 col-form-label" for="checkAnket">Şablon Kullanılacak Mı?</label>
+                                    <div class="form-check form-check-inline mt-3">
+                                        <input class="form-check-input"
+                                               type="radio"
+                                               name="checkTemp"
+                                               id="Yes"
+                                               value="Yes"
+                                               />
+                                        <label class="form-check-label" for="inlineRadio1">Evet</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input"
+                                               type="radio"
+                                               name="checkTemp"
+                                               id="No"
+                                               value="No"
+                                               checked="checked"
+                                                />
+                                        <label class="form-check-label" for="inlineRadio2">Hayır</label>
+                                    </div>
+                                </div>*@
+                            @*<div class="row mt-3">
+                                    <label class="col-sm-2 col-form-label" for="sablonCombo">Şablonlar</label>
+                                    <div class="col-sm-10">
+                                        <select class="form-select" id="discountselection" name="discountselection" aria-label="Default select example" disabled>
+                                            <option selected>Şablon Anket Seçin</option>
+                                            @foreach (var data in Model)
+                                            {
+
+                                                <option name="aID" value="@data.AnketID">@data.AnketAdi</option>
+                                            }
+                                        </select>
+                                    </div>
+                                </div>*@
+                            @if (TempData["AnketAdiError"] != null)
+                            {
+                                <p style="color:red">@TempData["AnketAdiError"].ToString()</p>
+                            }
+                            <div class="row justify-content-end mt-5">
+                                <div class="col-sm-10">
+                                    <button type="submit" class="btn btn-primary" onclick="location.href='@Url.Action("ProjeKayit","Management")'">Oluştur</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    }
+
+    <script>
+
+        $('input:radio[name="checkTemp"]').change(function () {
+            if ($(this).val() == 'No') {
+                $('#discountselection').attr('disabled', true);
+            } else
+                $('#discountselection').removeAttr('disabled');
+        });
+
+    </script>
+
+
+</div>

@@ -1,0 +1,241 @@
+﻿
+@{
+    ViewBag.Title = "HedefEkle";
+    Layout = "~/Views/Shared/_PeraLayout.cshtml";
+}
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+
+<body>
+    <div class="container-fluid flex-grow-1 container-p-y">
+        <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">PeraFIBRO / </span>Hedefleri Belirle</h4>
+
+
+        <div class="col-lg-12">
+            <div class="row">
+                <div class="col-lg-4">
+                    <div class="card">
+                        <div class="card-header d-flex align-items-center justify-content-between">
+                            <h5 class="mb-0">COB-SOUTH</h5>
+                            <small class="text-muted float-end"></small>
+                        </div>
+                        <div class="card-body">
+                            <div class="row mt-1">
+                                <div class="col-sm-5">
+                                    <label class="col-sm-10 col-form-label" for="OrderPieceSOUTHSiparis">Sipariş Hedefi<span style="color:red;font-size:11px"> (Adet)</span></label>
+                                    <input type="text" class="form-control" id="OrderPieceSOUTHSiparis" required />
+                                </div>
+                                <div class="col-sm-5 offset-1">
+                                    <label class="col-sm-10 col-form-label" for="OrderM2SOUTHSiparis">Sipariş Hedefi<span style="color:red;font-size:11px"> (m²)</span></label>
+                                    <input type="text" class="form-control" id="OrderM2SOUTHSiparis" required />
+                                </div>
+                            </div>
+                            <div class="row mt-4">
+                                <div class="col-sm-5">
+                                    <label class="col-sm-10 col-form-label" for="CastingPieceSOUTHDokum">Döküm Hedefi<span style="color:red;font-size:11px"> (Adet)</span></label>
+                                    <input type="text" class="form-control" id="CastingPieceSOUTHDokum" required />
+                                </div>
+                                <div class="col-sm-5 offset-1">
+                                    <label class="col-sm-10 col-form-label" for="CastingM2SOUTHDokum">Döküm Hedefi<span style="color:red;font-size:11px"> (m²)</span></label>
+                                    <input type="text" class="form-control" id="CastingM2SOUTHDokum" required />
+                                </div>
+                            </div>
+                            <div class="row mt-4">
+                                <div class="col-sm-5">
+                                    <label class="col-sm-10 col-form-label" for="ShippedPieceSOUTHSevkiyat">Sevkiyat Hedefi<span style="color:red;font-size:11px"> (Adet)</span></label>
+                                    <input type="text" class="form-control" id="ShippedPieceSOUTHSevkiyat" required />
+                                </div>
+                                <div class="col-sm-5 offset-1">
+                                    <label class="col-sm-10 col-form-label" for="ShippedM2SOUTHSevkiyat">Sevkiyat Hedefi<span style="color:red;font-size:11px"> (m²)</span></label>
+                                    <input type="text" class="form-control" id="ShippedM2SOUTHSevkiyat" required />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4">
+                    <div class="card">
+                        <div class="card-header d-flex align-items-center justify-content-between">
+                            <h5 class="mb-0">COB-EAST</h5>
+                            <small class="text-muted float-end"></small>
+                        </div>
+                        <div class="card-body">
+                            <div class="row mt-1">
+                                <div class="col-sm-5">
+                                    <label class="col-sm-10 col-form-label" for="OrderPieceEASTSiparis">Sipariş Hedefi<span style="color:red;font-size:11px"> (Adet)</span></label>
+                                    <input type="text" class="form-control" id="OrderPieceEASTSiparis" required />
+                                </div>
+                                <div class="col-sm-5 offset-1">
+                                    <label class="col-sm-10 col-form-label" for="OrderM2EASTSiparis">Sipariş Hedefi<span style="color:red;font-size:11px"> (m²)</span></label>
+                                    <input type="text" class="form-control" id="OrderM2EASTSiparis" required />
+                                </div>
+                            </div>
+                            <div class="row mt-4">
+                                <div class="col-sm-5">
+                                    <label class="col-sm-10 col-form-label" for="CastingPieceEASTDokum">Döküm Hedefi<span style="color:red;font-size:11px"> (Adet)</span></label>
+                                    <input type="text" class="form-control" id="CastingPieceEASTDokum" required />
+                                </div>
+                                <div class="col-sm-5 offset-1">
+                                    <label class="col-sm-10 col-form-label" for="CastingM2EASTDokum">Döküm Hedefi<span style="color:red;font-size:11px"> (m²)</span></label>
+                                    <input type="text" class="form-control" id="CastingM2EASTDokum" required />
+                                </div>
+                            </div>
+                            <div class="row mt-4">
+                                <div class="col-sm-5">
+                                    <label class="col-sm-10 col-form-label" for="ShippedPieceEASTSevkiyat">Sevkiyat Hedefi<span style="color:red;font-size:11px"> (Adet)</span></label>
+                                    <input type="text" class="form-control" id="ShippedPieceEASTSevkiyat" required />
+                                </div>
+                                <div class="col-sm-5 offset-1">
+                                    <label class="col-sm-10 col-form-label" for="ShippedM2EASTSevkiyat">Sevkiyat Hedefi<span style="color:red;font-size:11px"> (m²)</span></label>
+                                    <input type="text" class="form-control" id="ShippedM2EASTSevkiyat" required />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="col-lg-4">
+                    <div class="card">
+                        <div class="card-header d-flex align-items-center justify-content-between">
+                            <h5 class="mb-0">COB-NORTH</h5>
+                            <small class="text-muted float-end"></small>
+                        </div>
+                        <div class="card-body">
+                            <div class="row mt-1">
+                                <div class="col-sm-5">
+                                    <label class="col-sm-10 col-form-label" for="OrderPieceNORTHSiparis">Sipariş Hedefi<span style="color:red;font-size:11px"> (Adet)</span></label>
+                                    <input type="text" class="form-control" id="OrderPieceNORTHSiparis" required />
+                                </div>
+                                <div class="col-sm-5 offset-1">
+                                    <label class="col-sm-10 col-form-label" for="OrderM2NORTHSiparis">Sipariş Hedefi<span style="color:red;font-size:11px"> (m²)</span></label>
+                                    <input type="text" class="form-control" id="OrderM2NORTHSiparis" required />
+                                </div>
+                            </div>
+                            <div class="row mt-4">
+                                <div class="col-sm-5">
+                                    <label class="col-sm-10 col-form-label" for="CastingPieceNORTHDokum">Döküm Hedefi<span style="color:red;font-size:11px"> (Adet)</span></label>
+                                    <input type="text" class="form-control" id="CastingPieceNORTHDokum" required />
+                                </div>
+                                <div class="col-sm-5 offset-1">
+                                    <label class="col-sm-10 col-form-label" for="CastingM2NORTHDokum">Döküm Hedefi<span style="color:red;font-size:11px"> (m²)</span></label>
+                                    <input type="text" class="form-control" id="CastingM2NORTHDokum" required />
+                                </div>
+                            </div>
+                            <div class="row mt-4">
+                                <div class="col-sm-5">
+                                    <label class="col-sm-10 col-form-label" for="ShippedPieceNORTHSevkiyat">Sevkiyat Hedefi<span style="color:red;font-size:11px"> (Adet)</span></label>
+                                    <input type="text" class="form-control" id="ShippedPieceNORTHSevkiyat" required />
+                                </div>
+                                <div class="col-sm-5 offset-1">
+                                    <label class="col-sm-10 col-form-label" for="ShippedM2NORTHSevkiyat">Sevkiyat Hedefi<span style="color:red;font-size:11px"> (m²)</span></label>
+                                    <input type="text" class="form-control" id="ShippedM2NORTHSevkiyat" required />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="col-lg-12 mt-4">
+            <div class="row">
+                <div class="col-lg-4">
+                    <div class="card">
+                        <div class="card-header d-flex align-items-center justify-content-between">
+                            <h5 class="mb-0">COB-WEST</h5>
+                            <small class="text-muted float-end"></small>
+                        </div>
+                        <div class="card-body">
+                            <div class="row mt-1">
+                                <div class="col-sm-5">
+                                    <label class="col-sm-10 col-form-label" for="OrderPieceWESTSiparis">Sipariş Hedefi<span style="color:red;font-size:11px"> (Adet)</span></label>
+                                    <input type="text" class="form-control" id="OrderPieceWESTSiparis" required />
+                                </div>
+                                <div class="col-sm-5 offset-1">
+                                    <label class="col-sm-10 col-form-label" for="OrderM2WESTSiparis">Sipariş Hedefi<span style="color:red;font-size:11px"> (m²)</span></label>
+                                    <input type="text" class="form-control" id="OrderM2WESTSiparis" required />
+                                </div>
+                            </div>
+                            <div class="row mt-4">
+                                <div class="col-sm-5">
+                                    <label class="col-sm-10 col-form-label" for="CastingPieceWESTDokum">Döküm Hedefi<span style="color:red;font-size:11px"> (Adet)</span></label>
+                                    <input type="text" class="form-control" id="CastingPieceWESTDokum" required />
+                                </div>
+                                <div class="col-sm-5 offset-1">
+                                    <label class="col-sm-10 col-form-label" for="CastingM2WESTDokum">Döküm Hedefi<span style="color:red;font-size:11px"> (m²)</span></label>
+                                    <input type="text" class="form-control" id="CastingM2WESTDokum" required />
+                                </div>
+                            </div>
+                            <div class="row mt-4">
+                                <div class="col-sm-5">
+                                    <label class="col-sm-10 col-form-label" for="ShippedPieceWESTSevkiyat">Sevkiyat Hedefi<span style="color:red;font-size:11px"> (Adet)</span></label>
+                                    <input type="text" class="form-control" id="ShippedPieceWESTSevkiyat" required />
+                                </div>
+                                <div class="col-sm-5 offset-1">
+                                    <label class="col-sm-10 col-form-label" for="ShippedM2WESTSevkiyat">Sevkiyat Hedefi<span style="color:red;font-size:11px"> (m²)</span></label>
+                                    <input type="text" class="form-control" id="ShippedM2WESTSevkiyat" required />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="col-lg-4">
+                    <div class="card">
+                        <div class="card-header d-flex align-items-center justify-content-between">
+                            <h5 class="mb-0">COB-COURT</h5>
+                            <small class="text-muted float-end"></small>
+                        </div>
+                        <div class="card-body">
+                            <div class="row mt-1">
+                                <div class="col-sm-5">
+                                    <label class="col-sm-10 col-form-label" for="OrderPieceCOURTSiparis">Sipariş Hedefi<span style="color:red;font-size:11px"> (Adet)</span></label>
+                                    <input type="text" class="form-control" id="OrderPieceCOURTSiparis" required />
+                                </div>
+                                <div class="col-sm-5 offset-1">
+                                    <label class="col-sm-10 col-form-label" for="OrderM2COURTSiparis">Sipariş Hedefi<span style="color:red;font-size:11px"> (m²)</span></label>
+                                    <input type="text" class="form-control" id="OrderM2COURTSiparis" required />
+                                </div>
+                            </div>
+                            <div class="row mt-4">
+                                <div class="col-sm-5">
+                                    <label class="col-sm-10 col-form-label" for="CastingPieceCOURTDokum">Döküm Hedefi<span style="color:red;font-size:11px"> (Adet)</span></label>
+                                    <input type="text" class="form-control" id="CastingPieceCOURTDokum" required />
+                                </div>
+                                <div class="col-sm-5 offset-1">
+                                    <label class="col-sm-10 col-form-label" for="CastingM2COURTDokum">Döküm Hedefi<span style="color:red;font-size:11px"> (m²)</span></label>
+                                    <input type="text" class="form-control" id="CastingM2COURTDokum" required />
+                                </div>
+                            </div>
+                            <div class="row mt-4">
+                                <div class="col-sm-5">
+                                    <label class="col-sm-10 col-form-label" for="ShippedPieceCOURTSevkiyat">Sevkiyat Hedefi<span style="color:red;font-size:11px"> (Adet)</span></label>
+                                    <input type="text" class="form-control" id="ShippedPieceCOURTSevkiyat" required />
+                                </div>
+                                <div class="col-sm-5 offset-1">
+                                    <label class="col-sm-10 col-form-label" for="ShippedM2COURTSevkiyat">Sevkiyat Hedefi<span style="color:red;font-size:11px"> (m²)</span></label>
+                                    <input type="text" class="form-control" id="ShippedM2COURTSevkiyat" required />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="btn btn-primary" id="btnSave">Kaydet</div>
+            </div>
+
+        </div>
+    </div>
+</body>
+
+
+
+
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+<script type="text/javascript" src="http://ajax.cdnjs.com/ajax/libs/json2/20110223/json2.js"></script>
+<script src="~/Content/jsFile/UretimveSevkiyatJS/HedefKaydet.js"></script>

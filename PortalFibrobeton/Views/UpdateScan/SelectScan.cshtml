@@ -1,0 +1,160 @@
+﻿@model IEnumerable<PortalFibrobeton.Models.Entity.Tbl_Taramalar>
+@using PortalFibrobeton.Models.Entity
+
+@{
+    ViewBag.Title = "SelectScan";
+    Layout = "~/Views/Shared/ScanLayout.cshtml";
+}
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>FibroSCAN - Tarama Güncelle</title>
+
+    <link href="~/DataTables/DataTables-1.11.3/css/dataTables.bootstrap.min.css" rel="stylesheet" />
+    <link href="~/quixlab-master/quixlab-master/plugins/tables/css/datatable/dataTables.bootstrap4.min.css" rel="stylesheet">
+    <link href="~/quixlab-master/quixlab-master/css/style.css" rel="stylesheet">
+
+
+</head>
+
+<body>
+    <div class="container-fluid">
+        @using (Html.BeginForm("SelectScan", "UpdateScan", FormMethod.Post))
+        {
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <h3 class="card-title">Filtrele</h3>
+                            <div class="basic-form" style="margin-top:20px;">
+                                <form class="basic-form" method="post">
+                                    <div class="form-group">
+                                        <label>Poz Numarası:</label>
+                                        <input type="text" class="form-control" name="PozT" />
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Barkod Numarası:</label>
+                                        <input type="text" class="form-control" name="BarkodT" />
+                                    </div>
+                                    <div>
+                                        <button type="submit" onclick="location.href='@Url.Action("SelectScan","UpdateScan")'" class="btn btn-primary">Ara</button>
+                                    </div>
+                                    <br />
+                                    <br />
+
+                                </form>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title">Tarama Kayıtları</h4>
+                        <div class="table-responsive">
+                            <table id="veri" class="table table-bordered zero-configuration">
+                                <thead>
+                                    <tr style="background-color:#7571F9;color:floralwhite">
+                                        <th>Tarih</th>
+                                        <th>Proje</th>
+                                        <th>Poz</th>
+                                        <th>Malzeme</th>
+                                        <th>Yüzey</th>
+                                        <th>Döküm</th>
+                                        <th>Cihaz</th>
+                                        <th>Talep</th>
+                                        <th>Tarama Süresi</th>
+                                        <th>Teslim</th>
+                                        <th>Tarama Sayısı</th>
+                                        <th>Durum</th>
+                                        <th> </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Model)
+                                    {
+                                        <tr>
+                                            <td>@item.TarihT</td>
+                                            <td>@item.ProjeT</td>
+                                            <td>@item.PozT</td>
+                                            <td>@item.MalzemeT</td>
+                                            <td>@item.YüzeyT</td>
+                                            <td>@item.DökümT</td>
+                                            <td>@item.CihazT</td>
+                                            <td>@item.KonuT</td>
+                                            <td>@item.SureT</td>
+                                            @if (item.TeslimT == null)
+                                            {
+                                                <td><span class="label label-warning">——</span></td>
+                                            }
+                                            else
+                                            {
+                                                <td>@item.TeslimT</td>
+                                            }
+                                            <td>@item.SayıT</td>
+                                            @if (item.DurumT == "OK")
+                                            {
+                                                <td><span class="label label-success">O.K</span></td>
+                                            }
+                                            @if (item.DurumT == "RED")
+                                            {
+                                                <td><span class="label label-danger">RED</span></td>
+                                            }
+                                            @if (item.DurumT == "BOŞ" || item.DurumT == null)
+                                            {
+                                                <td><span class="label label-warning">——</span></td>
+                                            }
+                                            <td>
+                                                <span>
+                                                    <a href="/UpdateScan/ScanInfo/@item.IDT" data-toggle="tooltip" data-placement="top" title="Güncelle"><i class="fa fa-pencil color-muted m-r-5"></i> </a>
+                                                    <a href="/UpdateScan/Delete/@item.IDT" data-toggle="tooltip" data-placement="top" title="Sil"><i class="fa fa-close color-danger"></i></a>
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="~/DataTables/jQuery-3.6.0/jquery-3.6.0.min.js"></script>
+    <script src="~/DataTables/Bootstrap-5-5.0.1/js/bootstrap.bundle.min.js"></script>
+    <script src="~/DataTables/DataTables-1.11.3/js/jquery.dataTables.min.js"></script>
+    <script src="~/DataTables/DataTables-1.11.3/js/dataTables.bootstrap4.min.js"></script>
+    <script src="~/DataTables/DataTables-1.11.3/js/dataTables.bootstrap5.min.js"></script>
+    <script src="~/quixlab-master/quixlab-master/plugins/common/common.min.js"></script>
+    <script src="~/quixlab-master/quixlab-master/js/custom.min.js"></script>
+    <script src="~/quixlab-master/quixlab-master/js/settings.js"></script>
+    <script src="~/quixlab-master/quixlab-master/js/gleek.js"></script>
+    <script src="~/quixlab-master/quixlab-master/js/styleSwitcher.js"></script>
+    <script src="~/quixlab-master/quixlab-master/plugins/tables/js/jquery.dataTables.min.js"></script>
+    <script src="~/quixlab-master/quixlab-master/plugins/tables/js/datatable/dataTables.bootstrap4.min.js"></script>
+    <script src="~/quixlab-master/quixlab-master/plugins/tables/js/datatable-init/datatable-basic.min.js"></script>
+
+    <script>
+        $('#veri').dataTable({
+            autoFill: true,
+            "language": {
+                "url": "https://cdn.datatables.net/plug-ins/1.10.20/i18n/Turkish.json"
+            }
+        })
+    </script>
+
+
+</body>
+
+
+
+

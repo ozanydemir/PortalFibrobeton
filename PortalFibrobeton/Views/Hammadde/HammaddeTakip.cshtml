@@ -1,0 +1,220 @@
+﻿@model IEnumerable<PortalFibrobeton.Models.Class.HammaddeTakip.birlesmisHammaddeRaporu>
+
+
+@{
+    ViewBag.Title = "HammaddeTakip";
+    Layout = "~/Views/Shared/_PeraLayout.cshtml";
+}
+
+<head>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link type="text/css" href="https://cdn.datatables.net/buttons/2.3.6/css/buttons.dataTables.min.css" rel="stylesheet" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css" />
+
+</head>
+
+<style>
+    .notStil.input:focus {
+        outline: none;
+    }
+
+    .form-control:focus {
+        border-color: inherit;
+        -webkit-box-shadow: none;
+        box-shadow: none;
+    }
+
+    button.fred {
+        background-color: limegreen;
+        border-color: limegreen;
+    }
+
+    button.pri {
+        background-color: royalblue;
+        border-color: steelblue
+    }
+
+    button.pedefe {
+        background-color: red;
+        border-color: firebrick;
+    }
+
+    button.kopya {
+        background-color: darkorange;
+        border-color: orange;
+    }
+</style>
+
+
+<div class="container-fluid flex-grow-1 container-p-y">
+    <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">PeraFIBRO /</span>Hammadde ve Harç Takip Sistemi</h4>
+
+    @using (Html.BeginForm("HammaddeTakip", "Hammadde", FormMethod.Post))
+    {
+        <div class="row mt-3">
+            <div class="col-xxl-5">
+                <div class="card mt-2">
+                    <div class="card-header d-flex align-items-center justify-content-between">
+                        <h5 class="mb-0">Tarih Seç</h5>
+                        <small class="text-muted float-end"></small>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mt-3 input-group">
+                            <label class="col-sm-2 col-form-label">Başlangıç</label>
+                            <input type="date" class="form-control" name="bas" style="cursor:pointer" />
+                        </div>
+                        <div class="row mt-3 input-group">
+                            <label class="col-sm-2 col-form-label">Bitiş</label>
+                            <input type="date" class="form-control" name="bit" style="cursor:pointer" />
+                        </div>
+                        <div class="mt-3 text-center">
+                            <button type="submit" class="btn btn-primary">Ara</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row-mt-3">
+            <div class="card mt-5">           
+                <div class="card-body">
+                    @*<button id="excelDownloadButton" class="btn btn-primary">Excel İndir</button>*@
+                    <div class="table-responsive text-nowrap mt-4">
+                        <table id="hammadde" class="table table-striped">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th style="color:#fff">Proje Adı</th>
+                                    <th style="color:#fff">Poz Adı</th>
+                                    <th style="color:#fff">Metrekare</th>
+                                    <th style="color:#fff">Tahmini Kütle</th>
+                                    <th style="color:#fff">Tahmini Frame Kütle</th>
+                                    <th style="color:#fff">Toplam Kütle</th>
+                                    <th style="color:#fff">Tam Kova Sayısı</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @{
+                                    var tahminiKutleToplam = 0.0;
+                                    var tahminiFrameToplam = 0.0;
+                                    var toplamM2 = 0.0;
+                                    var toplamKutleFoot = 0.0;
+                                    var toplamKovaSayisi = 0.0;
+                                }
+                                @if (Model != null)
+                                {
+
+                                    foreach (var item in Model)
+                                    {
+                                        if (item != null)
+                                        {
+                                            var tahminiFrame = item.TahminiFrameKutle ?? 0;
+                                            var toplamKutle = item.ToplamKutle ?? 0;
+                                            var kovaSayisi = item.TamKovaSayisi ?? 0;
+                                            var tahminiKutle = item.TahminiKutle ?? 0;
+                                            var metreKare = item.KalıpM2 ?? 0;
+                                            tahminiKutleToplam += tahminiKutle;
+                                            tahminiFrameToplam += tahminiFrame;
+                                            toplamM2 += metreKare;
+                                            toplamKutleFoot += toplamKutle;
+                                            toplamKovaSayisi += kovaSayisi;
+                                            <tr>
+                                                <td>@item.ProjeAdi</td>
+                                                <td>@item.PozNo</td>
+                                                <td>@item.KalıpM2</td>
+                                                <td>@Math.Round((double)tahminiKutle, 2)</td>
+                                                <td>@Math.Round((double)tahminiFrame, 2)</td>
+                                                <td>@Math.Round((double)toplamKutle, 2)</td>
+                                                <td>@Math.Round((double)kovaSayisi, 2)</td>
+                                            </tr>
+                                        }
+                                    }
+                                }
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <th></th>
+                                    <th></th>
+                                    <th>@toplamM2</th>
+                                    <th>@Math.Round((double)tahminiKutleToplam, 2)</th>
+                                    <th>@Math.Round((double)tahminiFrameToplam, 2)</th>
+                                    <th>@Math.Round((double)toplamKutleFoot, 2)</th>
+                                    <th>@Math.Round((double)toplamKovaSayisi, 2)</th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+
+
+<script type="text/javascript" src="https://code.jquery.com/jquery-3.5.1.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/buttons/2.3.6/js/dataTables.buttons.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.html5.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.print.min.js"></script>
+
+
+<script>
+    $('#hammadde').DataTable({
+        dom: 'Bfrtip',
+        buttons: [
+            {
+                extend: 'excel',
+                text: '<i class="fa fa-file-excel-o"></i>',
+                titleAttr: 'Excel',
+                className: 'fred',
+                exportOptions: {
+                    decimal: ','
+                },
+                excelStyles: [
+                    {
+                        template: 'green_medium',
+                    },
+                    {
+                        cells: 'sh',
+                        style: {
+                            font: {
+                                size: 14,
+                                b: false,
+                            },
+                            fill: {
+                                pattern: {
+                                    color: '1C3144'
+                                }
+                            }
+                        }
+                    }
+                ]
+            },
+
+            {
+                extend: 'pdf',
+                text: '<i class="fa fa-file-pdf-o"></i>',
+                titleAttr: 'PDF',
+                className: 'pedefe'
+
+            },
+            {
+                extend: 'print',
+                text: '<i class="fa fa-print"></i>',
+                titleAttr: 'Yazdır',
+                className: 'pri'
+            },
+            {
+                extend: 'copy',
+                text: '<i class="fa fa-clone"></i>',
+                titleAttr: 'Kopyala',
+                className: 'kopya'
+            }
+        ],
+    });
+</script>

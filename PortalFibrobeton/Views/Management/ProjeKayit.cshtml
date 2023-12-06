@@ -1,0 +1,120 @@
+﻿@model IEnumerable<PortalFibrobeton.Models.Entity.AnketProjeler>
+
+@{
+    ViewBag.Title = "ProjeKayit";
+    Layout = "~/Views/Shared/_PeraLayout.cshtml";
+}
+
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+
+
+    <style>
+        .likeL {
+            background: rgba(0,0,0,0);
+            border: none;
+            cursor: default;
+            outline: none;
+        }
+
+        table .w-10 {
+            width: 13%;
+        }
+
+        table .w-40 {
+            width: 25%;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container-fluid flex-grow-1 container p-y">
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="row">
+                    <div class="card mt-4">
+                        <div class="card-body">
+                            <h5 class="card-header" style="margin-top:-10px">Proje Adları</h5>
+                            <div class="mb-4 mt-2">
+                            </div>
+                            <div class="table-responsive text-nowrap">
+                                <table class="table table-striped w-auto" id="tblProjeAd">
+                                    <thead class="table-dark">
+                                        <tr>
+                                            <th>Sıra</th>
+                                            <th class="w-40">Proje Adı</th>
+                                            <th>Ekle</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        
+                                    </tbody>
+                                    @if (Session["checkTemp"].ToString() == "Yes") 
+                                    {
+                                        if(Model != null) 
+                                        {
+
+                                            <tfoot>
+                                                @{
+
+                                                    var projeNoQ = Model.Select(a => a.ProjeAdi).Count();
+                                                    var projeNo = projeNoQ + 1;
+
+                                                }
+                                                @foreach (var item in Model)
+                                                {
+                                                    <tr>
+                                                        <td>1</td>
+                                                        <td><input type="text" value="@item.ProjeAdi" /></td>
+                                                        <td>
+                                                            <button type="button" class="btn btn-danger" onclick="RemoveProjeAd(this)">Sil</button>
+                                                        </td>
+                                                        <td class="col-sm-1"><btn class="btn" id="btnAddProjeAdSablon" value="EkleKalip"><i class="bx bxs-message-alt-add bx-flip-horizontal" style="color:#07c91a;font-size:28px;"></i></btn></td>
+                                                    </tr>
+                                                }
+                                                <tr>
+
+                                                    <td class="col-1"><input type="text" class="likeL col-sm-3" id="txtProjeAdNo" value="@projeNo" readonly /></td>
+                                                    <td class="col-sm-1"><input type="text" class="col-sm-10" id="txtProjeAdSoru" /></td>
+                                                    <td class="col-sm-1"><btn class="btn" id="btnAddProjeAd" value="EkleKalip"><i class="bx bxs-message-alt-add bx-flip-horizontal" style="color:#07c91a;font-size:28px;"></i></btn></td>
+                                                </tr>
+                                            </tfoot>
+                                        }
+                                    }
+                                    else
+                                    {
+
+                                        <tfoot>
+                                            <tr>
+                                                <td class="col-1"><input type="text" class="likeL col-sm-3" id="txtProjeAdNo" value="1" readonly /></td>
+                                                <td class="col-sm-1"><input type="text" class="col-sm-10" id="txtProjeAdSoru" /></td>
+                                                <td class="col-sm-1"><btn class="btn" id="btnAddProjeAd" value="EkleKalip"><i class="bx bxs-message-alt-add bx-flip-horizontal" style="color:#07c91a;font-size:28px;"></i></btn></td>
+                                            </tr>
+                                        </tfoot>
+                                        
+                                    }          
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+
+        </div>
+
+        <br/>
+        <button class="btn btn-primary" id="btnSave" onclick="alert('Projeler başarıyla kaydedildi!'); location.href='@Url.Action("Sorular", "Management")'">Kaydet ve Sorulara İlerle</button>
+    </div>
+
+
+
+
+
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+    <script type="text/javascript" src="http://ajax.cdnjs.com/ajax/libs/json2/20110223/json2.js"></script>
+    <script src="~/Content/jsFile/AnketProjeAdlari.js"></script>
+</body>
