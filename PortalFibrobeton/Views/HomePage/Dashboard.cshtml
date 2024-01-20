@@ -9,23 +9,13 @@
 <head>
     <title>FibroSCAN - Ana Sayfa</title>
     <link rel="icon" type="image/png" sizes="16x16" href="~/quixlab-master/quixlab-master/images/favicon.png">
-    <link rel="stylesheet" href="~/quixlab-master/quixlab-master/plugins/chartist/css/chartist.min.css">
-    <link rel="stylesheet" href="~/quixlab-master/quixlab-master/plugins/chartist-plugin-tooltips/css/chartist-plugin-tooltip.css">
-    <link href="~/quixlab-master/quixlab-master/css/style.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/chartist.js/latest/chartist.min.css">
-    <script src="https://cdn.jsdelivr.net/chartist.js/latest/chartist.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-circle-progress/1.2.2/circle-progress.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/raphael/2.1.0/raphael-min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/morris.js/0.5.1/morris.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/chartist.js/latest/chartist.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-    <link href="~/DataTables/DataTables-1.11.3/css/dataTables.bootstrap.min.css" rel="stylesheet" />
     <link href="~/quixlab-master/quixlab-master/plugins/tables/css/datatable/dataTables.bootstrap4.min.css" rel="stylesheet">
     <link href="~/quixlab-master/quixlab-master/css/style.css" rel="stylesheet">
-
 
 
 </head>
@@ -114,7 +104,7 @@
                                 <div class="ml-2 w-100">
                                     <h5 style=" margin-left:7px;">Ana Kalıphane</h5>
                                     <div class="p-2" style="margin-right:35px;">
-                                        <h4 style="color:#FF5E5E">@ViewBag.hol6TumHafta / @Model.LastWeekResults.Where(a => a.TeslimT == "HOL-6").Select(a => a.PozBarkodT).Count()</h4>
+                                        <h4 style="color:#FF5E5E">@Model.TodayResults.Where(a => a.TeslimT == "HOL-6").Select(a => a.IDT).Count() / @Model.LastWeekResults.Where(a => a.TeslimT == "HOL-6").Select(a => a.PozBarkodT).Count()</h4>
                                         <h6>Tarama Adedi <span class="pull-right" style="font-weight:bold; font-size:17px; color:#FF5E5E">@ViewBag.sonuc6TumHafta%</span></h6>
                                         <div class="progress mr-6" style="height: 8px">
                                             <div class="progress-bar bg-danger" style="width: @ViewBag.sonuc6TumHafta%"></div>
@@ -124,7 +114,7 @@
                                 <div class="ml-2 w-100">
                                     <h5 style=" margin-left:26px;">UHPC Kalıphane</h5>
                                     <div class="p-2" style="margin-left:20px;">
-                                        <h4 style="color:#F29D56">@ViewBag.hol9TumHafta / @Model.LastWeekResults.Where(a => a.TeslimT == "HOL-9").Select(a => a.PozBarkodT).Count()</h4>
+                                        <h4 style="color:#F29D56">@Model.TodayResults.Where(a => a.TeslimT == "HOL-9").Select(a => a.IDT).Count() / @Model.LastWeekResults.Where(a => a.TeslimT == "HOL-9").Select(a => a.PozBarkodT).Count()</h4>
                                         <h6>Tarama Adedi <span class="pull-right" style="font-weight:bold; font-size:17px; color:#F29D56">@ViewBag.sonuc9TumHafta%</span></h6>
                                         <div class="progress mr-6" style="height: 8px">
                                             <div class="progress-bar bg-warning" style="width: @ViewBag.sonuc9TumHafta%"></div>
@@ -148,10 +138,7 @@
                     <div id="morris-dashboard-cihaz"></div>
                 </div>
             </div>
-
         </div>
-
-
 
         @{
 
@@ -170,6 +157,7 @@
 
             }
         }
+
         <div class="col-lg-3 col-md-6">
             <div class="card card-widget">
                 <div class="card-body">
@@ -601,21 +589,8 @@
 
 </script>
 
-<script src="~/DataTables/jQuery-3.6.0/jquery-3.6.0.min.js"></script>
-<script src="~/DataTables/Bootstrap-5-5.0.1/js/bootstrap.bundle.min.js"></script>
-<script src="~/DataTables/DataTables-1.11.3/js/jquery.dataTables.min.js"></script>
-<script src="~/DataTables/DataTables-1.11.3/js/dataTables.bootstrap4.min.js"></script>
-<script src="~/DataTables/DataTables-1.11.3/js/dataTables.bootstrap5.min.js"></script>
-
 <script src="~/quixlab-master/quixlab-master/plugins/common/common.min.js"></script>
-<script src="~/quixlab-master/quixlab-master/js/custom.min.js"></script>
-<script src="~/quixlab-master/quixlab-master/js/settings.js"></script>
-<script src="~/quixlab-master/quixlab-master/js/gleek.js"></script>
-<script src="~/quixlab-master/quixlab-master/js/styleSwitcher.js"></script>
 
-<script src="~/quixlab-master/quixlab-master/plugins/tables/js/jquery.dataTables.min.js"></script>
-<script src="~/quixlab-master/quixlab-master/plugins/tables/js/datatable/dataTables.bootstrap4.min.js"></script>
-<script src="~/quixlab-master/quixlab-master/plugins/tables/js/datatable-init/datatable-basic.min.js"></script>
 
 <script>
     $('#veri').dataTable({
@@ -626,18 +601,21 @@
     })
 </script>
 
-@*<script type="text/javascript">
+<!-- View içerisinde -->
+<script type="text/javascript">
     var groupedData = @Html.Raw(Json.Encode(Model.LastWeekResults.GroupBy(a => a.TarihT.Date).Select(g => new
     {
-        Tarih = g.Key.DayOfWeek,
-        MetraScan = g.Where(a => a.CihazT == "METRASCAN").Select(a => a.IDT).Sum(),
-        Black = g.Where(a => a.CihazT == "BLACK ELİTE").Select(a => a.IDT).Sum()
+        Tarih = g.Key.DayOfWeek.ToString(),
+        MetraScan = g.Where(a => a.CihazT == "METRASCAN").Select(a => a.IDT).Count(),
+        Black = g.Where(a => a.CihazT == "BLACK ELİTE").Select(a => a.IDT).Count()
     }).ToList()));
-</script>*@
+</script>
 
 <script>
 
-    var allDays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+
+
+    @*var allDays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 
     var groupedData = @Html.Raw(Json.Encode(Model.LastWeekResults.GroupBy(a => a.TarihT.Date).Select(g => new
     {
@@ -655,52 +633,52 @@
                 Black: 0
             });
         }
-    });
+    });*@
 
-    // Bugünün gün numarasını al
-    var todayDayNumber = new Date().getDay();
-    // Günleri sayısal değerlere çevir
-    function getDayNumber(day) {
-        var days = { "Sunday": 0, "Monday": 1, "Tuesday": 2, "Wednesday": 3, "Thursday": 4, "Friday": 5, "Saturday": 6 };
-        return days[day];
-    }
-    // groupedData içindeki her bir elemana dayNumber ekleyin ve sıralayın
-    groupedData.forEach(function (item) {
-        item.dayNumber = getDayNumber(item.Tarih);
-    });
-    groupedData.sort(function (a, b) {
-        // Bugünün gününe göre sıralayarak bugünü sona alın
-        return (7 + a.dayNumber - todayDayNumber) % 7 - (7 + b.dayNumber - todayDayNumber) % 7;
-    });
+    //// Bugünün gün numarasını al
+    //var todayDayNumber = new Date().getDay();
+    //// Günleri sayısal değerlere çevir
+    //function getDayNumber(day) {
+    //    var days = { "Sunday": 0, "Monday": 1, "Tuesday": 2, "Wednesday": 3, "Thursday": 4, "Friday": 5, "Saturday": 6 };
+    //    return days[day];
+    //}
+    //// groupedData içindeki her bir elemana dayNumber ekleyin ve sıralayın
+    //groupedData.forEach(function (item) {
+    //    item.dayNumber = getDayNumber(item.Tarih);
+    //});
+    //groupedData.sort(function (a, b) {
+    //    // Bugünün gününe göre sıralayarak bugünü sona alın
+    //    return (7 + a.dayNumber - todayDayNumber) % 7 - (7 + b.dayNumber - todayDayNumber) % 7;
+    //});
 
-    var today = new Date().getDay();
-    var todayDataIndex = groupedData.findIndex(item => item.dayNumber === today);
-    var todayData = groupedData.splice(todayDataIndex, 1)[0];
-    groupedData.push(todayData);
+    //var today = new Date().getDay();
+    //var todayDataIndex = groupedData.findIndex(item => item.dayNumber === today);
+    //var todayData = groupedData.splice(todayDataIndex, 1)[0];
+    //groupedData.push(todayData);
 
-    // İngilizce gün adlarını Türkçe'ye çeviren bir fonksiyon
-    function translateDay(day) {
-        var days = { "Monday": "Pzt", "Tuesday": "Salı", "Wednesday": "Çrş", "Thursday": "Perş", "Friday": "Cuma", "Saturday": "Cmt", "Sunday": "Pazar" };
-        return days[day] || day;
-    }
+    //// İngilizce gün adlarını Türkçe'ye çeviren bir fonksiyon
+    //function translateDay(day) {
+    //    var days = { "Monday": "Pzt", "Tuesday": "Salı", "Wednesday": "Çrş", "Thursday": "Perş", "Friday": "Cuma", "Saturday": "Cmt", "Sunday": "Pazar" };
+    //    return days[day] || day;
+    //}
 
-    Morris.Bar({
-        element: 'morris-dashboard-cihaz',
-        data: groupedData.map(function (item) {
-            return {
-                y: translateDay(item.Tarih),
-                MetraScan: item.MetraScan,
-                Black: item.Black
-            };
-        }),
-        xkey: 'y',
-        ykeys: ['MetraScan', 'Black'],
-        labels: ['MetraSCAN', 'Black Elite'],
-        barColors: ['#FC6C8E', '#7571f9'],
-        hideHover: 'auto',
-        gridLineColor: 'transparent',
-        resize: true
-    });
+    //Morris.Bar({
+    //    element: 'morris-dashboard-cihaz',
+    //    data: groupedData.map(function (item) {
+    //        return {
+    //            y: translateDay(item.Tarih),
+    //            MetraScan: item.MetraScan,
+    //            Black: item.Black
+    //        };
+    //    }),
+    //    xkey: 'y',
+    //    ykeys: ['MetraScan', 'Black'],
+    //    labels: ['MetraSCAN', 'Black Elite'],
+    //    barColors: ['#FC6C8E', '#7571f9'],
+    //    hideHover: 'auto',
+    //    gridLineColor: 'transparent',
+    //    resize: true
+    //});
 
 </script>
 
@@ -711,24 +689,22 @@
     (function ($) {
         "use strict"
 
-        var pztSayı = @ViewBag.pzt;
-        var salıSayı = @ViewBag.salı;
-        var carsambaSayı = @ViewBag.crsmb;
-        var persembeSayı = @ViewBag.prsmb;
-        var cumaSayı = @ViewBag.cuma;
-        var cmtSayı = @ViewBag.cmt;
-        var pazarSayı = @ViewBag.pazar;
+        var taramaSayilari = @Html.Raw(Json.Encode(ViewBag.TaramaVerileri));
+
+        // Gün adlarını ve sayıları al
+        var labels = taramaSayilari.map(function (item) { return item.GunAdi; });
+        var data = taramaSayilari.map(function (item) { return item.Sayi; });
 
         let ctx = document.getElementById("anaChart");
         ctx.height = 280;
         new Chart(ctx, {
             type: 'line',
             data: {
-                labels: ["Cuma", "Cumartesi", "Pazar", "Pazartesi", "Salı", "Çarşamba", "Perşembe"],
+                labels: labels,
                 type: 'line',
                 defaultFontFamily: 'Montserrat',
                 datasets: [{
-                    data: [cumaSayı, cmtSayı, pazarSayı, pztSayı, salıSayı, carsambaSayı, persembeSayı],
+                    data: data,
                     label: "Toplam Tarama Adedi",
                     backgroundColor: '#847DFA',
                     borderColor: '#847DFA',
@@ -810,20 +786,4 @@
     });
 </script>
 
-
-<script src="https://cdn.jsdelivr.net/chartist.js/latest/chartist.min.js"></script>
-<script src="~/quixlab-master/quixlab-master/plugins/chartist/js/chartist.min.js"></script>
-<script src="~/quixlab-master/quixlab-master/plugins/chartist-plugin-tooltips/js/chartist-plugin-tooltip.min.js"></script>
-<script src="~/quixlab-master/quixlab-master/js/plugins-init/chartist.init.js"></script>
-<script src="~/quixlab-master/quixlab-master/plugins/chart.js/Chart.bundle.min.js"></script>
-<script src="~/quixlab-master/quixlab-master/plugins/circle-progress/circle-progress.min.js"></script>
-<script src="~/quixlab-master/quixlab-master/plugins/d3v3/index.js"></script>
-<script src="~/quixlab-master/quixlab-master/plugins/topojson/topojson.min.js"></script>
-<script src="~/quixlab-master/quixlab-master/plugins/datamaps/datamaps.world.min.js"></script>
-<script src="~/quixlab-master/quixlab-master/plugins/raphael/raphael.min.js"></script>
-<script src="~/quixlab-master/quixlab-master/plugins/morris/morris.min.js"></script>
-<script src="~/quixlab-master/quixlab-master/plugins/moment/moment.min.js"></script>
-<script src="~/quixlab-master/quixlab-master/plugins/pg-calendar/js/pignose.calendar.min.js"></script>
-<script src="~/quixlab-master/quixlab-master/plugins/chartist/js/chartist.min.js"></script>
-<script src="~/quixlab-master/quixlab-master/plugins/chartist-plugin-tooltips/js/chartist-plugin-tooltip.min.js"></script>
-<script src="~/quixlab-master/quixlab-master/js/dashboard/dashboard-1.js"></script>
+<script src="~/Content/jsFile/Tarama/DashboardCharts.js"></script>

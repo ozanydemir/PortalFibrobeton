@@ -1,6 +1,7 @@
 ﻿using Microsoft.Ajax.Utilities;
 using PortalFibrobeton.Attributelar;
 using PortalFibrobeton.Models.Class;
+using PortalFibrobeton.Models.Class.PeraRaporlar;
 using PortalFibrobeton.Models.Entity;
 using System;
 using System.Collections.Concurrent;
@@ -172,18 +173,37 @@ namespace PortalFibrobeton.Controllers.PeraFibro
         }
 
         //Klasör Olarak Yüklenen Dosyalar İçin
-        public List<string> DosyalariBul(string klasorYolu)
+        public List<string> DosyalariBul(string klasorYolu, string pozNo)
         {
+            //Klasör Olarak Yüklenen Dosyaların İçinden Belgeleri Bulup Listeleme Kodu
 
+            //var bulunanDosyalar = new List<string>();
+            //string[] uzantilar = new string[] { "*.pdf", "*.jpg", "*.jpeg", "*.dwg", "*.xlsx", "*.txt" };
+
+            //Parallel.ForEach(uzantilar, (uzanti) =>
+            //{
+            //    bulunanDosyalar.AddRange(Directory.GetFiles(klasorYolu, uzanti, SearchOption.AllDirectories));
+            //});
+
+            //return bulunanDosyalar.ToList();
+
+
+            //Direkt Dosya İçinde Poz No'ya Göre Arama
             var bulunanDosyalar = new List<string>();
             string[] uzantilar = new string[] { "*.pdf", "*.jpg", "*.jpeg", "*.dwg", "*.xlsx", "*.txt" };
 
-            Parallel.ForEach(uzantilar, (uzanti) =>
+            foreach(var uzanti in uzantilar)
             {
-                bulunanDosyalar.AddRange(Directory.GetFiles(klasorYolu, uzanti, SearchOption.AllDirectories));
-            });
-
-            return bulunanDosyalar.ToList();
+                var dosyalar = Directory.GetFiles(klasorYolu,uzanti,SearchOption.TopDirectoryOnly);
+                foreach(var dosya in dosyalar)
+                {
+                    if (dosya.Contains(pozNo))
+                    {
+                        bulunanDosyalar.Add(dosya);
+                    }
+                }
+            }
+            return bulunanDosyalar;
         }
 
         [HttpPost]
@@ -217,25 +237,26 @@ namespace PortalFibrobeton.Controllers.PeraFibro
 
             //Klasör Olarak Yüklenen Dosyalar İçin Kod
             var klasorYolu = db2.DOKUMAN_YONETIM_LOG.Where(a => a.VERI_ID == projeID).Select(a => a.KLASOR_YOLU).ToList().LastOrDefault();
-            if(!string.IsNullOrEmpty(klasorYolu))
+            if (!string.IsNullOrEmpty(klasorYolu))
             {
-                dosyalar = DosyalariBul(klasorYolu.ToString());
+                dosyalar = DosyalariBul(klasorYolu.ToString(),pozNo.ToString());
             }
             else
             {
                 dosyalar = new List<string>();
             }
 
-            if (!string.IsNullOrEmpty(pozNo))
-            {
-                foreach(var dosya in dosyalar)
-                {
-                    if (Path.GetFileName(dosya).Contains(pozNo))
-                    {
-                        filtrelenmisPozlar.Add(dosya);
-                    }
-                }
-            }
+            //if (!string.IsNullOrEmpty(pozNo))
+            //{
+            //    foreach (var dosya in dosyalar)
+            //    {
+            //        if (Path.GetFileName(dosya).Contains(pozNo))
+            //        {
+            //            filtrelenmisPozlar.Add(dosya);
+            //        }
+            //    }
+            //}
+
 
             //Diğer Bilgilere Göre Dosyalar
             var queryProje = db2.DOKUMAN_YONETIM_LOG.Where(a => a.VERI_ID == projeID || pozIDs.Contains((int)a.VERI_ID) || ktIDs.Contains((int)a.VERI_ID)).ToList();
@@ -244,7 +265,7 @@ namespace PortalFibrobeton.Controllers.PeraFibro
             var viewModel = new TeknikResimler
             {
                 ArsivListeNP = pdfSelector,
-                AltKlasorlerList = filtrelenmisPozlar,
+                AltKlasorlerList = dosyalar,
                 ProjeListNP = projeListNP
             };
 

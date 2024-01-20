@@ -65,6 +65,12 @@
     <Reference Include="EPPlus.System.Drawing, Version=6.1.1.0, Culture=neutral, PublicKeyToken=2308d35469c9bac0, processorArchitecture=MSIL">
       <HintPath>..\packages\EPPlus.System.Drawing.6.1.1\lib\net462\EPPlus.System.Drawing.dll</HintPath>
     </Reference>
+    <Reference Include="Hangfire.Core, Version=1.8.6.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Hangfire.Core.1.8.6\lib\net46\Hangfire.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Hangfire.SqlServer, Version=1.8.6.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Hangfire.SqlServer.1.8.6\lib\net451\Hangfire.SqlServer.dll</HintPath>
+    </Reference>
     <Reference Include="IronSoftware.Drawing.Common, Version=2023.4.4.0, Culture=neutral, PublicKeyToken=8d7e55c97b3e9835, processorArchitecture=MSIL">
       <HintPath>..\packages\IronSoftware.System.Drawing.2023.4.4\lib\netstandard2.0\IronSoftware.Drawing.Common.dll</HintPath>
     </Reference>
@@ -154,6 +160,9 @@
     <Reference Include="RestSharp, Version=106.0.1.0, Culture=neutral, PublicKeyToken=598062e77f915f75, processorArchitecture=MSIL">
       <HintPath>..\packages\RestSharp.106.0.1\lib\net452\RestSharp.dll</HintPath>
     </Reference>
+    <Reference Include="Serilog, Version=2.0.0.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10, processorArchitecture=MSIL">
+      <HintPath>..\packages\Serilog.3.1.1\lib\net471\Serilog.dll</HintPath>
+    </Reference>
     <Reference Include="SixLabors.ImageSharp, Version=2.0.0.0, Culture=neutral, PublicKeyToken=d998eea7b14cab13, processorArchitecture=MSIL">
       <HintPath>..\packages\SixLabors.ImageSharp.2.1.3\lib\net472\SixLabors.ImageSharp.dll</HintPath>
     </Reference>
@@ -166,8 +175,8 @@
     </Reference>
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Data" />
-    <Reference Include="System.Diagnostics.DiagnosticSource, Version=7.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Diagnostics.DiagnosticSource.7.0.0\lib\net462\System.Diagnostics.DiagnosticSource.dll</HintPath>
+    <Reference Include="System.Diagnostics.DiagnosticSource, Version=7.0.0.2, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Diagnostics.DiagnosticSource.7.0.2\lib\net462\System.Diagnostics.DiagnosticSource.dll</HintPath>
     </Reference>
     <Reference Include="System.Drawing" />
     <Reference Include="System.IO, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
@@ -1026,6 +1035,7 @@
     <Content Include="Content\jsFile\Olgunluk\HomePageOlgunluk.js" />
     <Content Include="Content\jsFile\OneSignal\OneSignalServiceWorkers.js" />
     <Content Include="Content\jsFile\StepForm.js" />
+    <Content Include="Content\jsFile\Tarama\DashboardCharts.js" />
     <Content Include="Content\jsFile\UpdateProje.js" />
     <Content Include="Content\jsFile\UretimveSevkiyatJS\HedefKaydet.js" />
     <Content Include="Content\Logo\CMA03\power-button.png" />
@@ -7253,10 +7263,10 @@
     <Content Include="Views\PeraV4Raporlar\UrunIzlemeRaporu.cshtml" />
     <Content Include="Views\PeraV4Raporlar\SiparisIzleme.cshtml" />
     <Content Include="Views\Reports\Kalıphaneler.cshtml" />
+    <Content Include="Views\CncHome\GecmisKayitEkleme.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Content\Class\" />
     <Folder Include="Views\MultipleButtonConc\" />
     <Folder Include="Views\MultipleButtonResults\" />
     <Folder Include="Views\MultipleButton\" />

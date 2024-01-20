@@ -7,6 +7,7 @@ using PortalFibrobeton.Models.Entity;
 using System.Data.SqlClient;
 using System.Globalization;
 using PortalFibrobeton.Models.Class.Tarama;
+using System.Data.Entity;
 
 namespace PortalFibrobeton.Controllers
 {
@@ -53,8 +54,52 @@ namespace PortalFibrobeton.Controllers
             var bugun = DateTime.Today;
             var sqlSorguBugun = db.Tbl_Taramalar.Where(a => a.TarihT == bugun).ToList();
 
+            // Tüm hafta için taramaları al
+            var baslangicTarihi = DateTime.Today.AddDays(-6); // Son 7 günü kapsayacak şekilde
+            var bitisTarihi = DateTime.Today;
+
+            // Veritabanından tarih ve sayıları al
+            var taramalar = db.Tbl_Taramalar
+                .Where(t => DbFunctions.TruncateTime(t.TarihT) >= baslangicTarihi && DbFunctions.TruncateTime(t.TarihT) <= bitisTarihi)
+                .ToList() // Veritabanından verileri al
+                .Select(t => new
+                {
+                    Tarih = t.TarihT,
+                    Sayi = 1 // Her bir tarama için sayıyı 1 olarak kabul ediyoruz
+                })
+                .GroupBy(t => t.Tarih.DayOfWeek)
+                .Select(g => new
+                {
+                    Gun = g.Key,
+                    Sayi = g.Count()
+                })
+                .ToList();
+
+            // Gün isimlerine göre sırala ve ViewBag'e ata
+            var gunIsimleri = new Dictionary<DayOfWeek, string> {
+                { DayOfWeek.Sunday, "Pazar" },
+                { DayOfWeek.Monday, "Pazartesi" },
+                { DayOfWeek.Tuesday, "Salı" },
+                { DayOfWeek.Wednesday, "Çarşamba" },
+                { DayOfWeek.Thursday, "Perşembe" },
+                { DayOfWeek.Friday, "Cuma" },
+                { DayOfWeek.Saturday, "Cumartesi" }
+            };
+
+            // Haftanın her günü için veri oluştur
+            var taramaVerileri = Enumerable.Range(0, 7)
+                .Select(i => baslangicTarihi.AddDays(i).DayOfWeek)
+                .Select(gun => new {
+                    GunAdi = gunIsimleri[gun],
+                    Sayi = taramalar.FirstOrDefault(t => t.Gun == gun)?.Sayi ?? 0
+                })
+                .ToList();
+
+            // Görünüme verileri aktar
+            ViewBag.TaramaVerileri = taramaVerileri;
 
 
+            //ViewModel
             var viewModel = new TaramaViewModel
             {
                 LastTenActivity = sqlActivity,

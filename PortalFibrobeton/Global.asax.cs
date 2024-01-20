@@ -8,9 +8,9 @@ using System.Web;
 using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
+using Hangfire;
 
 
-//[assembly: OwinStartup(typeof(PortalFibrobeton.MvcApplication), "Configuration")]
 namespace PortalFibrobeton
 {
    
@@ -25,9 +25,12 @@ namespace PortalFibrobeton
             BundleConfig.RegisterBundles(BundleTable.Bundles);
 
 
-            //MqttService mqttService = new MqttService();
-
             MqttServiceInstance = new MqttService();
+
+            ////Hangfire Veritabanı Cache
+            //Microsoft.Owin.Host.SystemWeb.OwinBuilder appBuilder = new Microsoft.Owin.Host.SystemWeb.OwinBuilder();
+            //Startup startup = new Startup();
+            //startup.Configuration(appBuilder.Build());
         }
     }
 }

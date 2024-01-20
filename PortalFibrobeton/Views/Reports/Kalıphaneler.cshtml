@@ -194,59 +194,34 @@
                         <div class="card-body">
                             <h4 class="card-title" style="font-size:22px;">Kalıp Tarama Sayı Grafiği </h4>
                             <span style="margin-left:30px;">Haftalık</span>
-                            <div id="haftalıksayı"></div>
+                            <div id="haftaliksayi"></div>
                         </div>
                     </div>
                 </div>
             </div>
 
             <script>
-                var sqlSorguDash = @Html.Raw(JsonConvert.SerializeObject(ViewBag.HaftalikTaramaChart));
+                $(function () {
+                    var haftalikTaramaChartVerileri = @Html.Raw(JsonConvert.SerializeObject(ViewBag.HaftalikTaramaChart));
 
-                var grafikVerileri = sqlSorguDash.map(function (item) {
-                    return {
-                        'tarih': item.Tarih, // Tarihi ekleyin
-                        'gun': item.Gun,
-                        'hol6': item.HOL6,
-                        'hol9': item.HOL9,
-                        'ozd': item.TASERON
-                    };
-                });
-
-                // Tarihleri kullanarak verileri sıralayın
-                grafikVerileri.sort(function (a, b) {
-                    return new Date(b.tarih) - new Date(a.tarih);
-                });
-
-                // Morris.js grafiği için verileri hazırlayın
-                var morrisVerileri = grafikVerileri.map(function (item) {
-                    return {
-                        '0': item.gun, // Gün adını kullanın
-                        'hol6': item.hol6,
-                        'hol9': item.hol9,
-                        'ozd': item.ozd
-                    };
-                });
-
-                new Morris.Area({
-                    // ID of the element in which to draw the chart.
-                    element: 'haftalıksayı',
-                    data: grafikVerileri, // Grafik verileri
-                    lineColors: ['#7571F9', '#4d7cff'],
-                    xkey: '0', // X ekseni (günler)
-                    ykeys: ['hol6', 'hol9', 'ozd'],
-                    labels: ['Ana Kalıphane', 'UHPC Kalıphane', 'Özdemir Model'],
-                    pointSize: 0,
-                    lineWidth: 0,
-                    parseTime: false,
-                    resize: true,
-                    fillOpacity: 0.8,
-                    behaveLikeLine: true,
-                    gridLineColor: 'transparent',
-                    hideHover: 'auto'
+                    new Morris.Area({
+                        element: 'haftaliksayi',
+                        data: haftalikTaramaChartVerileri,
+                        lineColors: ['#7571F9', '#4d7cff'],
+                        xkey: 'Gun',
+                        ykeys: ['HOL6', 'HOL9', 'TASERON'],
+                        labels: ['Ana Kalıphane', 'UHPC Kalıphane', 'Özdemir Model'],
+                        pointSize: 0,
+                        lineWidth: 0,
+                        parseTime: false,
+                        resize: true,
+                        fillOpacity: 0.8,
+                        behaveLikeLine: true,
+                        gridLineColor: 'transparent',
+                        hideHover: 'auto'
+                    });
                 });
             </script>
-
 
 
             @*-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*@
@@ -1155,11 +1130,6 @@
                 </div>
             </div>
         </div>
-
-
-
-
-
 
         <script>
             var yuzdeKaliphane6 = @Html.Raw(JsonConvert.SerializeObject(ViewBag.AyHataYuzdeler6));

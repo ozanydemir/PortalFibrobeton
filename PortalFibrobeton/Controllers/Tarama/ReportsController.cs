@@ -68,28 +68,31 @@ namespace PortalFibrobeton.Controllers
             ViewBag.DunHataYuzdeler6 = yuzdeler6Dun;
             ViewBag.DunHataYuzdeler9 = yuzdeler9Dun;
 
-            
 
+            //---------------------------------------------------------------------------------------------------------------------------------//
 
-            //Haftalık Veriler
-            var son7Gun = DateTime.Now.AddDays(-7);
+            // Haftalık Veriler
+            var baslangicTarihi = DateTime.Today.AddDays(-6);
+            var bitisTarihi = DateTime.Today;
+
             var sqlSorguDash = db.Tbl_Taramalar
-                       .Where(a => a.TarihT >= son7Gun)
-                       .OrderByDescending(a => a.TarihT) // Tarihe göre azalan sırada sırala
-                       .ToList();
+                .Where(a => a.TarihT >= baslangicTarihi && a.TarihT <= bitisTarihi)
+                .ToList();
 
-            var grupDataSql = sqlSorguDash.GroupBy(a => a.TarihT.Date).Select(grup => new
-            {
-                Tarih = grup.Key.ToString("yyyy-MM-dd"),
-                Gun = grup.Key.ToString("dddd",new CultureInfo("tr-TR")),
-                HOL6 = grup.Count(g => g.TeslimT == "HOL-6"),
-                HOL9 = grup.Count(g => g.TeslimT == "HOL-9"),
-                TASERON = grup.Count(g => g.TeslimT == "TAŞERON")
-            })
-            .OrderByDescending(g => g.Gun).ToList();
+            var grupDataSql = Enumerable.Range(0, 7)
+                .Select(offset => baslangicTarihi.AddDays(offset))
+                .Select(tarih => new
+                {
+                    Tarih = tarih,
+                    Gun = tarih.ToString("dddd", new CultureInfo("tr-TR")),
+                    HOL6 = sqlSorguDash.Count(a => a.TarihT.Date == tarih.Date && a.TeslimT == "HOL-6"),
+                    HOL9 = sqlSorguDash.Count(a => a.TarihT.Date == tarih.Date && a.TeslimT == "HOL-9"),
+                    TASERON = sqlSorguDash.Count(a => a.TarihT.Date == tarih.Date && a.TeslimT == "TAŞERON")
+                })
+                .ToList();
 
             ViewBag.HaftalikTaramaChart = grupDataSql;
-            
+
 
             //Haftalık Tarama Hata Sayısı
             var yuzdeler6Hafta = new List<double>();
@@ -114,7 +117,7 @@ namespace PortalFibrobeton.Controllers
             ViewBag.HaftalikHataYuzdeler6 = yuzdeler6Hafta;
             ViewBag.HaftalikHataYuzdeler9 = yuzdeler9Hafta;
 
-
+            //---------------------------------------------------------------------------------------------------------------------------------//
 
             //Bugün Kayıtları
             var bugun = DateTime.Today;
