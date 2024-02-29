@@ -1,0 +1,491 @@
+﻿@*@model IEnumerable<PortalFibrobeton.Models.Class.DigitalSignature.CertificateViewModel>*@
+@model IEnumerable<PortalFibrobeton.Models.Class.DigitalSignature.CertificateViewModel>
+
+@{
+    ViewBag.Title = "UploadDocuments";
+    Layout = "~/Views/Shared/_PeraLayout.cshtml";
+}
+
+<head>
+    <!-- Önizleme ve Dropzone için stil tanımlamaları -->
+    <style>
+        .dropzone {
+            border: 2px dashed #0087F7;
+            border-radius: 5px;
+            background: white;
+            min-height: 150px;
+            padding: 20px;
+            box-sizing: border-box;
+            cursor: pointer;
+            position: relative;
+            text-align: center;
+        }
+
+            .dropzone p {
+                margin: 10px 0;
+                font-size: 16px;
+                color: #999;
+            }
+
+        .preview-box {
+            border: 1px solid #ddd;
+            padding: 5px;
+            margin-top: 10px;
+            display: inline-block;
+        }
+
+
+        /*.button-row {
+            display: flex;
+            justify-content: space-between;*/ /* Butonları satırda yay */
+        /*}
+
+            .button-row button {
+                flex-grow: 1;*/ /* Butonların esnek büyümesini sağla */
+        /*margin-right: 5px;*/ /* Butonlar arasında boşluk */
+        /*height: 50px;
+            }
+
+            .button-row submit {
+                flex-grow: 1;*/ /* Butonların esnek büyümesini sağla */
+        /*margin-right: 5px;*/ /* Butonlar arasında boşluk */
+        /*height: 50px;
+            }
+
+            .button-row button:last-child {
+                margin-right: 0;*/ /* Son buton için sağdaki boşluğu sıfırla */
+        /*}*/
+
+        .custom-modal .modal-dialog {
+            max-width: 1200px; /* İstenilen genişlik */
+        }
+    </style>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pdfjs-dist@4.0.189/web/pdf_viewer.min.css">
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+</head>
+
+
+<body>
+
+    <script type="module" src="https://cdn.jsdelivr.net/npm/pdfjs-dist@4.0.189/build/pdf.worker.min.mjs"></script>
+    <script type="module" src="https://cdn.jsdelivr.net/npm/pdfjs-dist@4.0.189/build/pdf.min.mjs"></script>
+    <script type="module" src="https://cdn.jsdelivr.net/npm/pdfjs-dist@4.0.189/web/pdf_viewer.mjs"></script>
+
+
+    @using (Html.BeginForm("SignAllPdf", "DigitalSignature", FormMethod.Post, new { enctype = "multipart/form-data", id = "file-upload-form" }))
+    {
+
+
+        <div class="col-lg-9 mt-4" style="margin-left: 20px">
+            <div class="card">
+                <div class="card-body">
+                    @*<input type="radio" name="selectedCert" value="@item.Thumbprint" onclick="updateThumbPrint(this.value)" /> @item.Subject*@
+                    <h4 class="card-title">Sertifikalar</h4>
+                    <div class="signatures-container">
+                        <ul id="certificate-list">
+                            @if (Model != null)
+                            {
+                                foreach (var item in Model)
+                                {
+                                    <input type="radio" name="selectedCert" value="@item.Thumbprint" onclick="updateThumbPrint(this.value)" /> @item.Subject
+                                }
+                            }
+                        </ul>
+                        <input type="hidden" id="thumbPrint" name="thumbPrint" value="" />
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-12">
+            <div class="card mt-4" style="margin-left:20px;margin-right:20px">
+                <div class="card-body">
+                    <h3 class="card-title">Dosya Seç</h3>
+                    <div id="dropzone" class="form-control-file dropzone">
+                        <input id="file-input" type="file" name="file" multiple style="display: none;" onchange="updatePreview()" />
+                        <p>Belgelerinizi buraya bırakın veya başlamak için tıklayın</p>
+                        <div id="preview-container"></div>
+                    </div>
+                    <input type="hidden" id="signatureX" name="x" />
+                    <input type="hidden" id="signatureY" name="y" />
+                    <input type="hidden" id="signatureWidth" name="width" />
+                    <input type="hidden" id="signatureHeight" name="height" />
+                    <input type="hidden" id="pageNumber" name="pageNumber" />
+                    <div class="button-row">
+                        <input type="submit" id="signButton" class="btn btn-success btn-lg btn-block" value="İmzala" style="margin-top:8px" />
+                        <button type="button" class="btn btn-danger btn-lg btn-block" id="clear-button" style="margin-top:8px">Sil</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-12">
+            <div class="card mt-5" style="margin-left:20px;margin-right:20px">
+                <div class="card-body">
+                    <h4 class="card-title">Pdf Önizleme</h4>
+                    <div id="pdfViewerContainer"></div>
+                    <div id="signature-pad" class="signature-pad">
+                        <canvas id="signature-canvas"></canvas>
+                    </div>
+                    <div id="pagination-container">
+                        <button id="previous-page-button">Önceki Sayfa</button>
+                        <span id="page-num"></span> / <span id="page-count"></span>
+                        <button id="next-page-button">Sonraki Sayfa</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+</body>
+
+
+<script>
+    $(document).ready(function () {
+        $.ajax({
+            url: "@Url.Action("GetCertificates", "DigitalSignature")",
+            type: "GET",
+            success: function (data) {
+                var certificates = data;
+                var certificateList = $("#certificate-list");
+                certificateList.empty(); // Mevcut içeriği temizle
+
+                for (var i = 0; i < certificates.length; i++) {
+                    var cert = certificates[i];
+                    var listItem = $("<li>");
+                    var radioBtn = $('<input type="radio" name="selectedCert" value="' + cert.Thumbprint + '">');
+                    radioBtn.on("click", function () {
+                        updateThumbPrint(this.value);
+                    });
+                    listItem.append(radioBtn);
+                    listItem.append(" " + cert.Subject);
+                    certificateList.append(listItem);
+                }
+            },
+            error: function (error) {
+                console.error("Sertifika bilgileri alınamadı: " + error);
+            }
+        });
+    });
+
+
+
+    function updateThumbPrint(value) {
+        $("#thumbPrint").val(value);
+        console.log("Seçilen sertifika thumbprint: " + value);
+    }
+
+
+</script>
+
+<script>
+
+    document.addEventListener('DOMContentLoaded', (event) => {
+        document.getElementById('dropzone').onclick = function () {
+            if (document.getElementById('file-input').files.length === 0) {
+                document.getElementById('file-input').click();
+            }
+        };
+
+        document.getElementById('file-input').addEventListener('change', function (event) {
+            updatePreview(event.target.files);
+        });
+
+        document.getElementById('previous-page-button').addEventListener('click', goToPreviousPage);
+        document.getElementById('next-page-button').addEventListener('click', goToNextPage);
+        document.getElementById('clear-button').addEventListener('click', clearPreviews);
+
+        document.getElementById('file-upload-form').onsubmit = function () {
+            var files = document.getElementById('file-input').files;
+            if (files.length === 0) {
+                alert("Lütfen bir PDF dosyası seçin.");
+                return false;
+            }
+            document.getElementById('signatureX').value = parseInt(document.getElementById('signatureX').value);
+            document.getElementById('signatureY').value = parseInt(document.getElementById('signatureY').value);
+            document.getElementById('pageNumber').value = parseInt(document.getElementById('pageNumber').value);
+            return true;
+        };
+    });
+</script>
+
+<script type="module">
+    import * as pdfjsLib from 'https://cdn.jsdelivr.net/npm/pdfjs-dist@4.0.189/build/pdf.min.mjs';
+
+    var signatureInfo = { x: 0, y: 0, pageNumber: 0 };
+    var currentPage = 1;
+    var pageCount;
+    var currentPdfUrl;
+
+    document.addEventListener('DOMContentLoaded', (event) => {
+        document.getElementById('dropzone').onclick = function () {
+            if (document.getElementById('file-input').files.length === 0) {
+                document.getElementById('file-input').click();
+            }
+        };
+
+        document.getElementById('file-input').addEventListener('change', function (event) {
+            updatePreview(event.target.files);
+        });
+
+        document.getElementById('previous-page-button').addEventListener('click', goToPreviousPage);
+        document.getElementById('next-page-button').addEventListener('click', goToNextPage);
+        document.getElementById('clear-button').addEventListener('click', clearPreviews);
+
+        document.getElementById('file-upload-form').onsubmit = function () {
+            // Eğer dosya seçilmemişse form gönderimini engelle
+            var files = document.getElementById('file-input').files;
+            if (files.length === 0) {
+                alert("Lütfen bir PDF dosyası seçin.");
+                return false;
+            }
+            // Koordinat ve sayfa numarası değerlerini tam sayıya çevirme
+            document.getElementById('signatureX').value = parseInt(document.getElementById('signatureX').value);
+            document.getElementById('signatureY').value = parseInt(document.getElementById('signatureY').value);
+            document.getElementById('pageNumber').value = parseInt(document.getElementById('pageNumber').value);
+            return true;
+        };
+    });
+
+    function updatePreview(files) {
+        var previewContainer = document.getElementById('preview-container');
+        previewContainer.innerHTML = '';
+
+        Array.from(files).forEach((file, index) => {
+            var previewBox = document.createElement('div');
+            previewBox.className = 'preview-box';
+            previewBox.onclick = function () {
+                loadPdfFromFile(file);
+            };
+
+            var fileName = document.createElement('p');
+            fileName.textContent = file.name;
+            previewBox.appendChild(fileName);
+
+            var previewImage = document.createElement('img');
+            previewImage.src = '/Content/Icons/pdf64.png';
+            previewImage.height = 50;
+            previewBox.appendChild(previewImage);
+
+            previewContainer.appendChild(previewBox);
+        });
+    }
+
+    function loadPdfFromFile(file) {
+        currentPdfUrl = URL.createObjectURL(file);
+        currentPage = 1;
+        loadPdf(currentPdfUrl);
+    }
+
+    function loadPdf(url) {
+        var loadingTask = pdfjsLib.getDocument(url);
+        loadingTask.promise.then(function (pdf) {
+            pageCount = pdf.numPages;
+            document.getElementById('page-count').textContent = pageCount;
+            showPage(currentPage, pdf);
+        }, function (reason) {
+            console.error('PDF yüklenemedi: ' + reason);
+        });
+    }
+
+
+    function showPage(pageNumber, pdf) {
+        pdf.getPage(pageNumber).then(function (page) {
+            var scale = 1.5;
+            var viewport = page.getViewport({ scale: scale });
+            var canvas = document.getElementById('signature-canvas');
+            canvas.height = viewport.height;
+            canvas.width = viewport.width;
+
+            var context = canvas.getContext('2d');
+            var renderContext = {
+                canvasContext: context,
+                viewport: viewport
+            };
+            page.render(renderContext);
+            document.getElementById('page-num').textContent = pageNumber;
+            document.getElementById('pageNumber').value = 1;
+
+            // Canvas üzerindeki mevcut imza alanını temizle
+            clearSignatureCanvas();
+
+            // PDF boyutlarına göre koordinat dönüşümü için gerekli bilgileri sakla
+            signatureInfo.pdfWidth = viewport.width;
+            signatureInfo.pdfHeight = viewport.height;
+        });
+    }
+
+    // Imza canvas'ını temizleyin
+    function clearSignatureCanvas() {
+        var canvas = document.getElementById('signature-canvas');
+        var context = canvas.getContext('2d');
+        context.clearRect(0, 0, canvas.width, canvas.height);
+    }
+
+    // Imza alanı için fonksiyonları tekrar tanımlayın
+    function initializeSignaturePad() {
+        var canvas = document.getElementById('signature-canvas');
+        var context = canvas.getContext('2d');
+        var isDrawing = false;
+        var rect = {};
+
+        canvas.addEventListener('mousedown', function (e) {
+            rect.startX = e.offsetX;
+            rect.startY = e.offsetY;
+            isDrawing = true;
+        });
+
+        canvas.addEventListener('mousemove', function (e) {
+            if (!isDrawing) return;
+            rect.w = e.offsetX - rect.startX;
+            rect.h = e.offsetY - rect.startY;
+
+            context.clearRect(0, 0, canvas.width, canvas.height); // Önceki çizimleri temizle
+            context.strokeRect(rect.startX, rect.startY, rect.w, rect.h); // Yeni imza alanını çiz
+        });
+
+        canvas.addEventListener('mouseup', function (e) {
+            isDrawing = false;
+            // Form verilerini güncelleyin
+            document.getElementById('signatureX').value = rect.startX;
+            document.getElementById('signatureY').value = rect.startY;
+            document.getElementById('signatureWidth').value = rect.w;
+            document.getElementById('signatureHeight').value = rect.h;
+        });
+    }
+
+    // `initializeSignaturePad` fonksiyonunu sayfa yüklemesi tamamlandığında çağırın
+    document.addEventListener('DOMContentLoaded', function (event) {
+        initializeSignaturePad();
+    });
+
+
+    // Global değişkenler
+    let signaturePad = document.getElementById('signature-canvas');
+    let isDrawing = false;
+    let startX = 0;
+    let startY = 0;
+    let endX = 0;
+    let endY = 0;
+
+    // Canvas için context alın
+    let context = signaturePad.getContext('2d');
+
+    // Mouse hareketlerini takip eden fonksiyonlar
+    function startDrawing(e) {
+        isDrawing = true;
+        [startX, startY] = [e.offsetX, e.offsetY];
+    }
+
+    function draw(e) {
+        if (!isDrawing) return;
+        [endX, endY] = [e.offsetX, e.offsetY];
+
+        // Her harekette önceki dikdörtgeni temizle
+        context.clearRect(0, 0, signaturePad.width, signaturePad.height);
+
+        // Yeni dikdörtgeni çiz
+        context.beginPath();
+        context.rect(startX, startY, endX - startX, endY - startY);
+        context.stroke();
+    }
+
+    function finishDrawing() {
+        isDrawing = false;
+
+        // Dikdörtgenin koordinatlarını ve boyutlarını saklayın
+        let rectWidth = endX - startX;
+        let rectHeight = endY - startY;
+
+        // Canvas ve PDF boyutları arasındaki ölçeklendirme faktörünü hesaplayın
+        let scaleX = signatureInfo.pdfWidth / signaturePad.width;
+        let scaleY = signatureInfo.pdfHeight / signaturePad.height;
+
+        // Ölçeklendirilmiş koordinatları ve boyutları hesaplayın
+        let pdfX = startX * scaleX;
+        let pdfY = (signaturePad.height - startY - rectHeight) * scaleY; // Y koordinatını dönüştür
+        let pdfWidth = rectWidth * scaleX;
+        let pdfHeight = rectHeight * scaleY;
+
+        // Form verilerini güncelleyin
+        document.getElementById('signatureX').value = pdfX;
+        document.getElementById('signatureY').value = pdfY;
+        document.getElementById('signatureWidth').value = pdfWidth;
+        document.getElementById('signatureHeight').value = pdfHeight;
+        document.getElementById('pageNumber').value = pageNumber;
+
+
+        //Çalışan Kod//
+
+        //// Dikdörtgenin koordinatlarını ve boyutlarını saklayın
+        //let rectWidth = endX - startX;
+        //let rectHeight = endY - startY;
+
+        //// PDF formatına uygun koordinat dönüşümü yapın
+        //let pdfX = startX;
+        //let pdfY = signatureInfo.pdfHeight - startY - rectHeight; // Y koordinatını dönüştür
+
+        ////// Form verilerini güncelleyin
+        ////document.getElementById('signatureX').value = startX;
+        ////document.getElementById('signatureY').value = startY;
+        ////document.getElementById('signatureWidth').value = rectWidth;
+        ////document.getElementById('signatureHeight').value = rectHeight;
+        ////document.getElementById('pageNumber').value = pageNumber;
+
+
+    }
+
+    // Event listener'ları ekle
+    signaturePad.addEventListener('mousedown', startDrawing);
+    signaturePad.addEventListener('mousemove', draw);
+    signaturePad.addEventListener('mouseup', finishDrawing);
+
+
+    function goToPreviousPage() {
+        if (currentPage > 1) {
+            currentPage--;
+            loadPdf(currentPdfUrl);
+            document.getElementById('pageNumber').value = currentPage;
+        }
+    }
+
+    function goToNextPage() {
+        if (currentPage < pageCount) {
+            currentPage++;
+            loadPdf(currentPdfUrl);
+            document.getElementById('pageNumber').value = currentPage;
+        }
+    }
+
+    function clearPreviews() {
+        var previewContainer = document.getElementById('preview-container');
+        var pdfViewerContainer = document.getElementById('pdfViewerContainer');
+        var pageNumElement = document.getElementById('page-num');
+        var pageCountElement = document.getElementById('page-count');
+
+        if (previewContainer) {
+            previewContainer.innerHTML = '';
+        }
+        if (pdfViewerContainer) {
+            pdfViewerContainer.innerHTML = '';
+        }
+        if (pageNumElement) {
+            pageNumElement.textContent = '';
+        }
+        if (pageCountElement) {
+            pageCountElement.textContent = '';
+        }
+
+        var fileInput = document.getElementById('file-input');
+        if (fileInput) {
+            fileInput.value = '';
+        }
+
+        currentPage = 1;
+        pageCount = 0;
+        currentPdfUrl = null;
+    }
+</script>
+
+

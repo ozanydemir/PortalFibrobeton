@@ -50,6 +50,9 @@
     <Reference Include="BitMiracle.LibTiff.NET, Version=2.4.649.0, Culture=neutral, PublicKeyToken=53879b3e20e7a7d6, processorArchitecture=MSIL">
       <HintPath>..\packages\BitMiracle.LibTiff.NET.2.4.649\lib\net40\BitMiracle.LibTiff.NET.dll</HintPath>
     </Reference>
+    <Reference Include="BouncyCastle.Crypto, Version=1.8.9.0, Culture=neutral, PublicKeyToken=0e99375e54769942">
+      <HintPath>..\packages\BouncyCastle.1.8.9\lib\BouncyCastle.Crypto.dll</HintPath>
+    </Reference>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <HintPath>..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.dll</HintPath>
     </Reference>
@@ -73,6 +76,9 @@
     </Reference>
     <Reference Include="IronSoftware.Drawing.Common, Version=2023.4.4.0, Culture=neutral, PublicKeyToken=8d7e55c97b3e9835, processorArchitecture=MSIL">
       <HintPath>..\packages\IronSoftware.System.Drawing.2023.4.4\lib\netstandard2.0\IronSoftware.Drawing.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="itextsharp, Version=5.5.13.3, Culture=neutral, PublicKeyToken=8354ae6d2174ddca, processorArchitecture=MSIL">
+      <HintPath>..\packages\iTextSharp.5.5.13.3\lib\itextsharp.dll</HintPath>
     </Reference>
     <Reference Include="M2Mqtt.Net, Version=4.3.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\M2Mqtt.4.3.0.0\lib\net45\M2Mqtt.Net.dll</HintPath>
@@ -332,11 +338,13 @@
     <Compile Include="Attributelar\MultipleButton.cs" />
     <Compile Include="Attributelar\MultipleButtonResults.cs" />
     <Compile Include="Controllers\PeraFibro\ArsivDokumanController.cs" />
+    <Compile Include="Controllers\PeraFibro\DigitalSignatureController.cs" />
     <Compile Include="Controllers\PeraFibro\PeraV4RaporlarController.cs" />
     <Compile Include="Controllers\Tarama\TaramaEkleNPController.cs" />
     <Compile Include="Models\Class\ARGE\OlgunlukCihazClass\OlgunlukCihazClass.cs" />
     <Compile Include="Models\Class\ARGE\OlgunlukCihazClass\OlgunlukTestVerileri.cs" />
     <Compile Include="Models\Class\ARGE\OlgunlukViewModels\OlgunlukViewModelDashboard.cs" />
+    <Compile Include="Models\Class\DigitalSignature\CertificateViewModel.cs" />
     <Compile Include="Models\Class\PeraRaporlar\KalipIzlemeModelItem.cs" />
     <Compile Include="Models\Class\PeraRaporlar\PeraV4ReportsViewModel.cs" />
     <Compile Include="Models\Class\PeraRaporlar\SiparisIzlemeModelItem.cs" />
@@ -1012,6 +1020,7 @@
     <Content Include="Content\icons\minus.png" />
     <Content Include="Content\icons\ok_30px.png" />
     <Content Include="Content\icons\pdf.png" />
+    <Content Include="Content\icons\pdf64.png" />
     <Content Include="Content\icons\power-on.png" />
     <Content Include="Content\icons\radio-green.png" />
     <Content Include="Content\icons\radio-red.png" />
@@ -7264,6 +7273,7 @@
     <Content Include="Views\PeraV4Raporlar\SiparisIzleme.cshtml" />
     <Content Include="Views\Reports\Kalıphaneler.cshtml" />
     <Content Include="Views\CncHome\GecmisKayitEkleme.cshtml" />
+    <Content Include="Views\DigitalSignature\UploadDocuments.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

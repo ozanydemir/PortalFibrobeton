@@ -146,114 +146,75 @@ namespace PortalFibrobeton.Controllers.Tarama
         }
 
         [HttpPost]
-        public async Task<ActionResult> Save(Tbl_Taramalar p1, List<HttpPostedFileBase> images)
+        public async Task<ActionResult> Save(Tbl_Taramalar p1, HttpPostedFileBase image1, HttpPostedFileBase image2, HttpPostedFileBase image3, 
+            HttpPostedFileBase image4, HttpPostedFileBase image5, HttpPostedFileBase image6, HttpPostedFileBase image7, 
+            HttpPostedFileBase image8, HttpPostedFileBase image9, HttpPostedFileBase image10)
+
         {
             
 
             try
             {
-                for (int i = 0; i < images.Count; i++)
+                if (image1 != null)
                 {
-                    if (images[i] != null)
-                    {
-                        byte[] imageBytes = new byte[images[i].ContentLength];
-                        images[i].InputStream.Read(imageBytes, 0, images[i].ContentLength);
+                    p1.ResimT1 = new byte[image1.ContentLength];
+                    image1.InputStream.Read(p1.ResimT1, 0, image1.ContentLength);
 
-                        switch (i)
-                        {
-                            case 0:
-                                p1.ResimT1 = imageBytes;
-                                break;
-                            case 1:
-                                p1.ResimT2 = imageBytes;
-                                break;
-                            case 2:
-                                p1.ResimT3 = imageBytes;
-                                break;
-                            case 3:
-                                p1.ResimT4 = imageBytes;
-                                break;
-                            case 4:
-                                p1.ResimT5 = imageBytes;
-                                break;
-                            case 5:
-                                p1.ResimT6 = imageBytes;
-                                break;
-                            case 6:
-                                p1.ResimT7 = imageBytes;
-                                break;
-                            case 7:
-                                p1.ResimT8 = imageBytes;
-                                break;
-                            case 8:
-                                p1.ResimT9 = imageBytes;
-                                break;
-                            case 9:
-                                p1.ResimT10 = imageBytes;
-                                break;
-                        }
-                    }
                 }
-                //if (image1 != null)
-                //{
-                //    p1.ResimT1 = new byte[image1.ContentLength];
-                //    image1.InputStream.Read(p1.ResimT1, 0, image1.ContentLength);
 
-                //}
+                if (image2 != null)
+                {
+                    p1.ResimT2 = new byte[image2.ContentLength];
+                    image2.InputStream.Read(p1.ResimT2, 0, image2.ContentLength);
+                }
 
-                //if (image2 != null)
-                //{
-                //    p1.ResimT2 = new byte[image2.ContentLength];
-                //    image2.InputStream.Read(p1.ResimT2, 0, image2.ContentLength);
-                //}
+                if (image3 != null)
+                {
+                    p1.ResimT3 = new byte[image3.ContentLength];
+                    image3.InputStream.Read(p1.ResimT3, 0, image3.ContentLength);
+                }
 
-                //if (image3 != null)
-                //{
-                //    p1.ResimT3 = new byte[image3.ContentLength];
-                //    image3.InputStream.Read(p1.ResimT3, 0, image3.ContentLength);
-                //}
+                if (image4 != null)
+                {
+                    p1.ResimT4 = new byte[image4.ContentLength];
+                    image4.InputStream.Read(p1.ResimT4, 0, image4.ContentLength);
+                }
 
-                //if (image4 != null)
-                //{
-                //    p1.ResimT4 = new byte[image4.ContentLength];
-                //    image4.InputStream.Read(p1.ResimT4, 0, image4.ContentLength);
-                //}
+                if (image5 != null)
+                {
+                    p1.ResimT5 = new byte[image5.ContentLength];
+                    image5.InputStream.Read(p1.ResimT5, 0, image5.ContentLength);
+                }
 
-                //if (image5 != null)
-                //{
-                //    p1.ResimT5 = new byte[image5.ContentLength];
-                //    image5.InputStream.Read(p1.ResimT5, 0, image5.ContentLength);
-                //}
+                if (image6 != null)
+                {
+                    p1.ResimT6 = new byte[image6.ContentLength];
+                    image6.InputStream.Read(p1.ResimT6, 0, image6.ContentLength);
+                }
 
-                //if (image6 != null)
-                //{
-                //    p1.ResimT6 = new byte[image6.ContentLength];
-                //    image6.InputStream.Read(p1.ResimT6, 0, image6.ContentLength);
-                //}
+                if (image7 != null)
+                {
+                    p1.ResimT7 = new byte[image7.ContentLength];
+                    image7.InputStream.Read(p1.ResimT7, 0, image7.ContentLength);
+                }
 
-                //if (image7 != null)
-                //{
-                //    p1.ResimT7 = new byte[image7.ContentLength];
-                //    image7.InputStream.Read(p1.ResimT7, 0, image7.ContentLength);
-                //}
+                if (image8 != null)
+                {
+                    p1.ResimT8 = new byte[image8.ContentLength];
+                    image8.InputStream.Read(p1.ResimT8, 0, image8.ContentLength);
+                }
 
-                //if (image8 != null)
-                //{
-                //    p1.ResimT8 = new byte[image8.ContentLength];
-                //    image8.InputStream.Read(p1.ResimT8, 0, image8.ContentLength);
-                //}
+                if (image9 != null)
+                {
+                    p1.ResimT9 = new byte[image9.ContentLength];
+                    image9.InputStream.Read(p1.ResimT9, 0, image9.ContentLength);
+                }
 
-                //if (image9 != null)
-                //{
-                //    p1.ResimT9 = new byte[image9.ContentLength];
-                //    image9.InputStream.Read(p1.ResimT9, 0, image9.ContentLength);
-                //}
-
-                //if (image10 != null)
-                //{
-                //    p1.ResimT10 = new byte[image10.ContentLength];
-                //    image10.InputStream.Read(p1.ResimT10, 0, image10.ContentLength);
-                //}
+                if (image10 != null)
+                {
+                    p1.ResimT10 = new byte[image10.ContentLength];
+                    image10.InputStream.Read(p1.ResimT10, 0, image10.ContentLength);
+                }
 
                 string reporter = Session["UserName"].ToString();
 
